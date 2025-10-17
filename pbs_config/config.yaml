@@ -1,0 +1,15 @@
+cluster: qsub -e pbs_oe/ -o pbs_oe/ -q {resources.queue} -l select=1:ngpus={resources.ngpus}:ncpus={threads}:mem={resources.mem_gb}G -l walltime={resources.walltime}
+cluster-cancel: qdel
+cluster-status: pbs-status.py
+rerun-incomplete: True
+jobs: 10
+resources:
+  - concurrent_annotationhub_pulls=1
+  - concurrent_downloads=16
+  - concurrent_local_rules=10
+  - concurrent_panther_request=1
+default-resources:
+  - ngpus=0
+  - mem_gb=4
+  - queue=workq
+  - walltime='00:05:00'

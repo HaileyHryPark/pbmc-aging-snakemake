@@ -1,0 +1,7 @@
+*.log
+snakejob*
+.cache/
+.snakemake/
+*.swp
+data/
+pbs_oe/
