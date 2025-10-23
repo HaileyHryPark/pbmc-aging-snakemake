@@ -1,0 +1,36 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-biocmanager
+  - r-tidyr
+  - r-dplyr
+  - r-tidyverse
+  - r-rio
+  - r-ggpubr
+  - bioconductor-qvalue
+  - r-ggvenn
+  - r-venndiagram
+  - r-ggvenndiagram
+  - r-circlize
+  - bioconductor-complexheatmap
+  - r-igraph
+  - r-ggally
+  - r-network
+  - r-sna
+  - r-intergraph
+  - r-reshape2
+  - r-ggfortify
+  - r-svglite
+  - r-pheatmap
+  - r-upsetr
+  - r-complexupset
+  - r-stringr
+  - r-ppcor
+  - r-metrics
+  - r-fmsb
+  - r-corrplot
+  - r-rcolorbrewer
+  - r-colorspace
+  - r-ggalluvial

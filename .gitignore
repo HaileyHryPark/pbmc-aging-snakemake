@@ -5,3 +5,7 @@ snakejob*
 *.swp
 data/
 pbs_oe/
+plots/
+tables/
+screen*
+resources/r_package

@@ -1,0 +1,17 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-tidyr
+  - r-dplyr
+  - r-tidyverse
+  - r-rio=1.2.3
+  - r-ggpubr
+  - r-ggrepel
+  - bioconductor-limma
+  - bioconductor-mfuzz
+  - r-corrplot
+  - r-rcolorbrewer
+  - r-colorspace
+  - bioconductor-qvalue

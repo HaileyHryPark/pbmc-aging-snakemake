@@ -1,0 +1,11 @@
+# export CONDA_OVERRIDE_CUDA=12.2
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - numpy
+  - pandas=2.2.3
+  - matplotlib
+  - scikit-learn
+  - seaborn
+  - joblib=1.4.2

@@ -1,0 +1,17 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=4.4.3
+  - r-biocmanager
+  - r-tidyr
+  - r-dplyr
+  #- bioconductor-genomeinfodbdata=1.2.10
+  #- r-seurat=5.0.1
+  - r-tidyverse
+  - r-rio
+  - r-ggpubr
+  - r-reshape2
+  - r-hdf5r
+  - bioconductor-tfbstools
+#  - r-devtools

@@ -1,0 +1,17 @@
+# export CONDA_OVERRIDE_CUDA=12.2
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pytorch>=2.0.0
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - optuna
+  - shap
+  - wandb
+  - joblib 

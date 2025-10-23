@@ -1,3 +1,5 @@
+internal_ds: ["onek1k", "aida", "marina", "perez"]
+
 r_package:
         pkg:
                 path: ""

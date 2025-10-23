@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - scanpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - r-base=4.4.3
+  - mygene=3.2.2

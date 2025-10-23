@@ -1,0 +1,17 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-tidyr
+  - r-dplyr
+  - r-tidyverse
+  - r-rio
+  - r-ggpubr
+  - bioconductor-org.hs.eg.db
+  - bioconductor-clusterprofiler=3.18.0
+  - bioconductor-reactomepa
+  - bioconductor-complexheatmap
+  - r-colorspace
+  - bioconductor-ensembldb
+  - r-circlize
