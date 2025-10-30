@@ -41,9 +41,10 @@ rule plot_sample_distribution:
         input:
                 data="data/internal_pseudobulk/{mode}_pseudobulk_data_all.csv",
         output:
-                plot="plots/internal_pseudobulk/{mode}_sample_distribution.pdf",
+                plot1="plots/internal_pseudobulk/{mode}_sample_distribution.pdf",
+                plot2="plots/internal_pseudobulk/{mode}_sample_distribution2.pdf",
                 plot_ds="plots/internal_pseudobulk/{mode}_sample_distribution_by_dataset.pdf",
-	conda: "../env/internal_data_prep.yaml"
+	conda: "../env/external_dis_data_prep.yaml"
         threads: 1
         resources: ngpus = 0, mem_gb = 40, walltime = "05:00:00", queue = "normal"
         script:

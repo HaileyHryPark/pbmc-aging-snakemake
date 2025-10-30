@@ -113,7 +113,7 @@ rule summarize_final_data_included:
 		marina=expand("data/internal_data_prep/marina_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 6)]),
 	output:
 		summary="tables/internal_data_prep/final_data_included_summary.csv",
-	conda: "../env/internal_data_prep.yaml"
+	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "normal"
 	script:

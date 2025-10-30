@@ -30,36 +30,34 @@ deg_total <- deg_summary %>%
 
 deg_plot_data <- bind_rows(deg_summary, deg_total) %>% mutate(celltype = factor(celltype, levels = c("All","CD4 T","CD8 T","NK","B","Mono")))
 
-pdf(snakemake@output[["plots"]], width = 4.5, height = 3.5)
+pdf(snakemake@output[["plots"]], width = 4.8, height = 3.5)
 
 lapply(as.list(unique(deg_plot_data$celltype)), function(ct){
 	p1 <- deg_plot_data %>% filter(celltype == ct) %>% ggplot( aes(x = age_threshold, y = n_DEGs, color = gender)) +
   		geom_line(linewidth = 1) +
 		geom_point(size = 1.5) +
   		scale_color_manual(values = c("Both" = "grey", "Female" = "#E15566", "Male" = "#4981BF")) +
-  		#facet_wrap(~ celltype)+
   		labs(
     			title = ct, 
     			x = "Age (years)",
     			y = "Number of DEGs",
     			color = "Gender"
   		) +
-  		theme_test(base_size = 14)+
-  		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
+  		theme_classic(base_size = 15)+
+  		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5), strip.text = element_text(size=17))
 		
 	p2 <- deg_plot_data %>% filter(celltype == ct, gender != "Both") %>% ggplot( aes(x = age_threshold, y = n_DEGs, color = gender)) +
   		geom_line(linewidth = 1) +
 		geom_point(size = 1.5) +
   		scale_color_manual(values = c("Female" = "#E15566", "Male" = "#4981BF")) +
-  		#facet_wrap(~ celltype)+
   		labs(
     			title = ct, 
     			x = "Age Threshold",
     			y = "Number of DEGs",
     			color = "Gender"
   		) +
-  		theme_test(base_size = 14)+
-  		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
+  		theme_classic(base_size = 15)+
+  		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5), strip.text = element_text(size=17))
 	plot(p1)
 	plot(p2)	
 	plot(p1 + ylim(0,4050))
@@ -68,7 +66,7 @@ lapply(as.list(unique(deg_plot_data$celltype)), function(ct){
 
 dev.off()
 
-pdf(snakemake@output[["plots2"]], width = 16.5, height = 3.2)
+pdf(snakemake@output[["plots2"]], width = 16.5, height = 3.7)
 
 	p1 <- deg_plot_data %>% filter(celltype != "All") %>% ggplot(aes(x = age_threshold, y = n_DEGs, color = gender)) +
   		geom_line(linewidth = 1) +

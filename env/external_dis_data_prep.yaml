@@ -1,0 +1,12 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-tidyr
+  - r-dplyr
+  - r-tidyverse
+  - r-rio
+  - r-ggpubr
+  - r-reshape2
+  - r-seurat=5.0.1

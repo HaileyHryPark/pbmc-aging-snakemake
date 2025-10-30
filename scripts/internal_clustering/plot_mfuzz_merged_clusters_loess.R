@@ -102,8 +102,8 @@ ggplot(plotdata, aes(x=age, y=fitted, group=feature)) +
 	) +
 	scale_fill_manual(values = celltype_colors) + 
 	facet_wrap(~final_cluster, nrow = 1, ncol = 7, drop = FALSE)+
-	theme_bw(base_size = 15)+
-	theme(panel.grid = element_blank(), strip.background = element_blank(),strip.placement = "outside",strip.text = element_text(size=18), legend.position = "bottom")+
+	theme_linedraw(base_size = 16)+
+	theme(panel.grid = element_blank(), strip.text = element_text(size=17), legend.position = "bottom")+
 	ylim(-1.7,1.9)+
 	xlim(19,93)+
 	labs(x = "Age", y = "Scaled expression")

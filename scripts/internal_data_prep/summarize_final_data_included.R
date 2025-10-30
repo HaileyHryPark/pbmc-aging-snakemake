@@ -27,6 +27,7 @@ summary <- lapply(as.list(names(objs)), function(obj){
 			  n_cells_total = nrow(meta_all),
 			  n_female = meta_all %>% filter(sex == "female") %>% pull(donor_id) %>% unique() %>% length(),
 			  n_male = meta_all %>% filter(sex == "male") %>% pull(donor_id) %>% unique() %>% length(),
+			  n_asian = meta_all %>% filter(self_reported_ethnicity %in% c("Asian", "Indian", "Japanese", "Korean", "Singaporean Chinese", "Singaporean Indian", "Singaporean Malay", "Thai")) %>% pull(donor_id) %>% unique() %>% length(),
 			  age_min = min(meta_all$age, na.rm = TRUE),
 			  age_max = max(meta_all$age, na.rm = TRUE)))
 

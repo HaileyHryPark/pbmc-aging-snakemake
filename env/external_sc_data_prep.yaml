@@ -8,11 +8,7 @@ dependencies:
   - r-tidyverse
   - r-rio
   - r-ggpubr
+  - r-reshape2
+  - r-seurat=5.0.1
   - bioconductor-org.hs.eg.db
-  - bioconductor-clusterprofiler=3.18.0
-  - bioconductor-reactomepa
-  - bioconductor-complexheatmap
-  - r-colorspace
   - bioconductor-ensembldb
-  - r-circlize
-  - r-msigdbr
