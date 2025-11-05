@@ -33,11 +33,19 @@ rule internal_clustering:
 	input:
 		#expand("tables/internal_clustering/allexp5ct_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}.csv", gender=["both","female","male"]),
 		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_loess_{gender}.pdf", gender=["both","female","male"]),
-		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_{gender}_res.csv", gender=["both","female","male"]),
-		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_{gender}_res.csv", gender=["both","female","male"]),
-		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_disgenet2r_{gender}_res.csv", gender=["both","female","male"]),
-		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_plot.pdf",
-		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_plot_no_ribo.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_cluster_pie_by_celltype.pdf",
+		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv", gender=["both","female","male"]),
+		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv", gender=["both","female","male"]),
+		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_disgenet2r_all_res.csv", gender=["both","female","male"]),
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots2.pdf",
+
+rule internal_ctp:
+	input:
+		"data/internal_celltype_prop/celltype_prop_data_all.csv",
+		"plots/internal_celltype_prop/celltype_prop_data_raw_scatter.pdf",
+		"plots/internal_celltype_prop/celltype_data_deswan_corr.pdf",
 
 rule external:
 	input:
@@ -58,6 +66,7 @@ include: "rules/internal_data_prep.smk"
 include: "rules/internal_pseudobulk.smk"
 include: "rules/internal_deswan.smk"
 include: "rules/internal_clustering.smk"
+include: "rules/internal_celltype_prop.smk"
 include: "rules/internal_clock.smk"
 include: "rules/external_dis_data_prep.smk"
 include: "rules/external_sc_data_prep.smk"

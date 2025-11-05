@@ -12,7 +12,7 @@ library(circlize)
 library(rio)
 library(msigdbr)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease", "Inverted\nU-shape")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
 
 msig_hs <- msigdbr(species = "Homo sapiens")
@@ -150,42 +150,67 @@ return(res)
 }
 
 ## Main
-df <- import(snakemake@input[["df"]]) %>% dplyr::filter(!is.na(final_cluster))
+both_df <- import(snakemake@input[["both_df"]]) %>% dplyr::filter(!is.na(final_cluster))
+female_df <- import(snakemake@input[["female_df"]]) %>% dplyr::filter(!is.na(final_cluster))
+male_df <- import(snakemake@input[["male_df"]]) %>% dplyr::filter(!is.na(final_cluster))
+female_df_exc <- female_df %>% dplyr::filter(!(feature %in% male_df$feature))
+male_df_exc <- male_df %>% dplyr::filter(!(feature %in% female_df$feature))
 
-annot_deg <- ensembldb::select(org.Hs.eg.db, keys = unique(df$gene), keytype = "SYMBOL", columns = c("SYMBOL","ENTREZID"))
+print(table(female_df_exc$final_cluster))
+print(table(male_df_exc$final_cluster))
+
+annot_deg <- ensembldb::select(org.Hs.eg.db, keys = unique(c(both_df$gene, female_df$gene, male_df$gene)), keytype = "SYMBOL", columns = c("SYMBOL","ENTREZID"))
 print(head(annot_deg))
 
+df_list <- list(both_df, female_df, male_df, female_df_exc, male_df_exc)
+names(df_list) <- c("both", "female", "male", "female_only", "male_only")
+
 ## Res 1
+all_res <- lapply(as.list(names(df_list)), function(n){
+
+df <- df_list[[n]]
+
 res <- RunFAbyCluster(df, "All celltype")
 res$fa_celltype <- "All celltype"
 
 ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
-	
-	print(ct)
-	ctdf <- df %>% dplyr::filter(celltype == ct)
-	res <- RunFAbyCluster(ctdf, ct) 
-	res$fa_celltype <- ct
 
-	return(res)
+        print(ct)
+        ctdf <- df %>% dplyr::filter(celltype == ct)
+        res <- RunFAbyCluster(ctdf, ct)
+        res$fa_celltype <- ct
+
+        return(res)
 })
 
-export(rbind(res, bind_rows(ct_res)), snakemake@output[["res1"]])
+return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
+
+})
+export(bind_rows(all_res), snakemake@output[["res1"]])
 
 ## Exclude ribosomal genes
 annot_deg <- annot_deg %>% dplyr::filter(!grepl("^(RPS|RPL|MRPS|MRPL|MT-)", SYMBOL))
 
-## Res 1
+## Res 2
+all_res <- lapply(as.list(names(df_list)), function(n){
+
+df <- df_list[[n]]
+
 res <- RunFAbyCluster(df, "All celltype")
 res$fa_celltype <- "All celltype"
 
 ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
-	
-	print(ct)
-	ctdf <- df %>% dplyr::filter(celltype == ct)
-	res <- RunFAbyCluster(ctdf, ct) 
-	res$fa_celltype <- ct
 
-	return(res)
+        print(ct)
+        ctdf <- df %>% dplyr::filter(celltype == ct)
+        res <- RunFAbyCluster(ctdf, ct)
+        res$fa_celltype <- ct
+
+        return(res)
 })
 
-export(rbind(res, bind_rows(ct_res)), snakemake@output[["res2"]])
+return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
+
+})
+
+export(bind_rows(all_res), snakemake@output[["res2"]])

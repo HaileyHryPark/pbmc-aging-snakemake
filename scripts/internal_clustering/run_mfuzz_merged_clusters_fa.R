@@ -122,7 +122,7 @@ return(res)
 
 }
 
-df <- import(snakemake@input[["df"]])
+df <- import(snakemake@input[["df"]]) %>% dplyr::filter(!is.na(final_cluster))
 
 print(table(df$final_cluster))
 print(df %>% dplyr::filter(is.na(final_cluster)))

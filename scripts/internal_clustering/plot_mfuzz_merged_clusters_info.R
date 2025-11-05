@@ -8,7 +8,7 @@ library(colorspace)
 library(ggVennDiagram)
 
 
-cluster_col = qualitative_hcl(7, palette = "Set 2")
+cluster_col = qualitative_hcl(6, palette = "Set 2")
 celltype_colors <- c(
   "CD4 T" = "#D2533B",
   "CD8 T"    = "#E6974D",
@@ -16,7 +16,8 @@ celltype_colors <- c(
   "B"   = "#79629E",
   "Mono" = "#5B83BF"
 )
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease", "Inverted\nU-shape")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_col_df <- data.frame(cluster = cluster_level, color = cluster_col)
 
 both <- import(snakemake@input[["both"]]) %>% mutate(gender = "both")
 female <- import(snakemake@input[["female"]]) %>% mutate(gender = "female")
@@ -25,7 +26,7 @@ male <- import(snakemake@input[["male"]]) %>% mutate(gender = "male")
 df <- bind_rows(both, female, male)
 print(head(df))
 
-df <- df %>% mutate(final_cluster = factor(final_cluster, levels = cluster_level), gender = factor(gender, levels = c("male","both","female")))
+df <- df %>% filter(!is.na(final_cluster)) %>% mutate(final_cluster = factor(final_cluster, levels = cluster_level), gender = factor(gender, levels = c("male","both","female")))
 
 freqdf <- df %>% group_by(gender, feature, final_cluster) %>% summarise(Freq = n(), .groups = "drop")
 print(head(freqdf))
@@ -69,3 +70,22 @@ plot(ggVennDiagram(venn_list, label_alpha = 0, edge_size = 0.5, set_size = 6) + 
 })
 dev.off()
 
+## Pie chart
+pdf(snakemake@output[["pie"]], height = 5, width = 5)
+
+lapply(list("both", "female", "male"), function(g){
+lapply(as.list(unique(df$celltype)), function(ct){
+
+ctdf <- df %>% filter(celltype == ct, gender == g)
+
+  bycluster <- as.data.frame(table(ctdf$final_cluster)) %>% arrange(Freq)
+  bycluster <- bycluster %>% left_join(cluster_col_df, by = join_by(Var1 == cluster))
+
+  pie(bycluster$Freq, labels = rep("", nrow(bycluster)), col = bycluster$color, main = paste(g, ct))
+  pie(bycluster$Freq, labels = bycluster$Var1, col = bycluster$color, main = paste(g, ct))
+  mtext(ct, side = 3, line = 1, outer = F)
+
+})
+})
+
+dev.off()

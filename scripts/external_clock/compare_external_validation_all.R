@@ -22,7 +22,7 @@ p1 <- ggplot(female_met, aes(x = model, y = RMSE)) +
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "black", "Model F" = "#E15566", "Model M" = "#4981BF")) +
 	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#E15566") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
 	facet_wrap(~alg) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
@@ -33,7 +33,7 @@ p2 <- ggplot(male_met, aes(x = model, y = RMSE)) +
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "black", "Model M" = "#4981BF", "Model F" = "#E15566")) +
 	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#4981BF") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
 	facet_wrap(~alg) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
@@ -44,7 +44,7 @@ p3 <- ggplot(female_met, aes(x = model, y = MAE)) +
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "black", "Model F" = "#E15566", "Model M" = "#4981BF")) +
 	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#E15566") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
 	facet_wrap(~alg) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
@@ -55,7 +55,7 @@ p4 <- ggplot(male_met, aes(x = model, y = MAE)) +
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "black", "Model M" = "#4981BF", "Model F" = "#E15566")) +
 	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#4981BF") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
 	facet_wrap(~alg) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
@@ -129,16 +129,21 @@ PlotScatterGender(preds_age %>% filter(disease != "normal"))
 
 dev.off()
 
-pdf(snakemake@output[["plot3"]], width = 9, height = 9)
+pdf(snakemake@output[["plot3"]], width = 9, height = 15)
 lapply(list("Elastic Net", "XGBoost", "MLP"), function(a){
 
 ch_p <- lapply(list("Model B", "Model F", "Model M"), function(m){
 
 ch_df <- preds_age %>% filter(alg == a, dataset == "ch", model == m) %>% mutate(disease = factor(disease, levels = c("normal", "clonal hematopoiesis")))
-p <- ggplot(df, aes(x = disease, y = agediff)) +
+if(m == "Model F"){
+	ch_df <- ch_df %>% filter(sex == "female")
+}else if(m == "Model M"){
+	ch_df <- ch_df %>% filter(sex == "male")
+}
+p <- ggplot(ch_df, aes(x = disease, y = agediff)) +
 	geom_boxplot(color = "black")+
 	geom_jitter(aes(color = disease), position=position_jitter(0.2), alpha = 0.5)+
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "clonal hematopoiesis")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "clonal hematopoiesis")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .1) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
@@ -152,10 +157,15 @@ plot(ggarrange(plotlist = ch_p, ncol = 1, nrow = 3))
 glaucoma_p <- lapply(list("Model B", "Model F", "Model M"), function(m){
 
 glaucoma_df <- preds_age %>% filter(alg == a, dataset == "glaucoma", model == m) %>% mutate(disease = factor(disease, levels = c("normal", "open-angle glaucoma")))
-p <- ggplot(df, aes(x = disease, y = agediff)) +
+if(m == "Model F"){
+	glaucoma_df <- glaucoma_df %>% filter(sex == "female")
+}else if(m == "Model M"){
+	glaucoma_df <- glaucoma_df %>% filter(sex == "male")
+}
+p <- ggplot(glaucoma_df, aes(x = disease, y = agediff)) +
 	geom_boxplot(color = "black")+
 	geom_jitter(aes(color = disease), position=position_jitter(0.2), alpha = 0.5)+
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "open-angle glaucoma")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "open-angle glaucoma")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .1) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
@@ -169,13 +179,18 @@ plot(ggarrange(plotlist = glaucoma_p, ncol = 1, nrow = 3))
 ren_p <- lapply(list("Model B", "Model F", "Model M"), function(m){
 
 ren_df <- preds_age %>% filter(alg == a, dataset == "ren", model == m) %>% mutate(disease = factor(disease, levels = c("normal", "mild_progression", "mild_convalescence", "severe_progression", "severe_convalescence")))
-p <- ggplot(df, aes(x = disease, y = agediff)) +
+if(m == "Model F"){
+	ren_df <- ren_df %>% filter(sex == "female")
+}else if(m == "Model M"){
+	ren_df <- ren_df %>% filter(sex == "male")
+}
+p <- ggplot(ren_df, aes(x = disease, y = agediff)) +
 	geom_boxplot(color = "black")+
 	geom_jitter(aes(color = disease), position=position_jitter(0.2), alpha = 0.5)+
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild_progression"), c("mild_progression", "mild_convalescence"), c("severe_progression", "severe_convalescence"), c("normal", "severe_progression")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild_progression"), c("mild_progression", "mild_convalescence"), c("severe_progression", "severe_convalescence"), c("normal", "severe_progression")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .13) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
-	scale_y_continuous(expand = expansion(mult = c(0,1)))+
+	scale_y_continuous(expand = expansion(mult = c(0,.8)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 
@@ -186,13 +201,18 @@ plot(ggarrange(plotlist = ren_p, ncol = 1, nrow = 3))
 wellcome_p <- lapply(list("Model B", "Model F", "Model M"), function(m){
 
 wellcome_df <- preds_age %>% filter(alg == a, dataset == "wellcome", model == m) %>% mutate(disease = factor(disease, levels = c("normal", "mild", "moderate", "severe", "critical")))
-p <- ggplot(df, aes(x = disease, y = agediff)) +
+if(m == "Model F"){
+	wellcome_df <- wellcome_df %>% filter(sex == "female")
+}else if(m == "Model M"){
+	wellcome_df <- wellcome_df %>% filter(sex == "male")
+}
+p <- ggplot(wellcome_df, aes(x = disease, y = agediff)) +
 	geom_boxplot(color = "black")+
 	geom_jitter(aes(color = disease), position=position_jitter(0.2), alpha = 0.5)+
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild"), c("mild", "moderate"), c("moderate", "severe"), c("severe", "critical"), c("normal", "moderate"), c("normal", "severe"), c("normal", "critical")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step_increase = 2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild"), c("mild", "moderate"), c("moderate", "severe"), c("severe", "critical"), c("normal", "moderate"), c("normal", "severe"), c("normal", "critical")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .2) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
-	scale_y_continuous(expand = expansion(mult = c(0,2)))+
+	scale_y_continuous(expand = expansion(mult = c(0,1)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 

@@ -10,18 +10,9 @@ library(org.Hs.eg.db)
 library(ensembldb)
 library(circlize)
 library(rio)
-library(msigdbr)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease", "Inverted\nU-shape")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
-
-msig_hs <- msigdbr(species = "Homo sapiens")
-print(unique(msig_hs$gs_cat))
-print(unique(msig_hs$gs_subcat))
-msig_imm <- msig_hs %>% dplyr::filter(gs_subcat == "IMMUNESIGDB") %>% dplyr::select(gs_name, entrez_gene)
-msig_pos <- msig_hs %>% dplyr::filter(gs_cat == "C1") %>% dplyr::select(gs_name, entrez_gene)
-msig_mir <- msig_hs %>% dplyr::filter(gs_subcat == "MIR:MIRDB") %>% dplyr::select(gs_name, entrez_gene)
-msig_tft <- msig_hs %>% dplyr::filter(gs_subcat == "TFT:GTRD") %>% dplyr::select(gs_name, entrez_gene)
 
 ### Functions
 runFA <- function(features){
@@ -30,62 +21,47 @@ runFA <- function(features){
   print(genelist)
   
   set.seed(123)
-  enr_imm <- enricher(genelist,
-			TERM2GENE=msig_imm,
+  enr_kegg <- enrichKEGG(genelist,
+                         organism = "hsa",
                          pvalueCutoff = 1, 
+                         keyType = "ncbi-geneid",
                          minGSSize = 3)
-  if(is.null(enr_imm)){
+  if(is.null(enr_kegg)){
     print("here1")
-    enr_imm_res <- NULL
+    enr_kegg_res <- NULL
   }else{
-    enr_imm_res <- enr_imm@result
-    enr_imm_res$db <- "IMMUNESIGDB"
+    enr_kegg_res <- enr_kegg@result
+    enr_kegg_res$db <- "KEGG"
+    enr_kegg_res <- enr_kegg_res[,-c(1,2)]
   }
-  print(head(enr_imm_res))
   
   set.seed(123)
-  enr_pos <- enricher(genelist,
-			TERM2GENE=msig_pos,
-                         pvalueCutoff = 1, 
-                         minGSSize = 3)
-  if(is.null(enr_pos)){
+  enr_wp <- enrichWP(genelist,
+                     organism = "Homo sapiens",
+                     pvalueCutoff = 1, 
+                     minGSSize = 3)
+  if(is.null(enr_wp)){
     print("here2")
-    enr_pos_res <- NULL
+    enr_wp_res <- NULL
   }else{
-    enr_pos_res <- enr_pos@result
-    enr_pos_res$db <- "C1"
+    enr_wp_res <- enr_wp@result
+    enr_wp_res$db <- "WP"
   }
-  print(head(enr_pos_res))
   
   set.seed(123)
-  enr_mir <- enricher(genelist,
-			TERM2GENE=msig_mir,
+  enr_r <- enrichPathway(genelist,
+                         organism = "human",
                          pvalueCutoff = 1, 
                          minGSSize = 3)
-  if(is.null(enr_mir)){
+  if(is.null(enr_r)){
     print("here3")
-    enr_mir_res <- NULL
+    enr_r_res <- NULL
   }else{
-    enr_mir_res <- enr_mir@result
-    enr_mir_res$db <- "MIR"
+    enr_r_res <- enr_r@result
+    enr_r_res$db <- "Reactome"
   }
-  print(head(enr_mir_res))
 
-  set.seed(123)
-  enr_tft <- enricher(genelist,
-			TERM2GENE=msig_tft,
-                         pvalueCutoff = 1, 
-                         minGSSize = 3)
-  if(is.null(enr_tft)){
-    print("here3")
-    enr_tft_res <- NULL
-  }else{
-    enr_tft_res <- enr_tft@result
-    enr_tft_res$db <- "TFT"
-  }
-  print(head(enr_tft_res))
-
-  res_list <- list(enr_imm_res, enr_pos_res, enr_mir_res, enr_tft_res)
+  res_list <- list(enr_kegg_res, enr_wp_res, enr_r_res)
 
   enr_all_res <- bind_rows(res_list[!unlist(lapply(res_list, is.null))])
   if(nrow(enr_all_res) == 0){
@@ -96,9 +72,6 @@ runFA <- function(features){
     genes <- unlist(strsplit(x, split = "/"))
     return(paste(annot_deg[annot_deg$ENTREZID %in% genes, "SYMBOL"], collapse = "/"))
   })
-
-  print(head(enr_all_res))
-
   return(enr_all_res)
 }
 
@@ -110,7 +83,7 @@ runGOFA <- function(features){
   set.seed(123)
   enr_go <- enrichGO(genelist,
                      OrgDb = org.Hs.eg.db,
-                     ont = "CC",
+                     ont = "BP",
                      pvalueCutoff = 1, 
                      keyType = "ENTREZID",
                      minGSSize = 3)
@@ -118,7 +91,7 @@ runGOFA <- function(features){
     return(data.frame())
   }
   enr_go_res <- enr_go@result
-  enr_go_res$db <- "GOCC"
+  enr_go_res$db <- "GO"
   enr_go_res$gene_name <- sapply(enr_go_res$geneID, function(x){
     genes <- unlist(strsplit(x, split = "/"))
     return(paste(annot_deg[annot_deg$ENTREZID %in% genes, "SYMBOL"], collapse = "/"))
@@ -133,14 +106,14 @@ fares <- lapply(as.list(unique(df$final_cluster)), function(clust){
 	print(clust)
 	clustdf <- df %>% dplyr::filter(final_cluster == clust)
 
-	fadf <- rbind(runFA(unique(clustdf$gene)), runGOFA(unique(clustdf$gene)))
+	fadf <- rbind(runFA(unique(clustdf$gene)), runGOFA(unique(clustdf$gene))) 
 
-        if(nrow(fadf) == 0){
-                return(data.frame())
-        }else{
-                fadf <- fadf %>% mutate(cluster = clust, term = paste(ID, Description, sep = "-"))
-                return(fadf)
-        }	
+	if(nrow(fadf) == 0){
+		return(data.frame())
+	}else{
+		fadf <- fadf %>% mutate(cluster = clust, term = paste(ID, Description, sep = "-"))
+		return(fadf)
+	}
 })
 
 res <- bind_rows(fares)
@@ -150,12 +123,26 @@ return(res)
 }
 
 ## Main
-df <- import(snakemake@input[["df"]]) %>% dplyr::filter(!is.na(final_cluster))
+both_df <- import(snakemake@input[["both_df"]]) %>% dplyr::filter(!is.na(final_cluster), final_cluster != "")
+female_df <- import(snakemake@input[["female_df"]]) %>% dplyr::filter(!is.na(final_cluster), final_cluster != "")
+male_df <- import(snakemake@input[["male_df"]]) %>% dplyr::filter(!is.na(final_cluster), final_cluster != "")
+female_df_exc <- female_df %>% dplyr::filter(!(feature %in% male_df$feature))
+male_df_exc <- male_df %>% dplyr::filter(!(feature %in% female_df$feature))
 
-annot_deg <- ensembldb::select(org.Hs.eg.db, keys = unique(df$gene), keytype = "SYMBOL", columns = c("SYMBOL","ENTREZID"))
+print(table(female_df_exc$final_cluster))
+print(table(male_df_exc$final_cluster))
+
+annot_deg <- ensembldb::select(org.Hs.eg.db, keys = unique(c(both_df$gene, female_df$gene, male_df$gene)), keytype = "SYMBOL", columns = c("SYMBOL","ENTREZID"))
 print(head(annot_deg))
 
-## Res 1
+df_list <- list(both_df, female_df, male_df, female_df_exc, male_df_exc)
+names(df_list) <- c("both", "female", "male", "female_only", "male_only")
+
+## Res1
+all_res <- lapply(as.list(names(df_list)), function(n){
+
+df <- df_list[[n]]
+
 res <- RunFAbyCluster(df, "All celltype")
 res$fa_celltype <- "All celltype"
 
@@ -169,12 +156,20 @@ ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
 	return(res)
 })
 
-export(rbind(res, bind_rows(ct_res)), snakemake@output[["res1"]])
+return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
+
+})
+
+export(bind_rows(all_res), snakemake@output[["res1"]])
 
 ## Exclude ribosomal genes
 annot_deg <- annot_deg %>% dplyr::filter(!grepl("^(RPS|RPL|MRPS|MRPL|MT-)", SYMBOL))
 
-## Res 1
+## Res2
+all_res <- lapply(as.list(names(df_list)), function(n){
+
+df <- df_list[[n]]
+
 res <- RunFAbyCluster(df, "All celltype")
 res$fa_celltype <- "All celltype"
 
@@ -188,4 +183,9 @@ ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
 	return(res)
 })
 
-export(rbind(res, bind_rows(ct_res)), snakemake@output[["res2"]])
+return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
+
+})
+
+export(bind_rows(all_res), snakemake@output[["res2"]])
+

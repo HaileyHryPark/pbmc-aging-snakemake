@@ -20,6 +20,7 @@ dependencies:
   - r-network
   - r-sna
   - r-intergraph
+  - r-ggnetwork
   - r-reshape2
   - r-ggfortify
   - r-svglite
