@@ -38,6 +38,8 @@ rule internal_clustering:
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv", gender=["both","female","male"]),
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_disgenet2r_all_res.csv", gender=["both","female","male"]),
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots2.pdf",
 

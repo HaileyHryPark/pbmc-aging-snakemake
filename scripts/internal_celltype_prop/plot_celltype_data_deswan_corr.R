@@ -15,9 +15,9 @@ celltype_col <- c(
   "Mono" = "#5B83BF"
 )
 
-both <- import(snakemake@input[["degb"]]) %>% count(celltype, name = "deg_both_n") 
-female <- import(snakemake@input[["degf"]]) %>% count(celltype, name = "deg_female_n")
-male <- import(snakemake@input[["degm"]]) %>% count(celltype, name = "deg_male_n")
+both <- import(snakemake@input[["degb"]]) %>% distinct(celltype, variable) %>% count(celltype, name = "deg_both_n") 
+female <- import(snakemake@input[["degf"]]) %>% distinct(celltype, variable) %>% count(celltype, name = "deg_female_n")
+male <- import(snakemake@input[["degm"]]) %>% distinct(celltype, variable) %>% count(celltype, name = "deg_male_n")
 
 deg_summary <- full_join(both, female, by = "celltype") %>%
   full_join(male, by = "celltype") %>%
@@ -70,7 +70,7 @@ lapply(list("both","female","male"), function(g){
 	plots <- lapply(list("total_cells","total_UMIs","total_genes", "mean_tcells", "mean_tUMIs", "mean_tgenes", "mean_UMIs", "mean_genes", "mean_cells"), function(var){
 		p1 <- ggscatter(df, x = paste(var,g, sep = "_"), y = paste("deg",g,"n",sep="_"), color = "celltype", label = "celltype", repel = TRUE, size = 2, add = "reg.line", cor.coef = TRUE, conf.int = FALSE) +
 			scale_color_manual(values = celltype_col) + 
-			theme_test() + theme(legend.position = "none")
+			theme_test(base_size = 15) + theme(legend.position = "none")
 		return(p1)
 	})
 	ggarrange(plotlist = plots, ncol = 9, nrow = 1)

@@ -91,6 +91,8 @@ rule compare_external_validation_deswan_all:
                 plot1="plots/external_clock/{mode}_deswan_deg_model_comparison_metrics.pdf",
                 plot2="plots/external_clock/{mode}_deswan_deg_model_comparison_scatter.pdf",
                 plot3="plots/external_clock/{mode}_deswan_deg_model_comparison_disease.pdf",
+		sum="tables/external_clock/{mode}_deswan_deg_model_comparison_all_summary.csv",
+		fold="tables/external_clock/{mode}_deswan_deg_model_comparison_all_folds.csv",
         conda:  "../env/internal_downstream.yaml"
         threads: 1
         resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"

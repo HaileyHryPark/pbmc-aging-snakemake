@@ -9,14 +9,19 @@ pred_b <- import(snakemake@input[["pred_b"]]) %>% mutate(color_name = "grey", mo
 pred_f <- import(snakemake@input[["pred_f"]]) %>% mutate(color_name = "#E15566", model = "Model F")
 pred_m <- import(snakemake@input[["pred_m"]]) %>% mutate(color_name = "#4981BF", model = "Model M")
 
+
+pdf(snakemake@output[["predplot"]], width = 15, height = 8.5)
+all <- lapply(as.list(1:5), function(f){
+
 plots <- lapply(list(pred_b, pred_f, pred_m), function(data){
 	type = unique(data$color_name)
-	ggscatter(data, x = "actual_age", y = "predicted_age", color = type, cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson", label.sep = "\n"), cor.coef.size = 2) +
-		geom_smooth(method = "lm", color = "black", se = F) + theme_test() + theme(legend.position = "none") + xlim(c(0,100)) + ylim(c(0,100))
+	ggscatter(data %>% filter(fold == f), x = "actual_age", y = "predicted_age", color = type, cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 4) +
+		geom_smooth(method = "lm", color = "black", se = F) + theme_test(base_size = 15) + theme(legend.position = "none") + xlim(c(0,100)) + ylim(c(0,100))
 })
 
-pdf(snakemake@output[["predplot"]], width = 6.5, height = 2)
-ggarrange(plotlist=plots, ncol=3, nrow=1)
+return(ggarrange(plotlist=plots, ncol=1, nrow=3))
+})
+ggarrange(plotlist = all, ncol = 5, nrow = 1)
 dev.off()
 
 female_res <- bind_rows(pred_b %>% filter(sex == "female"), pred_f)

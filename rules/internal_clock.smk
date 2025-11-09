@@ -200,6 +200,8 @@ rule compare_internal_validation_deswan_all:
 		predct_m3="tables/internal_clock/{mode}_deswan_deg_xgboost_male_crosstest_prediction.csv",
 	output:
 		plots="plots/internal_clock/{mode}_deswan_deg_model_comparison_all.pdf",
+		sum="tables/internal_clock/{mode}_deswan_deg_model_comparison_all_summary.csv",
+		fold="tables/internal_clock/{mode}_deswan_deg_model_comparison_all_folds.csv",
 	conda:	"../env/internal_downstream.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"

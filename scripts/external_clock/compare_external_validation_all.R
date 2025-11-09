@@ -12,57 +12,183 @@ female_df <- df %>% filter(sex == "female")
 male_df <- df %>% filter(sex == "male")
 
 female_met <- female_df %>% group_by(alg, model, fold) %>% 
-	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), .groups = "drop")
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "female donors")
 male_met <- male_df %>% group_by(alg, model, fold) %>% 
-	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), .groups = "drop")
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "male donors")
 print(head(female_met))
 print(head(male_met))
 
 p1 <- ggplot(female_met, aes(x = model, y = RMSE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
-	scale_color_manual(values = c("Model B" = "black", "Model F" = "#E15566", "Model M" = "#4981BF")) +
-	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#E15566") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
+	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
 	facet_wrap(~alg) +
 	xlab("")+
-	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 
-p2 <- ggplot(male_met, aes(x = model, y = RMSE)) + 
+p2 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Model M", "Model F"))), aes(x = model, y = RMSE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
-	scale_color_manual(values = c("Model B" = "black", "Model M" = "#4981BF", "Model F" = "#E15566")) +
-	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#4981BF") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
+	scale_color_manual(values = c("Model B" = "grey", "Model M" = "#4981BF", "Model F" = "#E15566")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
 	facet_wrap(~alg) +
 	xlab("")+
-	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 
 p3 <- ggplot(female_met, aes(x = model, y = MAE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
-	scale_color_manual(values = c("Model B" = "black", "Model F" = "#E15566", "Model M" = "#4981BF")) +
-	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#E15566") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
+	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
 	facet_wrap(~alg) +
 	xlab("")+
-	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 
-p4 <- ggplot(male_met, aes(x = model, y = MAE)) + 
+p4 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Model M", "Model F"))), aes(x = model, y = MAE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
-	scale_color_manual(values = c("Model B" = "black", "Model M" = "#4981BF", "Model F" = "#E15566")) +
-	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.5, color = "#4981BF") +
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 2) + 
+	scale_color_manual(values = c("Model B" = "grey", "Model M" = "#4981BF", "Model F" = "#E15566")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
 	facet_wrap(~alg) +
 	xlab("")+
-	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 
-ggarrange(p1, p2, p3, p4, ncol=2, nrow=2)
+p5 <- ggplot(female_met, aes(x = model, y = r)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~alg) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p6 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Model M", "Model F"))), aes(x = model, y = r)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model M" = "#4981BF", "Model F" = "#E15566")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~alg) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+pall1 <- ggarrange(p1, p2, p3, p4, p5, p6, ncol=2, nrow=3)
+
+models <- lapply(list("Model B", "Model F", "Model M"), function(m){
+p1 <- ggplot(female_met %>% filter(model == m), aes(x = alg, y = RMSE)) +
+        geom_boxplot(aes(color = alg), width = 0.6) +
+        scale_color_manual(values = c("Elastic Net" = "#4DBBD5", "XGBoost" = "#E64B35", "MLP" = "#00A087")) +
+        geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+        stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Elastic Net", "XGBoost"), c("XGBoost", "MLP"), c("Elastic Net", "MLP")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.3) +
+        facet_wrap(~model) +
+        xlab("")+
+        scale_y_continuous(expand = expansion(mult = c(0.05,.25)))+
+        theme_linedraw(base_size = 15)+
+        theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p2 <- ggplot(male_met %>% filter(model == m), aes(x = alg, y = r)) +
+        geom_boxplot(aes(color = alg), width = 0.6) +
+        scale_color_manual(values = c("Elastic Net" = "#4DBBD5", "XGBoost" = "#E64B35", "MLP" = "#00A087")) +
+        geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+        stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Elastic Net", "XGBoost"), c("XGBoost", "MLP"), c("Elastic Net", "MLP")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.3) +
+        facet_wrap(~model) +
+        xlab("")+
+        scale_y_continuous(expand = expansion(mult = c(0.05,.25)))+
+        theme_linedraw(base_size = 15)+
+        theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+return(ggarrange(p1, p2, ncol = 4, nrow = 1))
+
+})
+
+pall2 <- ggarrange(plotlist = models, ncol = 1, nrow = 3)
+
+## MLP plot
+p1 <- ggplot(female_met %>% filter(alg == "MLP"), aes(x = model, y = RMSE)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~type) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p2 <- ggplot(male_met %>% filter(alg == "MLP") %>% mutate(model = factor(model, levels = c("Model B", "Model M", "Model F"))), aes(x = model, y = RMSE)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model M" = "#4981BF", "Model F" = "#E15566")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~type) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+p3 <- ggplot(female_met %>% filter(alg == "MLP"), aes(x = model, y = MAE)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~type) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p4 <- ggplot(male_met %>% filter(alg == "MLP") %>% mutate(model = factor(model, levels = c("Model B", "Model M", "Model F"))), aes(x = model, y = MAE)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model M" = "#4981BF", "Model F" = "#E15566")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~type) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p5 <- ggplot(female_met %>% filter(alg == "MLP"), aes(x = model, y = r)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model F"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~type) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p6 <- ggplot(male_met %>% filter(alg == "MLP") %>% mutate(model = factor(model, levels = c("Model B", "Model M", "Model F"))), aes(x = model, y = r)) + 
+	geom_boxplot(aes(color = model), width = 0.6) +
+	scale_color_manual(values = c("Model B" = "grey", "Model M" = "#4981BF", "Model F" = "#E15566")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("Model B", "Model M"), c("Model M", "Model F")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = 0.2) + 
+	facet_wrap(~type) +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+
+pall3 <- ggarrange(p1, p2, p3, p4, p5, p6, ncol=4, nrow=3)
+
+
+plot(pall1)
+plot(pall2)
+plot(pall3)
 
 }
 
@@ -73,13 +199,14 @@ lapply(list("Elastic Net", "XGBoost", "MLP"), function(a){
 df_alg <- df %>% filter(alg == a)
 
 plots <- lapply(as.list(1:5), function(f){
+	max_predicted_age <- max(df_alg %>% pull(predicted_age))
 
-	p1 <- ggscatter(df_alg %>% filter(fold == f, model == "Model B"), x = "actual_age", y = "predicted_age", color = "grey", cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 2.5) +
-		geom_smooth(method = "lm", color = "black", se = F) + theme_test() + theme(legend.position = "none") + xlim(c(0,100)) + ylim(c(0,100))
-	p2 <- ggscatter(df_alg %>% filter(fold == f, model == "Model F", sex == "female"), x = "actual_age", y = "predicted_age", color = "#E15566", cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 2.5) +
-		geom_smooth(method = "lm", color = "black", se = F) + theme_test() + theme(legend.position = "none") + xlim(c(0,100)) + ylim(c(0,100))
-	p3 <- ggscatter(df_alg %>% filter(fold == f, model == "Model M", sex == "male"), x = "actual_age", y = "predicted_age", color = "#4981BF", cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 2.5) +
-		geom_smooth(method = "lm", color = "black", se = F) + theme_test() + theme(legend.position = "none") + xlim(c(0,100)) + ylim(c(0,100))
+	p1 <- ggscatter(df_alg %>% filter(fold == f, model == "Model B"), x = "actual_age", y = "predicted_age", color = "grey", cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 4) +
+		geom_smooth(method = "lm", color = "black", se = F) + theme_test(base_size = 15) + theme(legend.position = "none") + xlim(c(0,max(100, max_predicted_age))) + ylim(c(0,max(100, max_predicted_age)))
+	p2 <- ggscatter(df_alg %>% filter(fold == f, model == "Model F", sex == "female"), x = "actual_age", y = "predicted_age", color = "#E15566", cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 4) +
+		geom_smooth(method = "lm", color = "black", se = F) + theme_test(base_size = 15) + theme(legend.position = "none") + xlim(c(0,max(100, max_predicted_age))) + ylim(c(0,max(100, max_predicted_age)))
+	p3 <- ggscatter(df_alg %>% filter(fold == f, model == "Model M", sex == "male"), x = "actual_age", y = "predicted_age", color = "#4981BF", cor.coef = TRUE, alpha = 0.7, cor.coeff.args = list(method = "pearson"), cor.coef.size = 4) +
+		geom_smooth(method = "lm", color = "black", se = F) + theme_test(base_size = 15) + theme(legend.position = "none") + xlim(c(0,max(100, max_predicted_age))) + ylim(c(0,max(100, max_predicted_age)))
 	return(ggarrange(p1, p2, p3, ncol = 1, nrow = 3))
 
 })
@@ -89,6 +216,7 @@ plot(ggarrange(plotlist = plots, ncol = 5, nrow = 1))
 
 }
 
+## Main
 pred_b1 <- import(snakemake@input[["pred_b1"]]) %>% mutate(color_name = "grey", model = "Model B", alg = "MLP")
 pred_f1 <- import(snakemake@input[["pred_f1"]]) %>% mutate(color_name = "#E15566", model = "Model F", alg = "MLP")
 pred_m1 <- import(snakemake@input[["pred_m1"]]) %>% mutate(color_name = "#4981BF", model = "Model M", alg = "MLP")
@@ -113,7 +241,69 @@ print(preds_age %>% distinct(sample_id, donor_id, dataset, disease) %>% count(da
 
 preds_age <- preds_age %>% mutate(agediff = predicted_age - actual_age)
 
-pdf(snakemake@output[["plot1"]], width = 9, height = 6)
+## tables with healthy ext data
+preds <- preds_age
+female_preds <- preds %>% filter(sex == "female")
+male_preds <- preds %>% filter(sex == "male")
+
+both_met <- preds %>% filter(model == "Model B") %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age, predicted_age), .groups = "drop") %>% 
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "all donors")
+female_met <- female_preds %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "female donors")
+male_met <- male_preds %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "male donors")
+print(head(female_met))
+print(head(male_met))
+
+met_all1 <- bind_rows(both_met, female_met, male_met) %>% mutate(type2 = "all")
+
+preds <- preds_age %>% filter(disease == "normal")
+female_preds <- preds %>% filter(sex == "female")
+male_preds <- preds %>% filter(sex == "male")
+
+both_met <- preds %>% filter(model == "Model B") %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age, predicted_age), .groups = "drop") %>% 
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "all donors")
+female_met <- female_preds %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "female donors")
+male_met <- male_preds %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "male donors")
+print(head(female_met))
+print(head(male_met))
+
+met_all2 <- bind_rows(both_met, female_met, male_met) %>% mutate(type2 = "healthy")
+
+preds <- preds_age %>% filter(disease != "normal")
+female_preds <- preds %>% filter(sex == "female")
+male_preds <- preds %>% filter(sex == "male")
+
+both_met <- preds %>% filter(model == "Model B") %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age, predicted_age), .groups = "drop") %>% 
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "all donors")
+female_met <- female_preds %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "female donors")
+male_met <- male_preds %>% group_by(alg, model, fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "male donors")
+print(head(female_met))
+print(head(male_met))
+
+met_all3 <- bind_rows(both_met, female_met, male_met) %>% mutate(type2 = "disease")
+met_all <- bind_rows(met_all1, met_all2, met_all3) %>% select(alg, model, type, type2, fold, RMSE, MAE, r)
+export(met_all, snakemake@output[["fold"]])
+
+met_all_sum <- met_all %>% group_by(alg, model, type) %>%
+        summarise(median_RMSE = median(RMSE), median_MAE = median(MAE), median_r = median(r), .group = "drop")
+head(met_all_sum)
+export(met_all_sum, snakemake@output[["sum"]])
+
+pdf(snakemake@output[["plot1"]], width = 9, height = 10.5)
 
 PlotMetricsGender(preds_age)
 PlotMetricsGender(preds_age %>% filter(disease == "normal"))
@@ -121,7 +311,7 @@ PlotMetricsGender(preds_age %>% filter(disease != "normal"))
 
 dev.off()
 
-pdf(snakemake@output[["plot2"]], width = 11, height = 6)
+pdf(snakemake@output[["plot2"]], width = 15, height = 8.5)
 
 PlotScatterGender(preds_age)
 PlotScatterGender(preds_age %>% filter(disease == "normal"))
@@ -147,6 +337,7 @@ p <- ggplot(ch_df, aes(x = disease, y = agediff)) +
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
+	ggtitle(paste(a, m))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
 
@@ -168,6 +359,7 @@ p <- ggplot(glaucoma_df, aes(x = disease, y = agediff)) +
 	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "open-angle glaucoma")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .1) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
+	ggtitle(paste(a, m))+
 	scale_y_continuous(expand = expansion(mult = c(0,.35)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
@@ -187,9 +379,10 @@ if(m == "Model F"){
 p <- ggplot(ren_df, aes(x = disease, y = agediff)) +
 	geom_boxplot(color = "black")+
 	geom_jitter(aes(color = disease), position=position_jitter(0.2), alpha = 0.5)+
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild_progression"), c("mild_progression", "mild_convalescence"), c("severe_progression", "severe_convalescence"), c("normal", "severe_progression")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .13) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild_progression"), c("mild_progression", "mild_convalescence"), c("severe_progression", "severe_convalescence"), c("normal", "severe_progression")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .15) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
+	ggtitle(paste(a, m))+
 	scale_y_continuous(expand = expansion(mult = c(0,.8)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
@@ -209,9 +402,10 @@ if(m == "Model F"){
 p <- ggplot(wellcome_df, aes(x = disease, y = agediff)) +
 	geom_boxplot(color = "black")+
 	geom_jitter(aes(color = disease), position=position_jitter(0.2), alpha = 0.5)+
-	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild"), c("mild", "moderate"), c("moderate", "severe"), c("severe", "critical"), c("normal", "moderate"), c("normal", "severe"), c("normal", "critical")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .2) + 
+	stat_compare_means(method = "wilcox", paired = FALSE, label = "p", comparisons = list(c("normal", "mild"), c("mild", "moderate"), c("moderate", "severe"), c("severe", "critical"), c("normal", "moderate"), c("normal", "severe"), c("normal", "critical")), tip.length = 0, bracket.size = 0.7, vjust = -0.4, step.increase = .5) + 
 	facet_wrap(~fold, ncol = 5) +
 	xlab("")+
+	ggtitle(paste(a, m))+
 	scale_y_continuous(expand = expansion(mult = c(0,1)))+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))

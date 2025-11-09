@@ -104,6 +104,7 @@ rule plot_mfuzz_merged_clusters_fa_all:
 		annot="data/internal_clustering/top_fa_terms.csv",
 	output:
 		go="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
+		annotgo="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_go_top_res_annotated.csv",
 	conda: "../env/internal_downstream.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
@@ -150,6 +151,17 @@ rule run_mfuzz_merged_clusters_msigdb_fa_all:
 	script:
 		"../scripts/internal_clustering/run_mfuzz_merged_clusters_msigdb_fa_all.R"
 
+rule plot_mfuzz_merged_clusters_msigdb_fa_all:
+	input:
+		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv",
+	output:
+		chr="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.pdf",
+	conda: "../env/internal_downstream.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_msigdb_fa_all.R"
+
 rule run_mfuzz_merged_clusters_disgenet2r_all:
 	input:
 		both_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
@@ -181,3 +193,27 @@ rule plot_mfuzz_merged_clusters_fa:
 	script:
 		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_fa.R"
 
+rule run_mfuzz_merged_clusters_mitocarta_fa_all:
+	input:
+		mitocarta="resources/MitoCarta3.0_data.rds",
+		both_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
+		female_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+		male_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
+	output:
+		res1="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_all_res.csv",
+	conda: "../env/functional_annotation.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/run_mfuzz_merged_clusters_mitocarta_fa_all.R"
+
+rule plot_mfuzz_merged_clusters_mitocarta_fa_all:
+	input:
+		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_all_res.csv",
+	output:
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
+	conda: "../env/internal_downstream.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_mitocarta_fa_all.R"
