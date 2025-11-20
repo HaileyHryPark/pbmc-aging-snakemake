@@ -20,6 +20,7 @@ male_met <- male_df %>% group_by(alg, model, fold) %>%
 print(head(female_met))
 print(head(male_met))
 
+## metrics comparison of models (5 folds) in either female donors / male donors
 p1 <- ggplot(female_met, aes(x = model, y = RMSE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
@@ -88,6 +89,7 @@ p6 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Mo
 
 pall1 <- ggarrange(p1, p2, p3, p4, p5, p6, ncol=2, nrow=3)
 
+## Algorithm comparison
 models <- lapply(list("Model B", "Model F", "Model M"), function(m){
 p1 <- ggplot(female_met %>% filter(model == m), aes(x = alg, y = RMSE)) +
         geom_boxplot(aes(color = alg), width = 0.6) +
@@ -117,7 +119,7 @@ return(ggarrange(p1, p2, ncol = 4, nrow = 1))
 
 pall2 <- ggarrange(plotlist = models, ncol = 1, nrow = 3)
 
-## MLP plot
+## Gender-combined or Gender-specific model comparison for MLP models in both female and male donors
 p1 <- ggplot(female_met %>% filter(alg == "MLP"), aes(x = model, y = RMSE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
@@ -241,7 +243,7 @@ print(preds_age %>% distinct(sample_id, donor_id, dataset, disease) %>% count(da
 
 preds_age <- preds_age %>% mutate(agediff = predicted_age - actual_age)
 
-## tables with healthy ext data
+## tables with all age available data (both healthy and disease)
 preds <- preds_age
 female_preds <- preds %>% filter(sex == "female")
 male_preds <- preds %>% filter(sex == "male")
@@ -260,6 +262,7 @@ print(head(male_met))
 
 met_all1 <- bind_rows(both_met, female_met, male_met) %>% mutate(type2 = "all")
 
+## tables with only healthy
 preds <- preds_age %>% filter(disease == "normal")
 female_preds <- preds %>% filter(sex == "female")
 male_preds <- preds %>% filter(sex == "male")
@@ -278,6 +281,7 @@ print(head(male_met))
 
 met_all2 <- bind_rows(both_met, female_met, male_met) %>% mutate(type2 = "healthy")
 
+## tables with only disease
 preds <- preds_age %>% filter(disease != "normal")
 female_preds <- preds %>% filter(sex == "female")
 male_preds <- preds %>% filter(sex == "male")
@@ -319,6 +323,7 @@ PlotScatterGender(preds_age %>% filter(disease != "normal"))
 
 dev.off()
 
+## By disease
 pdf(snakemake@output[["plot3"]], width = 9, height = 15)
 lapply(list("Elastic Net", "XGBoost", "MLP"), function(a){
 

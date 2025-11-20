@@ -57,22 +57,17 @@ def load_external_data(csv_file):
     return X, y, sex, samples, donors, disease, dataset
 
 # -----------------------------
+# Load Background
+# -----------------------------
+def load_background(background_path, all_data, features):
+    bg_df = pd.read_csv(background_path)
+    bg_df = all_data.loc[all_data.index.isin(bg_df["donor_id"])]
+    bg_X = bg_df[features].values.astype(np.float32)
+    return bg_X
+
+# -----------------------------
 # Evaluation Function
 # -----------------------------
-#def evaluate(model, loader):
-#    model.eval()
-#    preds, labels = [], []
-#    with torch.no_grad():
-#        for X_batch, y_batch in loader:
-#            X_batch = X_batch.to(device)
-#            y_batch = y_batch.to(device)
-#            outputs = model(X_batch)
-#            preds.append(outputs.cpu().numpy())
-#            labels.append(y_batch.cpu().numpy())
-#    preds = np.concatenate(preds).squeeze()
-#    labels = np.concatenate(labels)
-#    return preds, labels
-
 def evaluate(model, loader):
     model.eval()
     preds = []
@@ -87,15 +82,7 @@ def evaluate(model, loader):
 # -----------------------------
 # Main
 # -----------------------------
-def main(external_csv, model_path, scaler_dir, param_json_path, original_train_csv, prediction_csv, shap_csv):
-    # Load training data to fit same scaler
-    train_df = pd.read_csv(original_train_csv).set_index("rowname")
-    feature_cols = [col for col in train_df.columns if col not in ["age", "sex", "dataset", "disease"]]
-    X_train = train_df[feature_cols].values
-
-    np.random.seed(SEED)
-    background_size = min(100, X_train.shape[0])
-    background_idx = np.random.choice(X_train.shape[0], size=background_size, replace=False)
+def main(external_csv, model_path, scaler_dir, param_json_path, original_train_csv, background_csv, prediction_csv, shap_csv):
 
     # Load external data
     X_ext, y_ext, sex_ext, samples_ext, donors_ext, disease_ext, dataset_ext = load_external_data(external_csv)
@@ -147,11 +134,16 @@ def main(external_csv, model_path, scaler_dir, param_json_path, original_train_c
         all_predictions.append(df_pred)
 
         # ----- SHAP values -----
-        X_train_scaled = scaler.transform(X_train)
-        background_data = torch.tensor(X_train_scaled[background_idx, :], dtype=torch.float32).to(device)
-        print(f"Using {background_size} background samples for SHAP (fold {fold_idx}, fixed seed {SEED}).")
+        # Load training data to fit same scaler
+        train_df = pd.read_csv(original_train_csv).set_index("rowname")
+        feature_cols = [col for col in train_df.columns if col not in ["age", "sex", "dataset", "disease"]]
 
-        explainer = shap.DeepExplainer(model, background_data)
+        bg_X = load_background(background_csv, train_df, feature_cols)
+        bg_scaled = scaler.transform(bg_X)
+        background = torch.tensor(bg_scaled, dtype=torch.float32).to(device)
+        print(f"Background reference: {background.shape[0]} samples")
+
+        explainer = shap.DeepExplainer(model, background)
         X_ext_tensor = X_ext_tensor.to(device).requires_grad_()
         shap_values = explainer.shap_values(X_ext_tensor.to(device))
 
@@ -181,7 +173,8 @@ if __name__ == "__main__":
     param_json_path = snakemake.input[2]
     scaler_path = snakemake.input[3]
     original_train_csv = snakemake.input[4]
+    background_csv = snakemake.input[5]
     prediction_csv = snakemake.output[0]
     shap_csv = snakemake.output[1]
 
-    main(external_csv, model_path, scaler_path, param_json_path, original_train_csv, prediction_csv, shap_csv)
+    main(external_csv, model_path, scaler_path, param_json_path, original_train_csv, background_csv, prediction_csv, shap_csv)

@@ -28,6 +28,7 @@ rule internal_clock:
 		expand("plots/internal_clock/allexp5ct_deswan_deg_{model}_pred_comparison.pdf", model=["enet","xgboost","2dmlp"]),
 		expand("plots/internal_clock/allexp5ct_deswan_deg_{model}_metric_comparison.pdf", model=["enet","xgboost","2dmlp"]),
 		"plots/internal_clock/allexp5ct_deswan_deg_model_comparison_all.pdf",
+		expand("tables/internal_clock/allexp5ct_deswan_deg_2dmlp_{gender}_model_shap_values.csv", gender=["both","female","male"]),
 		
 rule internal_clustering:
 	input:
@@ -42,10 +43,12 @@ rule internal_clustering:
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots2.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_top_fa_score_plots.pdf",
 
 rule internal_ctp:
 	input:
 		"data/internal_celltype_prop/celltype_prop_data_all.csv",
+		"tables/internal_celltype_prop/celltype_prop_data_spearman_corr_age.csv",
 		"plots/internal_celltype_prop/celltype_prop_data_raw_scatter.pdf",
 		"plots/internal_celltype_prop/celltype_data_deswan_corr.pdf",
 
@@ -61,6 +64,12 @@ rule external:
 		"plots/external_clock/allexp5ct_deswan_deg_model_comparison_scatter.pdf",
 		"plots/external_clock/allexp5ct_deswan_deg_model_comparison_disease.pdf",
 
+
+rule downstream:
+	input:
+		"plots/external_clock/allexp5ct_deswan_deg_2dmlp_model_prediction_corrected_scatter.pdf",		
+		expand("plots/cluster_score/allexp5ct_deswan_deg_{cohort}_cluster_scores_{gender}_age_accel_radarplot.pdf", cohort=["internal","external"], gender=["female","male"]),
+
 ##### load rules #####
 
 include: "rules/r_package_install.smk"
@@ -74,3 +83,4 @@ include: "rules/external_dis_data_prep.smk"
 include: "rules/external_sc_data_prep.smk"
 include: "rules/external_pseudobulk.smk"
 include: "rules/external_clock.smk"
+include: "rules/cluster_score.smk"

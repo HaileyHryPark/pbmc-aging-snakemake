@@ -21,12 +21,15 @@ predct_f3 <- import(snakemake@input[["predct_f3"]]) %>% mutate(color_name = "#E1
 pred_m3 <- import(snakemake@input[["pred_m3"]]) %>% mutate(color_name = "#4981BF", model = "Model M", alg = "XGBoost")
 predct_m3 <- import(snakemake@input[["predct_m3"]]) %>% mutate(color_name = "#4981BF", model = "Model M", alg = "XGBoost")
 
+## All predictions 
 preds <- bind_rows(pred_m1, pred_m2, pred_m3, pred_b1, pred_b2, pred_b3, pred_f1, pred_f2, pred_f3, predct_f1, predct_f2, predct_f3, predct_m1, predct_m2, predct_m3)
 preds <- preds %>% mutate(agediff = predicted_age - actual_age)
 
+## Separated by donors
 female_preds <- preds %>% filter(sex == "female")
 male_preds <- preds %>% filter(sex == "male")
 
+## Calculate metrics 
 both_met <- preds %>% filter(model == "Model B") %>% group_by(alg, model, fold) %>% 
 	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age, predicted_age), .groups = "drop") %>% 
 	mutate(alg = factor(alg, levels = c("Elastic Net", "XGBoost", "MLP")), type = "all donors")
@@ -51,6 +54,7 @@ export(met_all_sum, snakemake@output[["sum"]])
 
 pdf(snakemake@output[["plots"]], width = 9, height = 3.5)
 
+## Agediff plot - not very meaningful
 p1 <- ggplot(female_preds, aes(x = model, y = abs(agediff))) + 
 	geom_point(position = position_jitter(width = 0.2), size = 1, alpha = 0.3, color = "#E15566") +
 	geom_boxplot(aes(color = model), width = 0.6) +
@@ -75,6 +79,7 @@ p2 <- ggplot(male_preds, aes(x = model, y = abs(agediff))) +
 
 ggarrange(p1, p2, ncol = 2, nrow = 1)
 
+## RMSE comparison of models (5 folds) in either female donors / male donors
 p1 <- ggplot(female_met, aes(x = model, y = RMSE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
@@ -99,6 +104,7 @@ p2 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Mo
 
 ggarrange(p1, p2, ncol = 2, nrow = 1)
 
+## MAE comparison of models (5 folds) in either female donors / male donors
 p1 <- ggplot(female_met, aes(x = model, y = MAE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
@@ -123,6 +129,7 @@ p2 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Mo
 
 ggarrange(p1, p2, ncol = 2, nrow = 1)
 
+## Pearson correlation comparison of models (5 folds) in either female donors / male donors
 p1 <- ggplot(female_met, aes(x = model, y = r)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +
@@ -147,6 +154,7 @@ p2 <- ggplot(male_met %>% mutate(model = factor(model, levels = c("Model B", "Mo
 
 ggarrange(p1, p2, ncol = 2, nrow = 1)
 
+## Algorithm comparison
 lapply(list("Model B", "Model F", "Model M"), function(m){
 p1 <- ggplot(female_met %>% filter(model == m), aes(x = alg, y = RMSE)) + 
 	geom_boxplot(aes(color = alg), width = 0.6) +
@@ -174,6 +182,7 @@ ggarrange(p1, p2, ncol = 4, nrow = 1)
 
 })
 
+## Gender-combined or Gender-specific model comparison for MLP models in both female and male donors
 p1 <- ggplot(female_met %>% filter(alg == "MLP"), aes(x = model, y = RMSE)) + 
 	geom_boxplot(aes(color = model), width = 0.6) +
 	scale_color_manual(values = c("Model B" = "grey", "Model F" = "#E15566", "Model M" = "#4981BF")) +

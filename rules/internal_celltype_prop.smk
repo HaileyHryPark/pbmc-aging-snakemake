@@ -43,6 +43,7 @@ rule plot_celltype_prop_scatter:
 		raw="data/internal_celltype_prop/celltype_prop_data_all.csv",
 		data="data/internal_celltype_prop/celltype_prop_data_limma.csv",
 	output:
+		table="tables/internal_celltype_prop/celltype_prop_data_spearman_corr_age.csv",
 		plot1="plots/internal_celltype_prop/celltype_prop_data_limma_scatter.pdf",
 		plot2="plots/internal_celltype_prop/celltype_prop_data_raw_scatter.pdf",
 	conda: "../env/internal_clustering.yaml"

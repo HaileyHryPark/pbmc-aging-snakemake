@@ -47,6 +47,7 @@ rule test_external_both_deswan_2dmlp_cv:
 		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_params.json",
 		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_scalers.joblib",
 		"data/internal_clock/{mode}_deswan_deg_pseudobulk_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_shap_background.csv",
 	output:
 		"tables/external_clock/{mode}_deswan_deg_2dmlp_both_cv_predictions.csv",
 		"tables/external_clock/{mode}_deswan_deg_2dmlp_both_cv_shap.csv",
@@ -65,6 +66,7 @@ rule test_external_gender_deswan_2dmlp_cv:
 		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_params.json",
 		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_scalers.joblib",
 		"data/internal_clock/{mode}_deswan_deg_pseudobulk_{gender}_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_shap_background.csv",
 	output:
 		"tables/external_clock/{mode}_deswan_deg_2dmlp_{gender}_cv_predictions.csv",
 		"tables/external_clock/{mode}_deswan_deg_2dmlp_{gender}_cv_shap.csv",
@@ -98,3 +100,29 @@ rule compare_external_validation_deswan_all:
         resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"
         script:
                 "../scripts/external_clock/compare_external_validation_all.R"
+
+rule correct_2dmlp_predicted_age:
+        input:
+                pred_i="tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_prediction.csv",
+                pred_e="tables/external_clock/{mode}_deswan_deg_2dmlp_{gender}_cv_predictions.csv",
+        output:
+                corrected="tables/external_clock/{mode}_deswan_deg_2dmlp_{gender}_model_prediction_corrected_all.csv",
+	params: gender="{gender}"
+        conda:  "../env/internal_downstream.yaml"
+        threads: 1
+        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"
+        script:
+                "../scripts/external_clock/correct_2dmlp_predicted_age.R"
+
+rule plot_corrected_2dmlp_predicted_age:
+        input:
+                both="tables/external_clock/{mode}_deswan_deg_2dmlp_both_model_prediction_corrected_all.csv",
+                female="tables/external_clock/{mode}_deswan_deg_2dmlp_female_model_prediction_corrected_all.csv",
+                male="tables/external_clock/{mode}_deswan_deg_2dmlp_male_model_prediction_corrected_all.csv",
+        output:
+                plot1="plots/external_clock/{mode}_deswan_deg_2dmlp_model_prediction_corrected_scatter.pdf",
+        conda:  "../env/internal_downstream.yaml"
+        threads: 1
+        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"
+        script:
+                "../scripts/external_clock/plot_corrected_2dmlp_predicted_age.R"

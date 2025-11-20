@@ -208,3 +208,49 @@ rule compare_internal_validation_deswan_all:
 	script:
 		"../scripts/internal_clock/compare_internal_validation_all.R"
 
+rule get_shap_background_2dmlp_deswan:
+	input:
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_prediction.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_female_model_prediction.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_male_model_prediction.csv",
+	output:
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_shap_background.csv",
+	params: both_fold=1, female_fold=4, male_fold=3
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clock/get_shap_background_2dmlp_deswan.py"
+	
+rule compute_shap_both_final_2dmlp_deswan:
+	input:
+		"data/internal_clock/{mode}_deswan_deg_pseudobulk_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_shap_background.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model.pt",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_params.json",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_scalers.joblib",
+	output:
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_shap_values.csv",
+	params: gender="both" 
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clock/compute_shap_2dmlp.py"
+
+rule compute_shap_gender_specific_final_2dmlp_deswan:
+	input:
+		"data/internal_clock/{mode}_deswan_deg_pseudobulk_{gender}_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_shap_background.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model.pt",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_params.json",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_scalers.joblib",
+	output:
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_shap_values.csv",
+	params: gender="{gender}" 
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clock/compute_shap_2dmlp.py"
+

@@ -111,6 +111,19 @@ rule plot_mfuzz_merged_clusters_fa_all:
 	script:
 		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_fa_all.R"
 
+rule plot_mfuzz_merged_clusters_fa_score_all:
+	input:
+		data="data/internal_pseudobulk/full5ct_pseudobulk_data_all.csv",
+		annotgo="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_go_top_res_annotated.csv",
+	output:
+		scores="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_top_fa_scores.csv",
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_top_fa_score_plots.pdf",
+	conda: "../env/cluster_score.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "99:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_fa_singscore_all.R"
+
 rule plot_mfuzz_merged_clusters_fa_network:
 	input:
 		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv",
