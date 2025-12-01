@@ -7,37 +7,43 @@ library(ggpubr)
 
 ## Functions
 # Function to compute Spearman correlation
-get_corr <- function(data, cell) {
-  test <- suppressWarnings(cor.test(data[[cell]], data$age, method = "spearman"))
-  tibble(
-    celltype = cell,
-    rho = test$estimate,
-    pval = test$p.value
-  )
+run_corr <- function(data, celltype_cols) {
+  results <- lapply(celltype_cols, function(ct) {
+    test <- cor.test(data[[ct]], data$age, method = "spearman")
+    data.frame(
+      celltype = ct,
+      rho = test$estimate,
+      pval = test$p.value
+    )
+  })
+  res <- do.call(rbind, results)
+  res$fdr <- p.adjust(res$pval, method = "fdr")
+  return(res)
 }
 
-
-raw <- import(snakemake@input[["raw"]])
-data <- import(snakemake@input[["data"]])
+raw <- import(snakemake@input[["raw"]]) %>% mutate(`CD4/CD8` = `CD4_T`/`CD8_T`)
+data <- import(snakemake@input[["data"]]) %>% mutate(`CD4/CD8` = `CD4_T`/`CD8_T`)
 celltypes <- colnames(data %>% select(-c(donor_id, age, sex, dataset, ethnicity)))
 
-# Compute correlations for each subgroup
-res_both   <- bind_rows(lapply(celltypes, function(c) get_corr(raw, c))) %>%
-  rename(rho_both = rho, p_both = pval)
+# Compute correlations
+res_both   <- run_corr(raw, celltypes)
+res_female <- run_corr(raw[raw$sex == "female", ], celltypes)
+res_male   <- run_corr(raw[raw$sex == "male", ], celltypes)
 
-res_female <- bind_rows(lapply(celltypes, function(c) get_corr(raw %>% filter(sex == "female"), c))) %>%
-  rename(rho_female = rho, p_female = pval)
-
-res_male   <- bind_rows(lapply(celltypes, function(c) get_corr(raw %>% filter(sex == "male"), c))) %>%
-  rename(rho_male = rho, p_male = pval)
 
 # Merge all tables
-final_table <- res_both %>%
-  left_join(res_female, by = "celltype") %>%
-  left_join(res_male,   by = "celltype")
+final_table <- Reduce(
+  function(x, y) merge(x, y, by = "celltype", suffixes = c("", "")),
+  list(
+    res_both   |> rename(rho_both = rho, p_both = pval, fdr_both = fdr),
+    res_female |> rename(rho_female = rho, p_female = pval, fdr_female = fdr),
+    res_male   |> rename(rho_male = rho, p_male = pval, fdr_male = fdr)
+  )
+)
 
 export(final_table, snakemake@output[["table"]])
 
+celltypes <- celltypes[celltypes != "CD4/CD8"]
 
 pdf(snakemake@output[["plot1"]], width = 9, height = 5)
 lapply(celltypes, function(f){

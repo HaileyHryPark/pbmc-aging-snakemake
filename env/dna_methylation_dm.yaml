@@ -1,0 +1,19 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-biocmanager
+  - r-tidyr
+  - r-dplyr
+  - r-tidyverse
+  - r-rio
+  - r-ggpubr
+  - r-reshape2
+  - bioconductor-limma
+  - r-circlize
+  - r-ggfortify
+  - bioconductor-minfi
+  - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19
+  - bioconductor-illuminahumanmethylation450kmanifest
+  - bioconductor-dmrcate

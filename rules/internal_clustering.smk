@@ -230,3 +230,60 @@ rule plot_mfuzz_merged_clusters_mitocarta_fa_all:
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
 	script:
 		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_mitocarta_fa_all.R"
+
+rule plot_mfuzz_specific_clusters_loess:
+	input:
+		fit_res_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_female.csv",
+		span_res_f="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_female.csv",
+		clust_df_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+		fit_res_m="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_male.csv",
+		span_res_m="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_male.csv",
+		clust_df_m="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
+	output:
+		plot1="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_loess.pdf",
+		plot2="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_celltype_pie.pdf",
+	conda: "../env/internal_clustering.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_specific_clusters_loess.R"
+
+rule run_mfuzz_specific_clusters_fa_all:
+	input:
+		both_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
+		female_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+		male_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
+	output:
+		res1="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res.csv",
+		res2="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res_no_ribo.csv",
+	conda: "../env/functional_annotation2.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/run_mfuzz_specific_clusters_fa_all.R"
+
+rule plot_mfuzz_specific_clusters_fa_all:
+	input:
+		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res.csv",
+	output:
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res.pdf",
+	conda: "../env/internal_downstream.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_specific_clusters_fa_all.R"
+
+rule run_mfuzz_specific_clusters_disgenet2r_all:
+	input:
+		both_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
+		female_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+		male_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
+	output:
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_disgenet2r_all_res.pdf",
+		res="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_disgenet2r_all_res.csv",
+	conda: "../env/azimuth.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/run_mfuzz_specific_clusters_disgenet2r_all.R"
+

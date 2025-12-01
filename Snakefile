@@ -44,6 +44,14 @@ rule internal_clustering:
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots2.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_top_fa_score_plots.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_all_res.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_loess.pdf",
+
+rule internal_cor:
+	input:
+		"tables/internal_correlation/allexp5ct_deswan_deg_limma_spearman_corr_gsea_all_res.csv",
+		"plots/internal_correlation/allexp5ct_deswan_deg_limma_spearman_corr_gsea_all_res_plots.pdf",
+		"plots/internal_correlation/allexp5ct_deswan_deg_limma_corr_comparison_specific_clusters.pdf",
 
 rule internal_ctp:
 	input:
@@ -70,6 +78,13 @@ rule downstream:
 		"plots/external_clock/allexp5ct_deswan_deg_2dmlp_model_prediction_corrected_scatter.pdf",		
 		expand("plots/cluster_score/allexp5ct_deswan_deg_{cohort}_cluster_scores_{gender}_age_accel_radarplot.pdf", cohort=["internal","external"], gender=["female","male"]),
 
+rule dnam:
+	input:
+		"data/dna_methylation/nsphs_norm.rds",		
+		"data/dna_methylation/nsphs_filtered.rds",
+		"tables/dna_methylation/nsphs_beta.csv",
+		"tables/dna_methylation/nsphs_limma_dmrcate_agegroup_res_both.rds",
+
 ##### load rules #####
 
 include: "rules/r_package_install.smk"
@@ -77,6 +92,7 @@ include: "rules/internal_data_prep.smk"
 include: "rules/internal_pseudobulk.smk"
 include: "rules/internal_deswan.smk"
 include: "rules/internal_clustering.smk"
+include: "rules/internal_correlation.smk"
 include: "rules/internal_celltype_prop.smk"
 include: "rules/internal_clock.smk"
 include: "rules/external_dis_data_prep.smk"
@@ -84,3 +100,4 @@ include: "rules/external_sc_data_prep.smk"
 include: "rules/external_pseudobulk.smk"
 include: "rules/external_clock.smk"
 include: "rules/cluster_score.smk"
+include: "rules/dna_methylation.smk"
