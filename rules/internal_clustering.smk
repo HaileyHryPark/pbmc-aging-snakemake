@@ -150,6 +150,18 @@ rule plot_mfuzz_merged_clusters_fa_network2:
 	script:
 		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_fa_network2.R"
 
+rule plot_mfuzz_merged_clusters_fa_network3:
+	input:
+		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv",
+	output:
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3.pdf",
+	params: db="{db}"
+	conda: "../env/internal_downstream2.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_fa_network3.R"
+
 rule run_mfuzz_merged_clusters_msigdb_fa_all:
 	input:
 		both_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
@@ -272,6 +284,18 @@ rule plot_mfuzz_specific_clusters_fa_all:
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
 	script:
 		"../scripts/internal_clustering/plot_mfuzz_specific_clusters_fa_all.R"
+
+rule plot_mfuzz_specific_clusters_fa_network:
+	input:
+		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res.csv",
+	output:
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_{db}_network.pdf",
+	params: db="{db}"
+	conda: "../env/internal_downstream2.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_specific_clusters_fa_network.R"
 
 rule run_mfuzz_specific_clusters_disgenet2r_all:
 	input:

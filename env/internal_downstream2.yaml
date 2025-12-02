@@ -17,6 +17,7 @@ dependencies:
   - bioconductor-complexheatmap
   - r-igraph
   - r-ggraph
+  - r-ggforce
   - r-scatterpie
   - r-ggally
   - r-network

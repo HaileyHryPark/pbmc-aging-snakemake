@@ -27,6 +27,23 @@ rule run_mfuzz_merged_clusters_spearman_corr_gsea_all:
 	script:
 		"../scripts/internal_correlation/run_mfuzz_merged_clusters_spearman_corr_gsea_all.R"
 
+rule plot_top_percentile_gender_corr:
+	input:
+		annot_cor="tables/internal_correlation/{mode}_deswan_deg_limma_corr_annotated_all.csv",
+		fit_res_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_female.csv",
+		span_res_f="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_female.csv",
+		fit_res_m="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_male.csv",
+		span_res_m="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_male.csv",
+	output:
+		venn="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_venn.pdf",
+		pie="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_pie.pdf",
+		loess="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_loess.pdf",
+	conda: "../env/internal_clustering.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 100, walltime = "80:00:00", queue = "normal"
+	script:
+		"../scripts/internal_correlation/plot_top_percentile_gender_corr.R"
+
 rule plot_mfuzz_merged_clusters_spearman_corr_gsea_all_network:
 	input:
 		res="tables/internal_correlation/{mode}_deswan_deg_limma_spearman_corr_gsea_all_res.csv",

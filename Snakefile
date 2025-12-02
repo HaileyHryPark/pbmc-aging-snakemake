@@ -46,12 +46,15 @@ rule internal_clustering:
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_top_fa_score_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_all_res.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_loess.pdf",
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3.pdf", db=["GO","Reactome"]),
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_{db}_network.pdf", db=["GO","Reactome"]),
 
 rule internal_cor:
 	input:
 		"tables/internal_correlation/allexp5ct_deswan_deg_limma_spearman_corr_gsea_all_res.csv",
 		"plots/internal_correlation/allexp5ct_deswan_deg_limma_spearman_corr_gsea_all_res_plots.pdf",
 		"plots/internal_correlation/allexp5ct_deswan_deg_limma_corr_comparison_specific_clusters.pdf",
+		"plots/internal_correlation/allexp5ct_deswan_deg_limma_top_percentile_gender_corr_loess.pdf",
 
 rule internal_ctp:
 	input:

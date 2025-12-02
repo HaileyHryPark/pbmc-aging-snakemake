@@ -45,7 +45,10 @@ contrast_age <- function(design, mode = c("both", "sexstrat")) {
     c5 <- makeContrasts(Interaction_gt60 = `AgeGroupgt60_Gendermale`,
                         levels = design)
 
-    return(list(AG_40to60_vs_lt40 = c1, AG_gt60_vs_40to60 = c2, AG_gt60_vs_lt40 = c3, Interaction_40to60 = c4, Interaction_gt60 = c5))
+    c6 <- makeContrasts(Interaction_40to60_gt60 = `AgeGroupgt60_Gendermale` - `AgeGroup40to60_Gendermale`,
+                        levels = design)
+
+    return(list(AG_40to60_vs_lt40 = c1, AG_gt60_vs_40to60 = c2, AG_gt60_vs_lt40 = c3, Interaction_40to60 = c4, Interaction_gt60 = c5, Interaction_40to60_gt60 = c6))
   }else{
     list(AG_40to60_vs_lt40 = c1, AG_gt60_vs_40to60 = c2, AG_gt60_vs_lt40 = c3)
   }
