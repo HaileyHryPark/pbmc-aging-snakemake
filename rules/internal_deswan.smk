@@ -66,7 +66,7 @@ rule plot_deswan:
 	output:
 		plots="plots/internal_deswan/{mode}_deswan_q_res_by_gender.pdf",
 		plots2="plots/internal_deswan/{mode}_deswan_q_res_by_gender2.pdf",
-	conda: "../env/internal_deswan.yaml"
+	conda: "../env/final_plots.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "normal"
 	script:
@@ -88,7 +88,7 @@ rule plot_deswan_by_dataset_loo:
 		q="tables/internal_deswan/{mode}_deswan_q_res_by_dataset_loo.csv",
 	output:
 		plots="plots/internal_deswan/{mode}_deswan_q_res_by_gender_by_dataset_loo.pdf",
-	conda: "../env/internal_deswan.yaml"
+	conda: "../env/final_plots.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "normal"
 	script:
@@ -100,7 +100,7 @@ rule plot_deswan_diff_params:
 	output:
 		plot1="plots/internal_deswan/{mode}_deswan_q_res_by_diff_qvalues.pdf",
 		plot2="plots/internal_deswan/{mode}_deswan_q_res_by_diff_buckets.pdf",
-	conda: "../env/internal_deswan.yaml"
+	conda: "../env/final_plots.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "normal"
 	script:

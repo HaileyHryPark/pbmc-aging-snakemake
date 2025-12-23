@@ -28,7 +28,7 @@ deg_total <- deg_summary %>%
   summarise(n_DEGs = sum(n_DEGs), .groups = "drop") %>%
   mutate(celltype = "All")
 
-deg_plot_data <- bind_rows(deg_summary, deg_total) %>% mutate(celltype = factor(celltype, levels = c("All","CD4 T","CD8 T","NK","B","Mono")))
+deg_plot_data <- bind_rows(deg_summary, deg_total) %>% mutate(celltype = factor(celltype, levels = c("All","CD4 T","CD8 T","B","NK","Mono")))
 
 pdf(snakemake@output[["plots"]], width = 4.8, height = 3.5)
 
@@ -92,7 +92,7 @@ pdf(snakemake@output[["plots2"]], width = 16.5, height = 3.7)
     			color = "Gender"
   		) +
   		theme_linedraw(base_size = 15)+
-  		theme(panel.grid = element_blank(), strip.text = element_text(size=17))
+  		theme(panel.grid = element_blank(), strip.text = element_text(size=17), legend.position = "bottom")
 	plot(p1)
 	plot(p2)
 

@@ -61,8 +61,8 @@ lapply(as.list(unique(all_res$dataset)), function(ds){
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
 	
 	if(ct == "All"){
-		plot(p1 + ylim(0,4000))
-	        plot(p2 + ylim(0,4000))
+		plot(p1 + ylim(0,4100))
+	        plot(p2 + ylim(0,4100))
 	}else{
 		plot(p1)
 	        plot(p2)

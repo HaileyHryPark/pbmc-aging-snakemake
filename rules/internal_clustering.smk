@@ -69,6 +69,20 @@ rule plot_mfuzz_merged_clusters_loess:
 	script:
 		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_loess.R"
 
+rule plot_mfuzz_merged_clusters_loess_final:
+	input:
+		fit_res="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_{gender}.csv",
+		span_res="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_{gender}.csv",
+		annotated="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}_annotated.csv",
+	output:
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_loess_{gender}_final.pdf",
+	params: gender="{gender}"
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_loess_final.R"
+
 rule plot_mfuzz_merged_clusters_info:
 	input:
 		both="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",

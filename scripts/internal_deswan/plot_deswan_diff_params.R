@@ -61,8 +61,8 @@ lapply(list(5,10,15,20,25), function(b){
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
 	
 if(ct == "All"){
-		plot(p1 + ylim(0,4000))
-	        plot(p2 + ylim(0,4000))
+		plot(p1 + ylim(0,4200))
+	        plot(p2 + ylim(0,4200))
 	}else{
 		plot(p1)
 	        plot(p2)
@@ -128,8 +128,8 @@ lapply(list(0.05,0.01,0.001,0.0001), function(b){
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
         
 	if(ct == "All"){
-		plot(p1 + ylim(0,3800))
-	        plot(p2 + ylim(0,3800))
+		plot(p1 + ylim(0,4200))
+	        plot(p2 + ylim(0,4200))
 	}else{
 		plot(p1)
 	        plot(p2)
