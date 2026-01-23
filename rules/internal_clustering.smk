@@ -169,6 +169,8 @@ rule plot_mfuzz_merged_clusters_fa_network3:
 		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv",
 	output:
 		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3.pdf",
+		plot_fli="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3_fli.pdf",
+                plot_mic="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3_mic.pdf",
 	params: db="{db}"
 	conda: "../env/internal_downstream2.yaml"
 	threads: 1
@@ -304,6 +306,7 @@ rule plot_mfuzz_specific_clusters_fa_network:
 		table="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res.csv",
 	output:
 		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_{db}_network.pdf",
+		plot_fcimei="plots/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_{db}_network_fcimei.pdf",
 	params: db="{db}"
 	conda: "../env/internal_downstream2.yaml"
 	threads: 1

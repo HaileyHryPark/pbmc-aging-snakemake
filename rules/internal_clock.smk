@@ -254,3 +254,32 @@ rule compute_shap_gender_specific_final_2dmlp_deswan:
 	script:
 		"../scripts/internal_clock/compute_shap_2dmlp.py"
 
+rule plot_shap_gender_specific_final_2dmlp_deswan:
+        input:
+                clust_b="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
+                clust_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+		clust_m="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
+                pred_b="tables/external_clock/{mode}_deswan_deg_2dmlp_both_model_prediction_corrected_all.csv",
+                pred_f="tables/external_clock/{mode}_deswan_deg_2dmlp_female_model_prediction_corrected_all.csv",
+                pred_m="tables/external_clock/{mode}_deswan_deg_2dmlp_male_model_prediction_corrected_all.csv",
+                shap_b="tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_shap_values.csv",
+                shap_f="tables/internal_clock/{mode}_deswan_deg_2dmlp_female_model_shap_values.csv",
+                shap_m="tables/internal_clock/{mode}_deswan_deg_2dmlp_male_model_shap_values.csv",
+        output:
+                pcaplot="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_pcaplots.svg",
+                pcaplot_c="plots/internal_clock/{mode}_deswan_deg_2dmlp_corrected_shap_pcaplots.svg",
+                corrplot_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_age_corrplots_female.svg",
+                corrplot_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_age_corrplots_male.svg",
+                vlnplot_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_vlnplots_female.svg",
+		vlnplot_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_vlnplots_male.svg",
+                vlnplot2_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_vlnplots_female.svg",
+                vlnplot2_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_vlnplots_male.svg",
+                vlnplot3_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_accel_vlnplots_female.svg",
+                vlnplot3_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_accel_vlnplots_male.svg",
+        conda: "../env/internal_downstream.yaml"
+        threads: 1
+        resources: ngpus = 1, mem_gb = 20, walltime = "10:00:00", queue = "normal"
+        script:
+                "../scripts/internal_clock/plot_shap_gender_specific_final_2dmlp_deswan.R"
+
+

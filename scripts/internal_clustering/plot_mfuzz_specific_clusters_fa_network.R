@@ -57,6 +57,32 @@ PlotFANetwork <- function(df, title){
 	g <- graph_from_data_frame(d = edges %>% select(term1, term2), 
 	                           vertices = sig_df, directed = FALSE)
 	
+	# Extract top terms per connected component
+	# Add qvalue into vertex attributes
+	term_q <- df %>% 
+	  distinct(term, qvalue)
+	
+	# Match qvalues to actual graph vertex names
+	vertex_q <- term_q$qvalue[match(V(g)$name, term_q$term)]
+	
+	g <- igraph::set_vertex_attr(g, "qvalue", value = vertex_q)
+	
+	# Connected components
+	comp <- igraph::components(g)
+	
+	# Build dataframe: term, component, qvalue, ranking
+	top_terms_df <- data.frame(
+	  term       = names(comp$membership),
+	  component  = comp$membership,
+	  qvalue     = igraph::vertex_attr(g, "qvalue")
+	) %>%
+	  group_by(component) %>%
+	  arrange(qvalue) %>%
+	  mutate(rank = row_number()) %>%
+	  filter(rank <= 3) %>%
+	  ungroup() %>% 
+	  mutate(title = title)
+	
 	# Create a ggraph layout object
 	set.seed(123)
 	ggraph_layout <- ggraph(g, layout = "kk")
@@ -83,7 +109,7 @@ PlotFANetwork <- function(df, title){
 	  theme(legend.position = "right") +
 	  labs(title = title) +
 	  coord_equal()
-
+	
 	set.seed(123)
 	p2 <- ggraph(g, layout = "kk") +
 	  geom_edge_link(color="grey80", alpha=.7, width = 2) +
@@ -106,6 +132,8 @@ PlotFANetwork <- function(df, title){
 	
 	p <- ggarrange(p1, p2, ncol = 2, nrow = 1)
 	plot(p)
+	return(top_terms_df)
+
 }
 
 ## Main
@@ -117,11 +145,42 @@ print(head(res))
 
 pdf(snakemake@output[["plot"]], width = 12, height = 6)
 
-lapply(as.list(unique(res$cluster)), function(cl){
-df <- res %>% filter(cluster == cl) %>% mutate(gene_name = strsplit(gene_name, "/"))
-print(head(df))
-
-PlotFANetwork(df, cl)	
+top_terms <- lapply(as.list(unique(res$cluster)), function(cl){
+	df <- res %>% filter(cluster == cl) %>% mutate(gene_name = strsplit(gene_name, "/"))
+	print(head(df))
+	
+	return(PlotFANetwork(df, cl))
 })
 
 dev.off()
+
+
+top <- bind_rows(top_terms)
+
+## For FCI_MEI
+top_terms_to_plot <- top %>% filter(title == "FCI_MEI", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
+
+res_to_plot <- res %>% filter(cluster == "FCI_MEI", term %in% top_terms_to_plot)
+
+p <- ggplot(res_to_plot, aes(y = reorder(term, -log10(qvalue)))) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype)) +
+  geom_text(
+    aes(x = 0, label = paste0(term, "\n")),
+    hjust = 0,
+    nudge_x = max(-log10(res_to_plot$qvalue)) / 80,
+    size = 6.5,
+    lineheight = 0.95
+  ) +
+  scale_fill_manual(values = celltype_cols) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    x = "-log10(qvalue)",
+    y = "GOBP Terms",
+  ) +
+  theme_linedraw(base_size = 18) +
+  theme(
+    panel.grid=element_blank(),
+    axis.text.y = element_blank(),  # hide original y-axis text
+    axis.ticks.y = element_blank()
+)
+ggsave(snakemake@output[["plot_fcimei"]], plot = p, width = 11, height = 4)
