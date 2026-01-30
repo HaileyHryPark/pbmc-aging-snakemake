@@ -16,7 +16,7 @@ fa_top <- fa %>% filter(db == "GO", cluster != "", fa_celltype != "All celltype"
 
 fa_res_top <- fa %>% filter(term %in% fa_top,  cluster != "", fa_celltype != "All celltype", type %in% c("both","female","male")) %>% 
   mutate(type = factor(type, levels = c("both","female","male")), 
-         cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange","Late\nincrease", "Continuous\nincrease")),
+         cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation","Late\nincrease", "Continuous\nincrease")),
          fa_celltype = factor(fa_celltype, levels = c("CD4 T", "CD8 T", "NK", "B", "Mono"))) %>% 
   select(Description, Gender = type, Celltype = fa_celltype, Cluster = cluster, qvalue) %>% 
   filter(qvalue < 0.01)
@@ -29,7 +29,7 @@ term_order2 <- gobp_fa_res_top %>%
 
 data_to_plot <- fa %>% filter(Description %in% term_order2, cluster != "", fa_celltype != "All celltype", type %in% c("both","female","male")) %>%
   mutate(type = factor(type, levels = c("both","female","male")), 
-         cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange","Late\nincrease", "Continuous\nincrease")),
+         cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation","Late\nincrease", "Continuous\nincrease")),
          fa_celltype = factor(fa_celltype, levels = c("CD4 T", "CD8 T", "NK", "B", "Mono"))) %>% 
   select(Description, Gender = type, Celltype = fa_celltype, Cluster = cluster, qvalue) %>% 
   filter(qvalue < 0.01)

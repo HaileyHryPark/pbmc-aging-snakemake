@@ -11,7 +11,7 @@ library(ensembldb)
 library(circlize)
 library(rio)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
 
 ### Functions

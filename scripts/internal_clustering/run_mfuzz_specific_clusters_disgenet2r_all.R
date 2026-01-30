@@ -10,7 +10,7 @@ library(disgenet2r)
 api_key <- "b9ff0e60-2dc1-4c68-8e77-28bc80901780"
 Sys.setenv(DISGENET_API_KEY= api_key)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 celltype_level = c("All celltype", "CD4 T", "CD8 T", "NK", "B", "Mono")
 
 ## Main
@@ -21,11 +21,11 @@ male_df <- import(snakemake@input[["male_df"]]) %>% dplyr::filter(!is.na(final_c
 subset1 <- intersect(female_df %>% dplyr::filter(final_cluster == "Continuous\nincrease") %>% pull(feature),
           male_df %>% dplyr::filter(final_cluster == "Early\nincrease") %>% pull(feature))
 subset2 <- intersect(female_df %>% dplyr::filter(final_cluster == "Early\nincrease") %>% pull(feature),
-          male_df %>% dplyr::filter(final_cluster == "Irregular\nchange") %>% pull(feature))
+          male_df %>% dplyr::filter(final_cluster == "Early\nfluctuation") %>% pull(feature))
 
 ## DF with specific subclusters
 df <- female_df %>% mutate(subcluster = ifelse(feature %in% subset1, "FCI_MEI",
-                                                ifelse(feature %in% subset2, "FEI_MIC", NA))) %>%
+                                                ifelse(feature %in% subset2, "FEI_MEF", NA))) %>%
                         dplyr::filter(!is.na(subcluster))
 print(dim(df))
 

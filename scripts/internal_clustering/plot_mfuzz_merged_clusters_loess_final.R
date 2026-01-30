@@ -31,7 +31,7 @@ print(table(clust_df$final_cluster))
 print(table(clust_df$merged_clusters))
 
 clust_df <- clust_df %>% filter(!is.na(final_cluster)) %>%
-        mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")))
+        mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")))
 plotdata <- merge(mat, clust_df, all.x = T, by = "feature")
 print(head(plotdata))
 print(table(plotdata$final_cluster))

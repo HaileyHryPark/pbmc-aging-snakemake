@@ -20,7 +20,7 @@ celltype_level <- c(
   "B",
   "Mono"
 )
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 
 ### Functions
 calculateJaccardIndex <- function(x,y){

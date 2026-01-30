@@ -5,7 +5,7 @@ rule run_gender_corr_limma_deswan_deg_subset:
 		cor="tables/internal_correlation/{mode}_deswan_deg_limma_{gender}_corr.csv",
 	conda: "../env/internal_clustering.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 100, walltime = "80:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 100, walltime = "80:00:00", queue = "super"
 	script:
 		"../scripts/internal_correlation/run_gender_corr_limma_deswan_deg_subset.R"
 
@@ -23,7 +23,7 @@ rule run_mfuzz_merged_clusters_spearman_corr_gsea_all:
 		res_df="tables/internal_correlation/{mode}_deswan_deg_limma_spearman_corr_gsea_all_res.csv",
 	conda: "../env/functional_annotation.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 150, walltime = "99:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 150, walltime = "99:00:00", queue = "super"
 	script:
 		"../scripts/internal_correlation/run_mfuzz_merged_clusters_spearman_corr_gsea_all.R"
 
@@ -40,7 +40,7 @@ rule plot_top_percentile_gender_corr:
 		loess="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_loess.pdf",
 	conda: "../env/internal_clustering.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 100, walltime = "80:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 100, walltime = "80:00:00", queue = "super"
 	script:
 		"../scripts/internal_correlation/plot_top_percentile_gender_corr.R"
 
@@ -51,7 +51,7 @@ rule plot_mfuzz_merged_clusters_spearman_corr_gsea_all_network:
 		plots="plots/internal_correlation/{mode}_deswan_deg_limma_spearman_corr_gsea_all_res_plots.pdf",
 	conda: "../env/internal_downstream2.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_correlation/plot_mfuzz_merged_clusters_spearman_corr_gsea_all_network.R"
 
@@ -62,7 +62,7 @@ rule plot_corr_comparison_specific_clusters:
 		plots="plots/internal_correlation/{mode}_deswan_deg_limma_corr_comparison_specific_clusters.pdf",
 	conda: "../env/internal_downstream2.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_correlation/plot_corr_comparison_specific_clusters.R"
 

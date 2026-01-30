@@ -7,7 +7,7 @@ rule get_celltype_prop_mat:
 	params: dataset="{dataset}"
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 100, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 100, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/get_celltype_prop_mat.R"
 
@@ -23,7 +23,7 @@ rule merge_celltype_prop_data:
 		"plots/internal_celltype_prop/celltype_prop_data_all_pca.pdf"
 	conda: "../env/internal_pseudobulk_py.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/merge_celltype_prop_data.py"
 
@@ -34,7 +34,7 @@ rule run_limma_celltype_prop_data:
 		res="data/internal_celltype_prop/celltype_prop_data_limma.csv",
 	conda: "../env/internal_clustering.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/run_limma_removebatcheffect_celltype_prop_data.R"
 
@@ -48,7 +48,7 @@ rule plot_celltype_prop_scatter:
 		plot2="plots/internal_celltype_prop/celltype_prop_data_raw_scatter.pdf",
 	conda: "../env/internal_clustering.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/plot_celltype_prop_data.R"
 
@@ -63,7 +63,7 @@ rule merge_celltype_meta_data:
 		"tables/internal_celltype_prop/celltype_meta_data_column_summary.txt",
 	conda: "../env/internal_pseudobulk_py.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/merge_celltype_meta_data.py"
 
@@ -77,7 +77,7 @@ rule plot_celltype_data_deswan_corr:
 		plot="plots/internal_celltype_prop/celltype_data_deswan_corr.pdf",
 	conda: "../env/internal_clustering.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/plot_celltype_data_deswan_corr.R"
 

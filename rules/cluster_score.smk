@@ -9,7 +9,7 @@ rule get_cluster_score:
 	params: cohort="{cohort}"
 	conda: "../env/cluster_score.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 120, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/cluster_score/get_cluster_score.R"
 
@@ -23,7 +23,7 @@ rule compare_age_accel_cluster_score:
 	params: cohort="{cohort}", gender="{gender}",
 	conda: "../env/cluster_score.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 120, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/cluster_score/compare_age_accel_cluster_score.R"
 
@@ -36,7 +36,7 @@ rule compare_disease_cluster_score:
 	params: cohort="{cohort}", gender="{gender}",
 	conda: "../env/cluster_score.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 120, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/cluster_score/compare_disease_cluster_score.R"
 

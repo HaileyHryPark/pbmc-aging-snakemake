@@ -21,7 +21,7 @@ celltype_level <- c(
   "B",
   "Mono"
 )
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 
 ### Functions
 calculateJaccardIndex <- function(x,y){
@@ -110,7 +110,7 @@ ggplot(ggnetwork(fa.net),
 					"Actin fiber organization" = "#7E6148", 
 					"Cellular transport" = "#CD534C", 
 					"Others" = NA)) +
-	facet_grid(type~factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange","Late\nincrease", "Continuous\nincrease")), labeller = "label_value", switch= "y")+
+	facet_grid(type~factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation","Late\nincrease", "Continuous\nincrease")), labeller = "label_value", switch= "y")+
 	labs(x = "", y = "", color = "Gender")+
 	theme_linedraw(base_size = 15)+
 	theme(panel.grid = element_blank(), legend.position = "bottom", axis.text = element_blank(), axis.ticks = element_blank())

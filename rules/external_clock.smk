@@ -6,7 +6,7 @@ rule test_external_deswan_enet_cv:
 		"tables/external_clock/{mode}_deswan_deg_enet_{gender}_cv_predictions.csv",
 	conda: "../env/enet.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
 	script:
 		"../scripts/external_clock/test_deswan_enet_cv.py"
 
@@ -21,7 +21,7 @@ rule test_external_both_deswan_xgboost_cv:
 		"tables/external_clock/{mode}_deswan_deg_xgboost_both_cv_shap.csv",
 	conda: "../env/xgboost.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
 	script:
 		"../scripts/external_clock/test_deswan_xgboost_cv.py"
 
@@ -36,7 +36,7 @@ rule test_external_gender_deswan_xgboost_cv:
 		"tables/external_clock/{mode}_deswan_deg_xgboost_{gender}_cv_shap.csv",
 	conda: "../env/xgboost.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
 	script:
 		"../scripts/external_clock/test_deswan_xgboost_cv.py"
 
@@ -55,7 +55,7 @@ rule test_external_both_deswan_2dmlp_cv:
 		"log/external_clock/test_2dmlp_cv_{mode}_deswan_deg_both.log"
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
 	script:
 		"../scripts/external_clock/test_deswan_2dmlp_cv.py"
 
@@ -74,7 +74,7 @@ rule test_external_gender_deswan_2dmlp_cv:
 		"log/external_clock/test_2dmlp_cv_{mode}_deswan_deg_{gender}.log"
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
 	script:
 		"../scripts/external_clock/test_deswan_2dmlp_cv.py"
 
@@ -97,7 +97,7 @@ rule compare_external_validation_deswan_all:
 		fold="tables/external_clock/{mode}_deswan_deg_model_comparison_all_folds.csv",
         conda:  "../env/internal_downstream.yaml"
         threads: 1
-        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"
+        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "super"
         script:
                 "../scripts/external_clock/compare_external_validation_all.R"
 
@@ -110,7 +110,7 @@ rule correct_2dmlp_predicted_age:
 	params: gender="{gender}"
         conda:  "../env/internal_downstream.yaml"
         threads: 1
-        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"
+        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "super"
         script:
                 "../scripts/external_clock/correct_2dmlp_predicted_age.R"
 
@@ -123,6 +123,6 @@ rule plot_corrected_2dmlp_predicted_age:
                 plot1="plots/external_clock/{mode}_deswan_deg_2dmlp_model_prediction_corrected_scatter.pdf",
         conda:  "../env/internal_downstream.yaml"
         threads: 1
-        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "normal"
+        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "super"
         script:
                 "../scripts/external_clock/plot_corrected_2dmlp_predicted_age.R"

@@ -12,7 +12,7 @@ library(circlize)
 library(rio)
 library(msigdbr)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
 
 msig_hs <- msigdbr(species = "Homo sapiens")
@@ -159,14 +159,14 @@ print(head(annot_deg))
 subset1 <- intersect(female_df %>% dplyr::filter(final_cluster == "Continuous\nincrease") %>% pull(feature), 
           male_df %>% dplyr::filter(final_cluster == "Early\nincrease") %>% pull(feature))
 subset2 <- intersect(female_df %>% dplyr::filter(final_cluster == "Early\nincrease") %>% pull(feature), 
-          male_df %>% dplyr::filter(final_cluster == "Irregular\nchange") %>% pull(feature))
+          male_df %>% dplyr::filter(final_cluster == "Early\nfluctuation") %>% pull(feature))
 
 print(length(subset1))
 print(length(subset2))
 
 ## DF with specific subclusters
 df <- female_df %>% mutate(subcluster = ifelse(feature %in% subset1, "FCI_MEI",
-						ifelse(feature %in% subset2, "FEI_MIC", NA))) %>%
+						ifelse(feature %in% subset2, "FEI_MEF", NA))) %>%
 			dplyr::filter(!is.na(subcluster))
 print(dim(df))
 

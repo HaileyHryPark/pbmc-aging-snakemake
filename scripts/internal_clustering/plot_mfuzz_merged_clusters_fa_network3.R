@@ -19,7 +19,7 @@ library(ggnetwork)
 celltype_cols <- c("CD4 T" = "#D2533B", "CD8 T" = "#E6974D", "NK" = "#73AF68", "B" = "#79629E", "Mono" = "#5B83BF")
 celltypes <- factor(names(celltype_cols), levels = names(celltype_cols))
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 
 ### Functions
 jaccard <- function(a, b) {
@@ -195,10 +195,10 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
   )
 ggsave(snakemake@output[["plot_fli"]], plot = p, width = 10, height = 6)
 
-## For male irregular change
-top_terms_to_plot <- top %>% filter(title == "male Irregular\nchange", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
+## For male early fluctuation
+top_terms_to_plot <- top %>% filter(title == "male Early\nfluctuation", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
 
-res_to_plot <- res %>% filter(type == "male", cluster == "Irregular\nchange", term %in% top_terms_to_plot) %>% 
+res_to_plot <- res %>% filter(type == "male", cluster == "Early\nfluctuation", term %in% top_terms_to_plot) %>% 
   mutate(term = factor(term, levels = rev(c("mitochondrial translational elongation", "mitochondrial respiratory chain complex assembly", 
                                         "antigen processing and presentation of exogenous peptide antigen via MHC class I, TAP-dependent", 
                                         "macroautophagy", "positive regulation of telomerase RNA localization to Cajal body")))) %>% 

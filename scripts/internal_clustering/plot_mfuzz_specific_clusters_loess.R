@@ -89,7 +89,7 @@ clust_df_m <- import(snakemake@input[["clust_df_m"]]) %>% filter(!is.na(final_cl
 subset1 <- intersect(clust_df_f %>% filter(final_cluster == "Continuous\nincrease") %>% pull(feature),
 	clust_df_m %>% filter(final_cluster == "Early\nincrease") %>% pull(feature))
 subset2 <- intersect(clust_df_f %>% filter(final_cluster == "Early\nincrease") %>% pull(feature), 
-	clust_df_m %>% filter(final_cluster == "Irregular\nchange") %>% pull(feature))
+	clust_df_m %>% filter(final_cluster == "Early\nfluctuation") %>% pull(feature))
 
 ## Import fit and spans
 mat_f <- import(snakemake@input[["fit_res_f"]]) %>% filter(feature %in% c(subset1, subset2))

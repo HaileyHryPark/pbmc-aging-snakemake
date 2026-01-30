@@ -15,7 +15,7 @@ fa_top <- fa %>% filter(cluster != "", fa_celltype != "All celltype", type %in% 
 
 fa_res_top <- fa %>% filter(term %in% fa_top,  cluster != "", fa_celltype != "All celltype", type %in% c("both","female","male")) %>% 
   mutate(type = factor(type, levels = c("both","female","male")), 
-         cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange","Late\nincrease", "Continuous\nincrease")),
+         cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation","Late\nincrease", "Continuous\nincrease")),
          fa_celltype = factor(fa_celltype, levels = c("CD4 T", "CD8 T", "NK", "B", "Mono"))) %>% 
   select(Description, Gender = type, Celltype = fa_celltype, Cluster = cluster, qvalue, geneID) %>% 
   filter(qvalue < 0.01)

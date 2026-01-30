@@ -32,17 +32,17 @@ print(head(clust_df))
 
 if(gender == "both"){
 	clust_df <- clust_df %>%
-		mutate(final_cluster = ifelse(merged_clusters == "MergedCluster2_1", "Early\ndecrease", ifelse(merged_clusters == "MergedCluster2_2", "Irregular\nchange", ifelse(merged_clusters == "MergedCluster2_3", "Early\nincrease", ifelse(merged_clusters == "MergedCluster2_4", "Continuous\ndecrease", ifelse(merged_clusters == "MergedCluster2_5", "Late\nincrease", NA))))))
+		mutate(final_cluster = ifelse(merged_clusters == "MergedCluster2_1", "Early\ndecrease", ifelse(merged_clusters == "MergedCluster2_2", "Early\nfluctuation", ifelse(merged_clusters == "MergedCluster2_3", "Early\nincrease", ifelse(merged_clusters == "MergedCluster2_4", "Continuous\ndecrease", ifelse(merged_clusters == "MergedCluster2_5", "Late\nincrease", NA))))))
 }else if(gender == "female"){
 	clust_df <- clust_df %>%
 		mutate(final_cluster = ifelse(merged_clusters == "MergedCluster2_1", "Early\nincrease", ifelse(merged_clusters == "MergedCluster2_2", "Early\ndecrease", ifelse(merged_clusters == "MergedCluster2_3", "Continuous\ndecrease", ifelse(merged_clusters == "MergedCluster2_4", "Continuous\nincrease", ifelse(merged_clusters == "MergedCluster2_5", "Late\nincrease", NA))))))
 }else if(gender == "male"){
 	clust_df <- clust_df %>%
-		mutate(final_cluster = ifelse(merged_clusters == "MergedCluster2_1", "Early\nincrease", ifelse(merged_clusters == "MergedCluster2_2", "Early\ndecrease", ifelse(merged_clusters == "MergedCluster2_3", "Irregular\nchange", ifelse(merged_clusters == "MergedCluster2_4", "Continuous\ndecrease", NA)))))
+		mutate(final_cluster = ifelse(merged_clusters == "MergedCluster2_1", "Early\nincrease", ifelse(merged_clusters == "MergedCluster2_2", "Early\ndecrease", ifelse(merged_clusters == "MergedCluster2_3", "Early\nfluctuation", ifelse(merged_clusters == "MergedCluster2_4", "Continuous\ndecrease", NA)))))
 }
 
 clust_df <- clust_df %>%
-        mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")))
+        mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")))
 
 print(head(clust_df))
 print(table(clust_df$final_cluster))

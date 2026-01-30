@@ -25,4 +25,4 @@ make_summary_row <- function(df, dataset_name) {
 
 meta <- import(snakemake@input[["meta"]])
 
-export(make_summary_row(meta, "cima"), snakemake@output[["table"]])
+export(make_summary_row(meta, "Supercentenarian"), snakemake@output[["table"]])

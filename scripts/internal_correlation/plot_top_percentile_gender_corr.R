@@ -16,7 +16,7 @@ celltype_colors <- c(
 celltype_col_df <-  data.frame(celltype = names(celltype_colors), color = celltype_colors)
 
 cluster_col = qualitative_hcl(6, palette = "Set 2")
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
 cluster_col_df <- data.frame(cluster = cluster_level, color = cluster_col)
 
 ## Import cor table

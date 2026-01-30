@@ -46,9 +46,9 @@ print(g)
 if(g == "female"){
 	cluster_levels <- c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Continuous\nincrease", "Late\nincrease")
 }else if(g == "male"){
-	cluster_levels <- c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange")
+	cluster_levels <- c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation")
 }else{
-	cluster_levels <- c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease")
+	cluster_levels <- c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease")
 }
 
 data <- import(snakemake@input[["data"]]) %>% filter(cohort == c)

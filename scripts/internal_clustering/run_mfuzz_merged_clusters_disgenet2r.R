@@ -11,7 +11,7 @@ library(disgenet2r)
 api_key <- "b9ff0e60-2dc1-4c68-8e77-28bc80901780"
 Sys.setenv(DISGENET_API_KEY= api_key)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange", "Late\nincrease", "Continuous\nincrease", "Inverted\nU-shape")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease", "Inverted\nU-shape")
 celltype_level = c("All celltype", "CD4 T", "CD8 T", "NK", "B", "Mono")
 
 df <- import(snakemake@input[["df"]]) %>% dplyr::filter(!is.na(final_cluster))

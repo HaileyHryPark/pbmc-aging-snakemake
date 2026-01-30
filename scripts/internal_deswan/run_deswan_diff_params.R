@@ -1,5 +1,5 @@
 print(.libPaths())
-.libPaths(c("/scratch/users/nus/e0859928/Snakemake/onek1k-analysis-snakemake/resources/r_package", "/home/users/nus/e0859928/opt/miniforge3/envs/rbase/lib/R/library", .libPaths()))
+.libPaths("resources/r_package")
 print(.libPaths())
 
 library(rio)

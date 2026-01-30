@@ -8,7 +8,7 @@ rule create_seurat_obj_sc:
 		annot="data/external_sc_data_prep/sc_annot.csv",
 	conda: "../env/external_sc_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 200, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/create_seurat_obj_sc.R"
 
@@ -19,7 +19,7 @@ rule write_initial_metadata_table_ext_sc:
 		table="tables/external_sc_data_prep/external_data_initial_metadata_table.csv",
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "02:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 200, walltime = "02:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/write_metadata_table.R"
 
@@ -32,7 +32,7 @@ rule filter_data_ext_sc:
 		meta="data/external_sc_data_prep/sc_metadata_filtered.csv",
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "20:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 200, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/filter_data.R"
 
@@ -43,10 +43,11 @@ rule write_final_metadata_table_ext_sc:
 		table="tables/external_sc_data_prep/external_data_final_metadata_table.csv",
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "02:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 200, walltime = "02:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/write_metadata_table.R"
 
+## Had to install manually and use server singularity (server outdated - old glibc); --use-singularity
 rule run_azimuth_ext_sc:
 	input:
 		data="data/external_sc_data_prep/sc_filtered.rds",
@@ -54,9 +55,9 @@ rule run_azimuth_ext_sc:
 	output:
 		annotated="data/external_sc_data_prep/sc_azimuth_annotated.rds",
 		plot="plots/external_sc_data_prep/sc_azimuth_annotation.pdf",
-	conda: "../env/azimuth.yaml"
+	singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/run_azimuth.R"
 
@@ -68,7 +69,7 @@ rule subset_samples_by_main_celltypes_ext_sc:
 		log="tables/external_sc_data_prep/sc_excluded_samples_log.csv",
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 50, walltime = "10:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 50, walltime = "10:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/subset_samples_by_main_celltypes.R"
 
@@ -79,7 +80,7 @@ rule summarize_final_data_included_ext_sc:
 		summary="tables/external_sc_data_prep/final_data_included_summary.csv",
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "super"
 	script:
 		"../scripts/external_sc_data_prep/summarize_final_data_included.R"
 		

@@ -82,7 +82,7 @@ fi_shap_sub_sum <- fi_shap_sub_long %>% group_by(across(all_of(meta_cols)), fina
          age_group = factor(age_group, levels = c("<40", "40-60", ">60")))
 mi_shap_sub_sum <- mi_shap_sub_long %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
   summarise(cluster_shap = sum(shap_value, na.rm = T), cluster_shap_abs = abs(sum(shap_value)), .groups = "drop") %>% 
-  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange")), 
+  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation")), 
          age_group = factor(age_group, levels = c("<40", "40-60", ">60")))
 
 fi_shap_corrected_sum <- fi_shap_corrected %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
@@ -91,7 +91,7 @@ fi_shap_corrected_sum <- fi_shap_corrected %>% group_by(across(all_of(meta_cols)
          age_group = factor(age_group, levels = c("<40", "40-60", ">60")))
 mi_shap_corrected_sum <- mi_shap_corrected %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
   summarise(cluster_shap = sum(shap_corrected, na.rm = T), cluster_shap_abs = abs(sum(shap_corrected)), .groups = "drop") %>% 
-  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Irregular\nchange")), 
+  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation")), 
          age_group = factor(age_group, levels = c("<40", "40-60", ">60")))
 
 ## Correlation with age
@@ -127,7 +127,7 @@ ggsave(snakemake@output[["vlnplot_f"]], f_clust_shap, width = 4, height = 5)
 
 m_clust_shap <- ggviolin(mi_shap_corrected_sum, x = "final_cluster", y = "cluster_shap_abs", fill = gender_cols["male"], width = 0.6) +
   geom_boxplot(width = 0.1, fill = "white") +
-  stat_compare_means(label = "p", comparisons = list(c("Early\nincrease","Early\ndecrease"),c("Early\nincrease","Continuous\ndecrease"),c("Early\nincrease","Irregular\nchange")),
+  stat_compare_means(label = "p", comparisons = list(c("Early\nincrease","Early\ndecrease"),c("Early\nincrease","Continuous\ndecrease"),c("Early\nincrease","Early\nfluctuation")),
                      step.increase = 0.2, tip.length = 0, bracket.size = 0.5, vjust = -0.4) +
   theme_linedraw(base_size = 15) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 15), 

@@ -6,7 +6,7 @@ rule get_full5ct_pseudobulk_mat:
        params: dataset="{dataset}"
        conda: "../env/internal_data_prep.yaml"
        threads: 1
-       resources: ngpus = 0, mem_gb = 100, walltime = "20:00:00", queue = "normal"
+       resources: ngpus = 0, mem_gb = 100, walltime = "20:00:00", queue = "super"
        script:
                "../scripts/internal_pseudobulk/get_full5ct_pseudobulk_mat.R"
 
@@ -22,7 +22,7 @@ rule merge_full5ct_pseudobulk_data:
                "plots/internal_pseudobulk/full5ct_pseudobulk_data_all_pca.pdf"
        conda: "../env/internal_pseudobulk_py.yaml"
        threads: 1
-       resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "normal"
+       resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "super"
        script:
                "../scripts/internal_pseudobulk/merge_full5ct_pseudobulk_data.py"
 
@@ -33,7 +33,7 @@ rule subset_allexp5ct_pseudobulk:
 		"data/internal_pseudobulk/allexp5ct_pseudobulk_data_all.csv",
 	conda: "../env/internal_pseudobulk_py.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 150, walltime = "02:00:00", queue = "normal"
+	resources: ngpus = 0, mem_gb = 150, walltime = "02:00:00", queue = "super"
 	script:
 		"../scripts/internal_pseudobulk/subset_allexp5ct_pseudobulk.py"
 
@@ -46,7 +46,7 @@ rule plot_sample_distribution:
                 plot_ds="plots/internal_pseudobulk/{mode}_sample_distribution_by_dataset.pdf",
 	conda: "../env/external_dis_data_prep.yaml"
         threads: 1
-        resources: ngpus = 0, mem_gb = 40, walltime = "05:00:00", queue = "normal"
+        resources: ngpus = 0, mem_gb = 40, walltime = "05:00:00", queue = "super"
         script:
                 "../scripts/internal_pseudobulk/plot_sample_distribution.R"
 
