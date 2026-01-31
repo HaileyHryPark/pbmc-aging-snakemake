@@ -100,6 +100,11 @@ if __name__ == "__main__":
         adata = adata_new
         print(np.min(adata.X), np.max(adata.X))
 
+    if dataset in ["cima_rna"]:
+        adata.obs["donor_id"] = adata.obs["sample"]
+        adata.obs["sample_id"] = adata.obs["sample"]
+        adata.obs["disease"] = "normal"
+
     # Gene name mapping
     if dataset not in ["marina", "cima_rna"]:
         adata = map_genes(adata)

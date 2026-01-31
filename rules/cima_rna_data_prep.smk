@@ -8,7 +8,7 @@ rule extract_metadata_cima_rna:
 	params: dataset="cima_rna"
 	conda: "../env/internal_data_prep_py.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 300, walltime = "40:00:00", queue = "super"
+	resources: ngpus = 0, mem_gb = 400, walltime = "40:00:00", queue = "normal"
 	script:
 		"../scripts/cima_rna_data_prep/extract_metadata.py"
 
@@ -19,7 +19,7 @@ rule write_initial_metadata_table_cima_rna:
 		table="tables/cima_rna_data_prep/cima_rna_data_prep_initial_metadata_table.csv",
 	conda: "../env/internal_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 300, walltime = "04:00:00", queue = "super"
+	resources: ngpus = 0, mem_gb = 300, walltime = "04:00:00", queue = "normal"
 	script:
 		"../scripts/cima_rna_data_prep/write_metadata_table.R"
 
@@ -29,12 +29,11 @@ rule filter_data_cima_rna:
 		"tables/cima_rna_data_prep/cima_rna_data_prep_initial_metadata_table.csv",
 	output:
 		"data/cima_rna_data_prep/cima_rna_filtered.h5ad",
-		"data/cima_rna_data_prep/cima_rna_filtered_others.h5ad",
 		"data/cima_rna_data_prep/cima_rna_metadata_filtered.csv",
 	params: dataset="cima_rna"
 	conda: "../env/internal_data_prep_py.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 300, walltime = "40:00:00", queue = "super"
+	resources: ngpus = 0, mem_gb = 440, walltime = "40:00:00", queue = "normal"
 	script:
 		"../scripts/cima_rna_data_prep/filter_data.py"
 
@@ -42,10 +41,10 @@ rule write_final_metadata_table_cima_rna:
 	input:
 		meta="data/cima_rna_data_prep/cima_rna_metadata_filtered.csv",
 	output:
-		table="tables/cima_rna_data_prep/internal_data_final_metadata_table.csv",
+		table="tables/cima_rna_data_prep/cima_rna_data_prep_final_metadata_table.csv",
 	conda: "../env/internal_data_prep.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 300, walltime = "02:00:00", queue = "super"
+	resources: ngpus = 0, mem_gb = 300, walltime = "02:00:00", queue = "normal"
 	script:
 		"../scripts/cima_rna_data_prep/write_metadata_table.R"
 
@@ -57,7 +56,7 @@ rule split_h5ad_by_donor_cima_rna:
 	params: dataset="cima_rna"
 	conda: "../env/internal_data_prep_py.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 300, walltime = "20:00:00", queue = "super"
+	resources: ngpus = 0, mem_gb = 300, walltime = "20:00:00", queue = "normal"
 	script:
 		"../scripts/cima_rna_data_prep/split_h5ad_by_donor.py"
 
@@ -69,7 +68,7 @@ rule convert_h5ad_to_seu_cima_rna:
 		seu="data/cima_rna_data_prep/cima_rna_filtered_{split}.rds",
 	conda: "../env/anndata.yaml"
 	threads: 1
-	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "super"
+	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "normal"
 	script:
 		"../scripts/cima_rna_data_prep/convert_h5ad_to_seu.R"
 
@@ -80,7 +79,7 @@ rule run_azimuth_by_split_cima_rna:
 	output:
 		annotated="data/cima_rna_data_prep/cima_rna_{split}_azimuth_annotated.rds",
 		plot="plots/cima_rna_data_prep/cima_rna_{split}_azimuth_annotation.pdf",
-	singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
+	#singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "super"
 	script:
@@ -100,7 +99,7 @@ rule subset_donors_by_main_celltypes_cima_rna:
 
 rule summarize_final_data_included_cima_rna:
 	input:
-		data=expand("data/cima_rna_data_prep/cima_rna_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 10)]),
+		data=expand("data/cima_rna_data_prep/cima_rna_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 11)]),
 	output:
 		summary="tables/cima_rna_data_prep/final_data_included_summary.csv",
 	conda: "../env/external_dis_data_prep.yaml"

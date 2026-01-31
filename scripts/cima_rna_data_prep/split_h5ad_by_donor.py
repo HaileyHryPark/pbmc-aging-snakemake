@@ -11,10 +11,10 @@ adata = sc.read_h5ad(snakemake.input[0])
 dataset = snakemake.params.dataset
 if dataset == "onek1k":
     split_size = 100
+elif dataset == "cima_rna":
+    split_size = 40
 else:
     split_size = 30
-
-adata.obs = adata.obs[['donor_id', 'disease', 'sex', 'age', 'self_reported_ethnicity', 'nCount_RNA', 'nFeature_RNA', 'percent_mito']].copy()
 
 donor_list = adata.obs["donor_id"].unique()
 
@@ -32,7 +32,7 @@ for i in range(n_splits):
     donors_in_group = donor_list[start:end]
 
     adata_subset = adata[adata.obs["donor_id"].isin(donors_in_group)].copy()
-    out_path = f"data/external_cima_data/{dataset}_filtered_split{i+1:02d}.h5ad"
+    out_path = f"data/cima_rna_data_prep/{dataset}_filtered_split{i+1:02d}.h5ad"
     adata_subset.write(out_path)
 
     log_lines.append(f"Group {i+1}: donors {start+1} to {end} ({len(donors_in_group)} donors)\n")

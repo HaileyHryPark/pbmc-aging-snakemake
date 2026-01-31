@@ -154,6 +154,11 @@ rule dnam:
 		"tables/dna_methylation/nsphs_beta.csv",
 		"tables/dna_methylation/nsphs_limma_dmrcate_agegroup_res_both.rds",
 
+rule cima_rna:
+	input:
+		expand("data/cima_rna_data_prep/cima_rna_filtered_{split}.rds", split=[f"split{i:02d}" for i in range(1,11)]),
+		"tables/cima_rna_data_prep/final_data_included_summary.csv",
+
 ##### load rules #####
 
 include: "rules/r_package_install.smk"

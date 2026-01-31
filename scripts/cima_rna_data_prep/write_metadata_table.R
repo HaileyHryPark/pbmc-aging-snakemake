@@ -13,16 +13,16 @@ make_summary_row <- function(df, dataset_name) {
 
   sum <- data.frame(dataset = dataset_name, 
 		num_donor = length(unique(df$donor_id)), 
-		num_control = df %>% filter(disease == "CT") %>% pull(donor_id) %>% unique() %>% length())
-  sum <- sum %>% mutate(num_sc = num_donor - num_control, female_prop = df %>% filter(sex == "female") %>% pull(donor_id) %>% unique() %>% length() / num_donor * 100, num_sample = length(unique(df$sample_id)))
-  sum <- sum %>% mutate(min_age = "50s", max_age = "110s")
+		num_healthy = df %>% filter(disease == "normal") %>% pull(donor_id) %>% unique() %>% length())
+  sum <- sum %>% mutate(num_disease = num_donor - num_healthy, female_prop = df %>% filter(sex == "Female") %>% pull(donor_id) %>% unique() %>% length() / num_donor * 100, num_sample = length(unique(df$sample_id)))
+  sum <- sum %>% mutate(min_age = min(df$age, na.rm = TRUE), max_age = max(df$age, na.rm = TRUE))
 
   sum <- cbind(sum, row)
-  colnames(sum) <- c("dataset", "num_donor", "num_control", "num_sc", "female_prop", "num_sample", "min_age", "max_age", cols)
+  colnames(sum) <- c("dataset", "num_donor", "num_healthy", "num_disease", "female_prop", "num_sample", "min_age", "max_age", cols)
 
   return(sum)
 }
 
 meta <- import(snakemake@input[["meta"]])
 
-export(make_summary_row(meta, "Supercentenarian"), snakemake@output[["table"]])
+export(make_summary_row(meta, "cima_rna"), snakemake@output[["table"]])
