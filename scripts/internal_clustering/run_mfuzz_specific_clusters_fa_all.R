@@ -6,6 +6,7 @@ library(colorspace)
 library(ComplexHeatmap)
 library(clusterProfiler)
 library(ReactomePA)
+library(AnnotationHub)
 library(org.Hs.eg.db)
 library(ensembldb)
 library(circlize)
@@ -16,7 +17,7 @@ cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", 
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
 
 msig_hs <- msigdbr(species = "Homo sapiens")
-msig_pos <- msig_hs %>% dplyr::filter(gs_cat == "C1") %>% dplyr::select(gs_name, entrez_gene)
+msig_pos <- msig_hs %>% dplyr::filter(gs_collection == "C1") %>% dplyr::select(gs_name, ncbi_gene)
 
 ### Functions
 runFA <- function(features){

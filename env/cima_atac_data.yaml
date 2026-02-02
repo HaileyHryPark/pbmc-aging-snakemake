@@ -1,0 +1,20 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-hdf5r
+  - hdf5
+  - r-seurat
+  - r-seuratobject
+  - r-signac
+  - bioconductor-genomicranges
+  - bioconductor-iranges
+  - bioconductor-limma
+  - bioconductor-org.hs.eg.db
+  - r-rio
+  - r-tidyr
+  - r-dplyr
+  - r-tidyverse
+  - r-ggpubr
+  - r-scales

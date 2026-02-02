@@ -74,7 +74,7 @@ rule cv_train_and_test_gender_specific_xgboost_deswan:
 	params: gender="{gender}"
 	conda: "../env/xgboost.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "30:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "30:00:00", queue = "gpu-h200"
 	script:
 		"../scripts/internal_clock/cv_train_and_test_gender_specific_xgboost.py"
 
@@ -104,7 +104,7 @@ rule cv_train_and_test_gender_specific_2dmlp_deswan:
 	params: gender="{gender}"
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "99:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "99:00:00", queue = "gpu-h200"
 	script:
 		"../scripts/internal_clock/cv_train_and_test_gender_specific_2dmlp.py"
 
@@ -119,7 +119,7 @@ rule cv_train_and_test_gender_both_subsample_2dmlp_deswan:
 		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_scalers.joblib",
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "99:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "99:00:00", queue = "gpu-h200-int"
 	script:
 		"../scripts/internal_clock/cv_train_and_test_both_subsample_2dmlp.py"
 
@@ -132,7 +132,7 @@ rule crosstest_enet_deswan:
 	params: gender="{gender}"
 	conda: "../env/enet.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_clock/crosstest_deswan_enet_cv.py"
 
@@ -218,7 +218,7 @@ rule get_shap_background_2dmlp_deswan:
 	params: both_fold=1, female_fold=4, male_fold=3
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "gpu-h200"
 	script:
 		"../scripts/internal_clock/get_shap_background_2dmlp_deswan.py"
 	
@@ -250,7 +250,7 @@ rule compute_shap_gender_specific_final_2dmlp_deswan:
 	params: gender="{gender}" 
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 100, walltime = "90:00:00", queue = "gpu-h200"
 	script:
 		"../scripts/internal_clock/compute_shap_2dmlp.py"
 

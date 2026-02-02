@@ -34,6 +34,6 @@ print("rds saved")
 
 excluded_donors <- meta %>%
   filter(!(donor_id %in% eligible_donors)) %>%
-  distinct(donor_id, sex, age, disease, self_reported_ethnicity)
+  distinct(donor_id, sex, age, disease)
 
 export(excluded_donors, snakemake@output[["log"]])

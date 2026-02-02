@@ -9,8 +9,9 @@ dependencies:
   - r-rio
   - r-ggpubr
   - bioconductor-org.hs.eg.db
-  - bioconductor-clusterprofiler=3.18.0
+  - bioconductor-clusterprofiler
   - bioconductor-reactomepa
+  - bioconductor-annotationhub
   - bioconductor-complexheatmap
   - r-colorspace
   - bioconductor-ensembldb

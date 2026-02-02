@@ -27,7 +27,6 @@ rule all:
 		"plots/internal_clustering/allexp5ct_deswan_cluster_pie_by_celltype.pdf",
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv", gender=["both","female","male"]),
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv", gender=["both","female","male"]),
-		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_disgenet2r_all_res.csv", gender=["both","female","male"]),
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
 		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
@@ -103,7 +102,6 @@ rule internal_clustering:
 		"plots/internal_clustering/allexp5ct_deswan_cluster_pie_by_celltype.pdf",
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv", gender=["both","female","male"]),
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv", gender=["both","female","male"]),
-		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_disgenet2r_all_res.csv", gender=["both","female","male"]),
 		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
@@ -156,19 +154,30 @@ rule dnam:
 
 rule cima_rna:
 	input:
-		expand("data/cima_rna_data_prep/cima_rna_filtered_{split}.rds", split=[f"split{i:02d}" for i in range(1,11)]),
+		"data/cima_rna_data_prep/split_h5ad_by_donor_log_cima_rna.txt",
+
 		"tables/cima_rna_data_prep/final_data_included_summary.csv",
+		"data/cima_rna_data_prep/allexpcima_pseudobulk_data_cima_rna.csv",
+		"plots/cima_rna_data_prep/cima_rna_sample_distribution.svg",
+		#"plots/cima_rna_analysis/allexp5ct_deswan_q_res_by_gender.pdf",
+		#"plots/cima_rna_analysis/allexp5ct_deswan_q_deg_cima_rna_venn.pdf",
+		"plots/cima_rna_analysis/allexp5ct_deswan_deg_model_comparison_metrics.pdf",
+		"plots/cima_rna_analysis/allexp5ct_deswan_deg_2dmlp_model_prediction_corrected_scatter.pdf",
+
+rule cima_atac:
+	input:
+		"data/cima_atac_data/cima_atac_metadata_prefilter.csv",
 
 ##### load rules #####
 
 include: "rules/r_package_install.smk"
 include: "rules/internal_data_prep.smk"
 include: "rules/internal_pseudobulk.smk"
-include: "rules/internal_deswan.smk"
+#include: "rules/internal_deswan.smk"
 include: "rules/internal_clustering.smk"
 include: "rules/internal_correlation.smk"
 include: "rules/internal_celltype_prop.smk"
-include: "rules/internal_clock.smk"
+#include: "rules/internal_clock.smk"
 include: "rules/external_dis_data_prep.smk"
 include: "rules/external_sc_data_prep.smk"
 include: "rules/external_pseudobulk.smk"
@@ -176,3 +185,5 @@ include: "rules/external_clock.smk"
 include: "rules/cluster_score.smk"
 include: "rules/dna_methylation.smk"
 include: "rules/cima_rna_data_prep.smk"
+include: "rules/cima_rna_analysis.smk"
+include: "rules/cima_atac_data.smk"

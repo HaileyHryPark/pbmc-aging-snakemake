@@ -211,7 +211,8 @@ rule run_mfuzz_merged_clusters_disgenet2r_all:
 	output:
 		res1="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_disgenet2r_all_res.csv",
 		res2="tables/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_disgenet2r_all_res_no_ribo.csv",
-	conda: "../env/azimuth.yaml"
+	singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
+	#conda: "../env/azimuth.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
 	script:
@@ -284,7 +285,7 @@ rule run_mfuzz_specific_clusters_fa_all:
 	output:
 		res1="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res.csv",
 		res2="tables/internal_clustering/{mode}_deswan_deg_mfuzz_specific_clusters_fa_all_res_no_ribo.csv",
-	conda: "../env/functional_annotation2.yaml"
+	conda: "../env/functional_annotation.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
 	script:

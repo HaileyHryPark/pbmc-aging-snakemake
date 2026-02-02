@@ -6,7 +6,7 @@ rule test_external_deswan_enet_cv:
 		"tables/external_clock/{mode}_deswan_deg_enet_{gender}_cv_predictions.csv",
 	conda: "../env/enet.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
+	resources: ngpus = 0, mem_gb = 120, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/external_clock/test_deswan_enet_cv.py"
 
@@ -21,7 +21,7 @@ rule test_external_both_deswan_xgboost_cv:
 		"tables/external_clock/{mode}_deswan_deg_xgboost_both_cv_shap.csv",
 	conda: "../env/xgboost.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu-h200-int"
 	script:
 		"../scripts/external_clock/test_deswan_xgboost_cv.py"
 
@@ -55,7 +55,7 @@ rule test_external_both_deswan_2dmlp_cv:
 		"log/external_clock/test_2dmlp_cv_{mode}_deswan_deg_both.log"
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu-h200"
 	script:
 		"../scripts/external_clock/test_deswan_2dmlp_cv.py"
 
@@ -74,7 +74,7 @@ rule test_external_gender_deswan_2dmlp_cv:
 		"log/external_clock/test_2dmlp_cv_{mode}_deswan_deg_{gender}.log"
 	conda: "../env/mlp.yaml"
 	threads: 1
-	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu"
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu-h200"
 	script:
 		"../scripts/external_clock/test_deswan_2dmlp_cv.py"
 

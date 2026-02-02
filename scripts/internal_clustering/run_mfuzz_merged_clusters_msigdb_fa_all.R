@@ -16,12 +16,12 @@ cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", 
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
 
 msig_hs <- msigdbr(species = "Homo sapiens")
-print(unique(msig_hs$gs_cat))
-print(unique(msig_hs$gs_subcat))
-msig_imm <- msig_hs %>% dplyr::filter(gs_subcat == "IMMUNESIGDB") %>% dplyr::select(gs_name, entrez_gene)
-msig_pos <- msig_hs %>% dplyr::filter(gs_cat == "C1") %>% dplyr::select(gs_name, entrez_gene)
-msig_mir <- msig_hs %>% dplyr::filter(gs_subcat == "MIR:MIRDB") %>% dplyr::select(gs_name, entrez_gene)
-msig_tft <- msig_hs %>% dplyr::filter(gs_subcat == "TFT:GTRD") %>% dplyr::select(gs_name, entrez_gene)
+print(unique(msig_hs$gs_collection))
+print(unique(msig_hs$gs_subcollection))
+msig_imm <- msig_hs %>% dplyr::filter(gs_subcollection == "IMMUNESIGDB") %>% dplyr::select(gs_name, ncbi_gene)
+msig_pos <- msig_hs %>% dplyr::filter(gs_collection == "C1") %>% dplyr::select(gs_name, ncbi_gene)
+msig_mir <- msig_hs %>% dplyr::filter(gs_subcollection == "MIR:MIRDB") %>% dplyr::select(gs_name, ncbi_gene)
+msig_tft <- msig_hs %>% dplyr::filter(gs_subcollection == "TFT:GTRD") %>% dplyr::select(gs_name, ncbi_gene)
 
 ### Functions
 runFA <- function(features){
