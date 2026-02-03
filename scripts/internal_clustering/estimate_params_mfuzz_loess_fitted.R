@@ -5,10 +5,12 @@ library(tidyverse)
 
 eset <- table2eset(filename = snakemake@input[["mfuzz_mat"]])
 
+set.seed(123)
 m1 <- mestimate(eset)
 print("M1:")
 print(m1)
 
+set.seed(123)
  plot <-
    Dmin(
      eset,

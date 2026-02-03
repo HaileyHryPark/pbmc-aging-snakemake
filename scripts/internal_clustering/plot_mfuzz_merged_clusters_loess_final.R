@@ -31,7 +31,7 @@ print(table(clust_df$final_cluster))
 print(table(clust_df$merged_clusters))
 
 clust_df <- clust_df %>% filter(!is.na(final_cluster)) %>%
-        mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")))
+        mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation1", "Early\nfluctuation2", "Late\nincrease", "Continuous\nincrease")))
 plotdata <- merge(mat, clust_df, all.x = T, by = "feature")
 print(head(plotdata))
 print(table(plotdata$final_cluster))
@@ -67,8 +67,7 @@ cell_prop_summary <- cell_prop_summary %>%
   )
 print(head(cell_prop_summary))
 
-pdf(snakemake@output[["plot"]], width = 15, height = 4)
-ggplot(plotdata, aes(x=age, y=fitted, group=feature)) +
+p <- ggplot(plotdata, aes(x=age, y=fitted, group=feature)) +
 	geom_line(color = ifelse(gender == "both", "grey", ifelse(gender == "female", "#E15566", "#4981BF")), size = 0.3, alpha = 0.5) +
 	geom_smooth(aes(group = 1), method = "gam", formula = y ~ s(x, k = 10),
               color = "black", size = 2, linetype = "solid") +
@@ -84,11 +83,11 @@ ggplot(plotdata, aes(x=age, y=fitted, group=feature)) +
 	) +
 	scale_fill_manual(values = celltype_colors) + 
 	guides(fill = guide_legend(nrow = 1)) +
-	facet_wrap(~final_cluster, nrow = 1, ncol = 7, drop = FALSE)+
+	facet_wrap(~final_cluster, nrow = 1, ncol = 8, drop = FALSE)+
 	theme_linedraw(base_size = 16)+
 	theme(panel.grid = element_blank(), strip.text = element_text(size=17), legend.position = "bottom")+
 	ylim(-1.7,1.9)+
 	xlim(19,93)+
 	labs(x = "Age", y = "Scaled expression")
 
-dev.off()
+ggsave(snakemake@output[["plot"]], p, width = 17, height = 4)

@@ -3,6 +3,8 @@ library(dplyr)
 library(tidyverse)
 library(purrr)
 
+options(digits = 15)
+
 k_folds <- 10
 
 ## Functions
@@ -16,7 +18,7 @@ optimize_loess_span_kfold <- function(x, y, span_range = seq(0.5, 1, 0.1), k = k
   
   # Assign folds
   set.seed(123)  # reproducibility
-  df$fold <- sample(rep(1:k, length.out = nrow(df)))
+  df <- df %>% mutate(fold = (row_number() - 1) %% k + 1)
   
   span_rmse <- map_dfr(span_range, function(s) {
     #print(s)
@@ -57,7 +59,7 @@ zscore_long <- zscore %>%
     pivot_longer(cols = all_of(features), names_to = "feature", values_to = "zscore") %>% 
     filter(!is.na(zscore), !is.na(age))
 
-span_res <- lapply(unique(zscore_long$feature), function(f){
+span_res <- lapply(sort(unique(zscore_long$feature)), function(f){
 	message("Processing feature: ", f)
 
 		df_fg <- zscore_long %>% filter(feature == f)
@@ -70,7 +72,7 @@ span_res <- lapply(unique(zscore_long$feature), function(f){
 		res <- res %>% mutate(feature = f)
 		print(head(res))
 
-		opt_span <- res$span[which.min(res$rmse)]
+		opt_span <- res %>% filter(rmse == min(rmse, na.rm = TRUE)) %>% arrange(span) %>% slice(1) %>% pull(span) 
 		print(opt_span)
 
 		fit <- loess(zscore ~ age, data = df_fg, span = opt_span)

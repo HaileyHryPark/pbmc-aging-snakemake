@@ -37,37 +37,90 @@ rule estimate_params_mfuzz_loess_fitted:
 	script:
 		"../scripts/internal_clustering/estimate_params_mfuzz_loess_fitted.R"
 
-rule cluster_mfuzz_loess_fitted_final:
+rule cluster_mfuzz_loess_fitted_multirun: 
 	input:
 		mfuzz_mat="tables/internal_clustering/{mode}_deswan_deg_loess_mfuzz_mat_{gender}.txt",
 		table="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_num_{gender}.csv",
 	output:
-		cnumplot="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_elbowplot_{gender}.pdf",
-		corrplot1="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_corrplot_initial_{gender}.pdf",
-		mfuzzplot1="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_plot_initial_{gender}.pdf",
-		corrplot2="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_corrplot_merged_{gender}.pdf",
-		mfuzzplot2="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_plot_merged_{gender}.pdf",
-		var_cluster_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}.csv",
-	conda: "../env/internal_clustering.yaml"
+		cluster_counts="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_multirun_cluster_num_{gender}.csv",
+		all_runs_rds="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_multirun_res_{gender}.rds",
+	conda: "../env/internal_clustering2.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
 	script:
-		"../scripts/internal_clustering/cluster_mfuzz_loess_fitted_final.R"
+		"../scripts/internal_clustering/cluster_mfuzz_loess_fitted_multirun.R"
 
-rule plot_mfuzz_merged_clusters_loess:
+rule cluster_mfuzz_loess_fitted_final_run: 
 	input:
-		fit_res="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_{gender}.csv",
-		span_res="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_{gender}.csv",
-		var_cluster_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}.csv",
+		mfuzz_mat="tables/internal_clustering/{mode}_deswan_deg_loess_mfuzz_mat_{gender}.txt",
+		table="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_num_{gender}.csv",
+	output:
+		final_cluster_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_finalrun_cluster_assignment_{gender}.csv",
+		final_centers="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_finalrun_cluster_centers_{gender}.csv",
+	conda: "../env/internal_clustering2.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
+	script:
+		"../scripts/internal_clustering/cluster_mfuzz_loess_fitted_final_run.R"
+
+rule plot_mfuzz_loess_fitted_cluster_runs: 
+	input:
+		cluster_counts="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_multirun_cluster_num_{gender}.csv",
+		all_runs_rds="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_multirun_res_{gender}.rds",
+		final_centers="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_finalrun_cluster_centers_{gender}.csv",
+	output:
+		plot1="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_multirun_cluster_num_{gender}.svg",
+		plot2="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_finalrun_cluster_trajectories_{gender}.svg",
+		plot3="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_multirun_cluster_trajectories_{gender}.svg",
+	conda: "../env/internal_clustering2.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
+	script:
+		"../scripts/internal_clustering/plot_mfuzz_loess_fitted_cluster_runs.R"
+
+rule annotate_mfuzz_loess_fitted_final_clusters: 
+	input:
+		final_cluster_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_finalrun_cluster_assignment_{gender}.csv",
 	output:
 		annotated="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}_annotated.csv",
-		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_loess_{gender}.pdf",
 	params: gender="{gender}"
-	conda: "../env/internal_clustering.yaml"
+	conda: "../env/internal_clustering2.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
 	script:
-		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_loess.R"
+		"../scripts/internal_clustering/annotate_mfuzz_loess_fitted_final_clusters.R"
+
+#rule cluster_mfuzz_loess_fitted_final:
+#	input:
+#		mfuzz_mat="tables/internal_clustering/{mode}_deswan_deg_loess_mfuzz_mat_{gender}.txt",
+#		table="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_num_{gender}.csv",
+#	output:
+#		cnumplot="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_elbowplot_{gender}.pdf",
+#		corrplot1="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_corrplot_initial_{gender}.pdf",
+#		mfuzzplot1="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_plot_initial_{gender}.pdf",
+#		corrplot2="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_corrplot_merged_{gender}.pdf",
+#		mfuzzplot2="plots/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_plot_merged_{gender}.pdf",
+#		var_cluster_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}.csv",
+#	conda: "../env/internal_clustering.yaml"
+#	threads: 1
+#	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
+#	script:
+#		"../scripts/internal_clustering/cluster_mfuzz_loess_fitted_final.R"
+#
+#rule plot_mfuzz_merged_clusters_loess:
+#	input:
+#		fit_res="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_{gender}.csv",
+#		span_res="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_{gender}.csv",
+#		var_cluster_df="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}.csv",
+#	output:
+#		annotated="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}_annotated.csv",
+#		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_loess_{gender}.pdf",
+#	params: gender="{gender}"
+#	conda: "../env/internal_clustering.yaml"
+#	threads: 1
+#	resources: ngpus = 0, mem_gb = 50, walltime = "20:00:00", queue = "super"
+#	script:
+#		"../scripts/internal_clustering/plot_mfuzz_merged_clusters_loess.R"
 
 rule plot_mfuzz_merged_clusters_loess_final:
 	input:
@@ -75,7 +128,7 @@ rule plot_mfuzz_merged_clusters_loess_final:
 		span_res="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_{gender}.csv",
 		annotated="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_{gender}_annotated.csv",
 	output:
-		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_loess_{gender}_final.pdf",
+		plot="plots/internal_clustering/{mode}_deswan_deg_mfuzz_merged_clusters_loess_{gender}_final.svg",
 	params: gender="{gender}"
 	conda: "../env/final_plots.yaml"
 	threads: 1

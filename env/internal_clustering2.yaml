@@ -3,16 +3,17 @@ channels:
   - bioconda
 dependencies:
   - r-base
-  - r-biocmanager
   - r-tidyr
   - r-dplyr
   - r-tidyverse
   - r-rio
   - r-ggpubr
-  - r-reshape2
   - r-ggrepel
+  - bioconductor-limma
+  - bioconductor-mfuzz
   - r-corrplot
   - r-rcolorbrewer
   - r-colorspace
   - bioconductor-qvalue
+  - r-igraph
   - r-svglite
