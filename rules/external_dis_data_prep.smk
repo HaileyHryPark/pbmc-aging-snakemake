@@ -121,13 +121,13 @@ rule subset_samples_by_main_celltypes_ext_dis:
 
 rule summarize_final_data_included_ext_dis:
 	input:
-		ren=expand("data/external_dis_data_prep/ren_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 9)]),
-		wellcome=expand("data/external_dis_data_prep/wellcome_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 4)]),
-		combat=expand("data/external_dis_data_prep/combat_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 5)]),
+		ren=expand("data/external_dis_data_prep/ren_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 10)]),
+		wellcome=expand("data/external_dis_data_prep/wellcome_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 5)]),
+		combat=expand("data/external_dis_data_prep/combat_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 6)]),
 		ch="data/external_dis_data_prep/ch_split01_processed.rds", 
 		glaucoma="data/external_dis_data_prep/glaucoma_split01_processed.rds",
-		ra=expand("data/external_dis_data_prep/ra_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 2)]),
-		sle=expand("data/external_dis_data_prep/sle_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 6)]),
+		ra=expand("data/external_dis_data_prep/ra_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 3)]),
+		sle=expand("data/external_dis_data_prep/sle_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 7)]),
 	output:
 		summary="tables/external_dis_data_prep/final_data_included_summary.csv",
 	conda: "../env/external_dis_data_prep.yaml"

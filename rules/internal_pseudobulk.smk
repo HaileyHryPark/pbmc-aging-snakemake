@@ -12,10 +12,10 @@ rule get_full5ct_pseudobulk_mat:
 
 rule merge_full5ct_pseudobulk_data:
        input:
-               expand("data/internal_pseudobulk/onek1k_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 10)]), 
-               expand("data/internal_pseudobulk/aida_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 21)]), 
-               expand("data/internal_pseudobulk/perez_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 4)]), 
-               expand("data/internal_pseudobulk/marina_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 6)]), 
+               expand("data/internal_pseudobulk/onek1k_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 11)]), 
+               expand("data/internal_pseudobulk/aida_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 22)]), 
+               expand("data/internal_pseudobulk/perez_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 5)]), 
+               expand("data/internal_pseudobulk/marina_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 7)]), 
        output:
                "data/internal_pseudobulk/full5ct_pseudobulk_data_all.csv",
                "tables/internal_pseudobulk/full5ct_pseudobulk_data_column_summary.txt",
@@ -49,4 +49,32 @@ rule plot_sample_distribution:
         resources: ngpus = 0, mem_gb = 40, walltime = "05:00:00", queue = "super"
         script:
                 "../scripts/internal_pseudobulk/plot_sample_distribution.R"
+
+rule get_full5ctagg_pseudobulk_mat:
+       input:
+               data="data/internal_data_prep/{dataset}_{split}_processed.rds",
+       output:
+               pb="data/internal_pseudobulk/{dataset}_{split}_full5ctagg_pseudobulk_data.csv",
+       params: dataset="{dataset}"
+       conda: "../env/internal_data_prep.yaml"
+       threads: 1
+       resources: ngpus = 0, mem_gb = 200, walltime = "80:00:00", queue = "super"
+       script:
+               "../scripts/internal_pseudobulk/get_full5ctagg_pseudobulk_mat.R"
+
+rule merge_full5ctagg_pseudobulk_data:
+       input:
+               expand("data/internal_pseudobulk/onek1k_{split}_full5ctagg_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 11)]), 
+               expand("data/internal_pseudobulk/aida_{split}_full5ctagg_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 22)]), 
+               expand("data/internal_pseudobulk/perez_{split}_full5ctagg_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 5)]), 
+               expand("data/internal_pseudobulk/marina_{split}_full5ctagg_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 7)]), 
+       output:
+               "data/internal_pseudobulk/full5ctagg_pseudobulk_data_all.csv",
+               "tables/internal_pseudobulk/full5ctagg_pseudobulk_data_column_summary.txt",
+               "plots/internal_pseudobulk/full5ctagg_pseudobulk_data_all_pca.pdf"
+       conda: "../env/internal_pseudobulk_py.yaml"
+       threads: 1
+       resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "super"
+       script:
+               "../scripts/internal_pseudobulk/merge_full5ct_pseudobulk_data.py"
 

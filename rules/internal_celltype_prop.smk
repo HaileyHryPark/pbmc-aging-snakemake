@@ -13,10 +13,10 @@ rule get_celltype_prop_mat:
 
 rule merge_celltype_prop_data:
 	input:
-		expand("data/internal_celltype_prop/onek1k_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 10)]), 
-		expand("data/internal_celltype_prop/aida_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 21)]), 
-		expand("data/internal_celltype_prop/perez_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 4)]), 
-		expand("data/internal_celltype_prop/marina_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 6)]), 
+		expand("data/internal_celltype_prop/onek1k_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 11)]), 
+		expand("data/internal_celltype_prop/aida_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 22)]), 
+		expand("data/internal_celltype_prop/perez_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 5)]), 
+		expand("data/internal_celltype_prop/marina_{split}_celltype_prop_data.csv", split=[f"split{i:02d}" for i in range(1, 7)]), 
 	output:
 		"data/internal_celltype_prop/celltype_prop_data_all.csv",
 		"tables/internal_celltype_prop/celltype_prop_data_column_summary.txt",
@@ -54,10 +54,10 @@ rule plot_celltype_prop_scatter:
 
 rule merge_celltype_meta_data:
 	input:
-		expand("data/internal_celltype_prop/onek1k_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 10)]), 
-		expand("data/internal_celltype_prop/aida_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 21)]), 
-		expand("data/internal_celltype_prop/perez_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 4)]), 
-		expand("data/internal_celltype_prop/marina_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 6)]), 
+		expand("data/internal_celltype_prop/onek1k_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 11)]), 
+		expand("data/internal_celltype_prop/aida_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 22)]), 
+		expand("data/internal_celltype_prop/perez_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 5)]), 
+		expand("data/internal_celltype_prop/marina_{split}_celltype_meta_data.csv", split=[f"split{i:02d}" for i in range(1, 7)]), 
 	output:
 		"data/internal_celltype_prop/celltype_meta_data_all.csv",
 		"tables/internal_celltype_prop/celltype_meta_data_column_summary.txt",

@@ -118,10 +118,10 @@ rule subset_donors_by_main_celltypes:
 
 rule summarize_final_data_included:
 	input:
-		onek1k=expand("data/internal_data_prep/onek1k_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 10)]),
-		aida=expand("data/internal_data_prep/aida_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 21)]),
-		perez=expand("data/internal_data_prep/perez_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 4)]),
-		marina=expand("data/internal_data_prep/marina_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 6)]),
+		onek1k=expand("data/internal_data_prep/onek1k_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 11)]),
+		aida=expand("data/internal_data_prep/aida_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 22)]),
+		perez=expand("data/internal_data_prep/perez_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 5)]),
+		marina=expand("data/internal_data_prep/marina_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 7)]),
 	output:
 		summary="tables/internal_data_prep/final_data_included_summary.csv",
 	conda: "../env/external_dis_data_prep.yaml"

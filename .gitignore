@@ -10,3 +10,4 @@ tables/
 screen*
 resources/r_package
 .local/
+Rplots.pdf

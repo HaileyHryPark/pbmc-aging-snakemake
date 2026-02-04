@@ -113,6 +113,11 @@ rule internal_clustering:
 		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3.pdf", db=["GO","Reactome"]),
 		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_{db}_network.pdf", db=["GO","Reactome"]),
 
+rule internal_clustering2:
+	input:
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_loess_fitted_mfuzz_finalrun_cluster_trajectories_{gender}.svg", gender=["both","female","male"]),
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_loess_fitted_mfuzz_multirun_cluster_trajectories_{gender}.svg", gender=["both","female","male"]),
+
 rule internal_cor:
 	input:
 		"tables/internal_correlation/allexp5ct_deswan_deg_limma_spearman_corr_gsea_all_res.csv",
