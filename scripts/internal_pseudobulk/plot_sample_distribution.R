@@ -55,8 +55,7 @@ lapply(as.list(unique(meta$dataset)), function(ds){
         	theme_classic()+
 		theme(panel.grid = element_blank(), strip.text = element_text(size=17))
 	p2 <- ggplot(m, aes(x = age)) +
-        	geom_histogram(aes(fill = ethnicity), color = "white", binwidth = 5, boundary = 50) +
-        scale_fill_manual(values = c("White" = "#ACA233", "Asian" = "#53B7DA", "Hispanic" = "#DE6FE5"), name = "Ethnic group") +
+        	geom_histogram(aes(fill = ethnicity_org), color = "white", binwidth = 5, boundary = 50) +
         	xlab("Age")+
         	ylab("Number of samples") +
 		ylim(0,150) +

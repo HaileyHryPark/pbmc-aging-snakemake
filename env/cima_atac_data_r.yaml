@@ -2,14 +2,12 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python=3.10
-  - scanpy
-  - anndata
-  - pandas
-  - numpy=1.23.5
-  - scipy
-  - episcanpy
   - r-base
+  - r-hdf5r
+  - hdf5
+  - r-seurat
+  - r-seuratobject
+  - r-signac
   - bioconductor-genomicranges
   - bioconductor-iranges
   - bioconductor-limma

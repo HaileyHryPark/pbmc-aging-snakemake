@@ -124,10 +124,22 @@ rule summarize_final_data_included:
 		marina=expand("data/internal_data_prep/marina_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 7)]),
 	output:
 		summary="tables/internal_data_prep/final_data_included_summary.csv",
+		cellcount="tables/internal_data_prep/final_data_cellcount_df.csv",
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 200, walltime = "10:00:00", queue = "super"
 	script:
 		"../scripts/internal_data_prep/summarize_final_data_included.R"
 		
-
+rule plot_final_data_cellcount_per_dataset:
+	input:
+		cellcount="tables/internal_data_prep/final_data_cellcount_df.csv",
+	output:
+		plot="plots/internal_data_prep/final_data_cellcount_by_dataset.svg"	
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 20, walltime = "10:00:00", queue = "short"
+	script:
+		"../scripts/internal_data_prep/plot_final_data_cellcount_per_dataset.R"
+		
+			

@@ -2,6 +2,7 @@ library(rio)
 library(dplyr)
 library(tidyverse)
 library(ggpubr)
+library(svglite)
 
 q <- import(snakemake@input[["q"]])
 
@@ -40,10 +41,10 @@ lapply(as.list(unique(deg_plot_data$celltype)), function(ct){
   		labs(
     			title = ct, 
     			x = "Age (years)",
-    			y = "Number of DEGs",
-    			color = "Gender"
+    			y = "Number of DEFs",
+    			color = "Sex"
   		) +
-  		theme_classic(base_size = 15)+
+  		theme_classic(base_size = 17)+
   		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5), strip.text = element_text(size=17))
 		
 	p2 <- deg_plot_data %>% filter(celltype == ct, gender != "Both") %>% ggplot( aes(x = age_threshold, y = n_DEGs, color = gender)) +
@@ -53,10 +54,10 @@ lapply(as.list(unique(deg_plot_data$celltype)), function(ct){
   		labs(
     			title = ct, 
     			x = "Age Threshold",
-    			y = "Number of DEGs",
-    			color = "Gender"
+    			y = "Number of DEFs",
+    			color = "Sex"
   		) +
-  		theme_classic(base_size = 15)+
+  		theme_classic(base_size = 17)+
   		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5), strip.text = element_text(size=17))
 	plot(p1)
 	plot(p2)	
@@ -75,10 +76,10 @@ pdf(snakemake@output[["plots2"]], width = 16.5, height = 3.7)
   		facet_wrap(~ celltype, nrow = 1, ncol = 5)+
   		labs(
     			x = "Age (years)",
-    			y = "Number of DEGs",
-    			color = "Gender"
+    			y = "Number of DEFs",
+    			color = "Sex"
   		) +
-  		theme_linedraw(base_size = 15)+
+  		theme_linedraw(base_size = 17)+
   		theme(panel.grid = element_blank(), strip.text = element_text(size=17))
 		
 	p2 <- deg_plot_data %>% filter(celltype != "All") %>% ggplot(aes(x = age_threshold, y = n_DEGs, color = gender)) +
@@ -88,13 +89,27 @@ pdf(snakemake@output[["plots2"]], width = 16.5, height = 3.7)
   		facet_wrap(~ celltype, nrow = 1, ncol = 5, scales = "free")+
   		labs(
     			x = "Age (years)",
-    			y = "Number of DEGs",
-    			color = "Gender"
+    			y = "Number of DEFs",
+    			color = "Sex"
   		) +
-  		theme_linedraw(base_size = 15)+
+  		theme_linedraw(base_size = 17)+
   		theme(panel.grid = element_blank(), strip.text = element_text(size=17), legend.position = "bottom")
 	plot(p1)
 	plot(p2)
 
 dev.off()
+
+p <- deg_plot_data %>% filter(celltype == "All") %>% ggplot(aes(x = age_threshold, y = n_DEGs, color = gender)) +
+	geom_line(linewidth = 1) +
+	geom_point(size = 1.5) +
+	scale_color_manual(values = c("Both" = "grey", "Female" = "#E15566", "Male" = "#4981BF")) +
+  	labs(
+    		x = "Age (years)",
+    		y = "Number of DEFs",
+    		color = "Sex"
+  	) +
+  	theme_classic(base_size = 15)
+		
+ggsave(snakemake@output[["plot"]], p, width = 5.3, height = 3.5)
+
 

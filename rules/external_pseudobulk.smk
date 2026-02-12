@@ -22,6 +22,7 @@ rule get_full5ct_pseudobulk_mat_external_sc:
 	script:
 		"../scripts/external_pseudobulk/get_full5ct_pseudobulk_mat.R"
 
+# Not including the second split because only one donor + no exact age so does not affect analysis
 rule merge_full5ct_pseudobulk_data_external:
 	input:
 		"data/external_pseudobulk/sc_full5ct_pseudobulk_data.csv",
@@ -30,7 +31,7 @@ rule merge_full5ct_pseudobulk_data_external:
 		expand("data/external_pseudobulk/combat_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 6)]), 
 		"data/external_pseudobulk/ch_split01_full5ct_pseudobulk_data.csv",
 		"data/external_pseudobulk/glaucoma_split01_full5ct_pseudobulk_data.csv",
-		expand("data/external_pseudobulk/ra_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 3)]), 
+		expand("data/external_pseudobulk/ra_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 2)]), 
 		expand("data/external_pseudobulk/sle_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 7)]), 
 	output:
 		"data/external_pseudobulk/full5ct_pseudobulk_data_all.csv",

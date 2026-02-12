@@ -40,8 +40,8 @@ lapply(as.list(unique(all_res$dataset)), function(ds){
                 labs(
                         title = paste(ct, ds),
                         x = "Age (years)",
-                        y = "Number of DEGs (q < 0.05)",
-                        color = "Gender"
+                        y = "Number of DEFs (q < 0.05)",
+                        color = "Sex"
                 ) +
                 theme_test(base_size = 14)+
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
@@ -54,8 +54,8 @@ lapply(as.list(unique(all_res$dataset)), function(ds){
                 labs(
                         title = paste(ct, ds),
                         x = "Age (years)",
-                        y = "Number of DEGs (q < 0.05)",
-                        color = "Gender"
+                        y = "Number of DEFs (q < 0.05)",
+                        color = "Sex"
 		) +
                 theme_test(base_size = 14)+
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))

@@ -158,7 +158,7 @@ if __name__ == "__main__":
     shap_output_csv = snakemake.output[0]
     gender = snakemake.params["gender"]            # "male", "female", or "both"
     if gender == "both":
-        fold = 1
+        fold = 2
     elif gender == "female":
         fold = 4
     elif gender == "male":

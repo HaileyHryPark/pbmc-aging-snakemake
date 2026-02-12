@@ -19,7 +19,7 @@ library(ggnetwork)
 celltype_cols <- c("CD4 T" = "#D2533B", "CD8 T" = "#E6974D", "NK" = "#73AF68", "B" = "#79629E", "Mono" = "#5B83BF")
 celltypes <- factor(names(celltype_cols), levels = names(celltype_cols))
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Late\nincrease", "Continuous\nincrease")
 
 ### Functions
 jaccard <- function(a, b) {
@@ -143,7 +143,7 @@ res <- import(snakemake@input[["table"]]) %>%
 	rename(term = Description)
 print(head(res))
 
-pdf(snakemake@output[["plot"]], width = 12, height = 6)
+pdf(snakemake@output[["plot"]], width = 24, height = 12)
 
 top_terms <- lapply(as.list(unique(res$cluster)), function(cl){
 	df <- res %>% filter(cluster == cl) %>% mutate(gene_name = strsplit(gene_name, "/"))
@@ -160,17 +160,22 @@ top <- bind_rows(top_terms)
 ## For FCI_MEI
 top_terms_to_plot <- top %>% filter(title == "FCI_MEI", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
 
-res_to_plot <- res %>% filter(cluster == "FCI_MEI", term %in% top_terms_to_plot)
+res_to_plot <- res %>% filter(cluster == "FCI_MEI", term %in% top_terms_to_plot) %>%
+	mutate(term = factor(term, levels = rev(top_terms_to_plot))) %>%
+	arrange(term, desc(qvalue)) %>%
+	mutate(group_order = forcats::fct_inorder(interaction(term, fa_celltype)),
+		fa_celltype = factor(fa_celltype, levels= c("CD4 T", "CD8 T", "B", "NK", "Mono")))
 
-p <- ggplot(res_to_plot, aes(y = reorder(term, -log10(qvalue)))) +
-  geom_col(aes(x = -log10(qvalue), fill = fa_celltype)) +
-  geom_text(
-    aes(x = 0, label = paste0(term, "\n")),
+p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.25) +   geom_text(
+    aes(x = 0, label = term),
     hjust = 0,
     nudge_x = max(-log10(res_to_plot$qvalue)) / 80,
-    size = 6.5,
+    nudge_y = 0.4,
+    size = 6,
     lineheight = 0.95
   ) +
+  geom_hline(yintercept = (1:4)+0.6, linewidth = 0.5) +
   scale_fill_manual(values = celltype_cols) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +
   labs(
@@ -182,5 +187,6 @@ p <- ggplot(res_to_plot, aes(y = reorder(term, -log10(qvalue)))) +
     panel.grid=element_blank(),
     axis.text.y = element_blank(),  # hide original y-axis text
     axis.ticks.y = element_blank()
-)
+  )
+
 ggsave(snakemake@output[["plot_fcimei"]], plot = p, width = 11, height = 4)

@@ -78,3 +78,29 @@ rule merge_full5ctagg_pseudobulk_data:
        script:
                "../scripts/internal_pseudobulk/merge_full5ct_pseudobulk_data.py"
 
+rule subset_allexp5ctagg_pseudobulk:
+	input:
+		"data/internal_pseudobulk/full5ctagg_pseudobulk_data_all.csv",
+	output:
+		"data/internal_pseudobulk/allexp5ctagg_pseudobulk_data_all.csv",
+	conda: "../env/internal_pseudobulk_py.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 150, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_pseudobulk/subset_allexp5ct_pseudobulk.py"
+
+rule check_cellnumber_effect_pseudobulk:
+	input:
+		avg="data/internal_pseudobulk/allexp5ct_pseudobulk_data_all.csv",
+		agg="data/internal_pseudobulk/allexp5ctagg_pseudobulk_data_all.csv",
+		cellcount="tables/internal_data_prep/final_data_cellcount_df.csv",
+	output:
+		plot1="plots/internal_pseudobulk/cellnumber_pc1_correlation.svg",
+		plot2="plots/internal_pseudobulk/cellnumber_totalexp_correlation.svg",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 150, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_pseudobulk/check_cellnumber_effect_pseudobulk.R"
+
+

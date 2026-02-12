@@ -8,15 +8,15 @@ library(colorspace)
 library(ggVennDiagram)
 
 
-cluster_col = qualitative_hcl(6, palette = "Set 2")
+cluster_col = qualitative_hcl(7, palette = "Set 2")
 celltype_colors <- c(
   "CD4 T" = "#D2533B",
   "CD8 T"    = "#E6974D",
-  "NK"= "#73AF68",
   "B"   = "#79629E",
+  "NK"= "#73AF68",
   "Mono" = "#5B83BF"
 )
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")
 cluster_col_df <- data.frame(cluster = cluster_level, color = cluster_col)
 
 both <- import(snakemake@input[["both"]]) %>% mutate(gender = "both")

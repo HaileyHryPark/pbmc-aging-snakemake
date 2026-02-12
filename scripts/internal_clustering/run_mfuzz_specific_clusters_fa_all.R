@@ -13,7 +13,7 @@ library(circlize)
 library(rio)
 library(msigdbr)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Late\nincrease", "Continuous\nincrease")
 celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
 
 msig_hs <- msigdbr(species = "Homo sapiens")
@@ -187,21 +187,3 @@ ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
 
 export(rbind(res, bind_rows(ct_res)), snakemake@output[["res1"]])
 
-## Exclude ribosomal genes
-annot_deg <- annot_deg %>% dplyr::filter(!grepl("^(RPS|RPL|MRPS|MRPL|MT-)", SYMBOL))
-
-## Res2
-res <- RunFAbySubcluster(df, "All celltype")
-res$fa_celltype <- "All celltype"
-
-ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
-	
-	print(ct)
-	ctdf <- df %>% dplyr::filter(celltype == ct)
-	res <- RunFAbySubcluster(ctdf, ct) 
-	res$fa_celltype <- ct
-
-	return(res)
-})
-
-export(rbind(res, bind_rows(ct_res)), snakemake@output[["res2"]])

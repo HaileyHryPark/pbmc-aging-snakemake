@@ -78,7 +78,7 @@ ggsave(snakemake@output[["pcaplot_c"]], plot = pca_af_c, width = 10, height = 6)
 ## SHAP sum by cluster
 fi_shap_sub_sum <- fi_shap_sub_long %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
   summarise(cluster_shap = sum(shap_value, na.rm = T), cluster_shap_abs = abs(sum(shap_value, na.rm = T)), .groups = "drop") %>% 
-  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Continuous\nincrease", "Late\nincrease")), 
+  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")), 
          age_group = factor(age_group, levels = c("<40", "40-60", ">60")))
 mi_shap_sub_sum <- mi_shap_sub_long %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
   summarise(cluster_shap = sum(shap_value, na.rm = T), cluster_shap_abs = abs(sum(shap_value)), .groups = "drop") %>% 
@@ -87,7 +87,7 @@ mi_shap_sub_sum <- mi_shap_sub_long %>% group_by(across(all_of(meta_cols)), fina
 
 fi_shap_corrected_sum <- fi_shap_corrected %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
   summarise(cluster_shap = sum(shap_corrected, na.rm = T), cluster_shap_abs = abs(sum(shap_corrected, na.rm = T)), .groups = "drop") %>% 
-  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Continuous\nincrease", "Late\nincrease")), 
+  mutate(final_cluster = factor(final_cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")), 
          age_group = factor(age_group, levels = c("<40", "40-60", ">60")))
 mi_shap_corrected_sum <- mi_shap_corrected %>% group_by(across(all_of(meta_cols)), final_cluster) %>% 
   summarise(cluster_shap = sum(shap_corrected, na.rm = T), cluster_shap_abs = abs(sum(shap_corrected)), .groups = "drop") %>% 
@@ -97,7 +97,7 @@ mi_shap_corrected_sum <- mi_shap_corrected %>% group_by(across(all_of(meta_cols)
 ## Correlation with age
 fi_corrplots <- ggscatter(fi_shap_corrected_sum, x = "predicted_age", y = "cluster_shap", color = gender_cols["female"], 
                           alpha = 0.7, size = 0.5, cor.coef = T, add = "reg.line", cor.method = "pearson") +
-  facet_wrap(~final_cluster, ncol = 5)+
+  facet_wrap(~final_cluster, ncol = 6)+
   theme_linedraw(base_size = 11)+
   theme(panel.grid = element_blank())+
   labs(x = "predicted age", y = "summed SHAP")

@@ -36,9 +36,9 @@ rule plot_top_percentile_gender_corr:
 		span_res_m="tables/internal_clustering/{mode}_deswan_deg_loess_span_res_male.csv",
 	output:
 		venn="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_venn.pdf",
-		pie="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_pie.pdf",
+		bar="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_bar.svg",
 		loess="plots/internal_correlation/{mode}_deswan_deg_limma_top_percentile_gender_corr_loess.pdf",
-	conda: "../env/internal_clustering.yaml"
+	conda: "../env/internal_downstream.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 100, walltime = "80:00:00", queue = "super"
 	script:

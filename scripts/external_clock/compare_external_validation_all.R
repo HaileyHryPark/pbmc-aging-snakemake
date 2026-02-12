@@ -238,8 +238,9 @@ preds_age_table <- preds_age %>% distinct(sample_id, donor_id, dataset, disease)
 print(preds_age_table %>% count(dataset, disease) %>% group_by(disease) %>% mutate(prop = prop.table(n)))
 print(preds_age_table[!duplicated(preds_age_table$donor_id),])
 
-preds_age <- preds_age %>% filter(sample_id %in% preds_age_table[!duplicated(preds_age_table$donor_id), "sample_id"])
-print(preds_age %>% distinct(sample_id, donor_id, dataset, disease) %>% count(dataset, disease) %>% group_by(disease) %>% mutate(prop = prop.table(n)))
+## This was for individual-level validation
+#preds_age <- preds_age %>% filter(sample_id %in% preds_age_table[!duplicated(preds_age_table$donor_id), "sample_id"])
+#print(preds_age %>% distinct(sample_id, donor_id, dataset, disease) %>% count(dataset, disease) %>% group_by(disease) %>% mutate(prop = prop.table(n)))
 
 preds_age <- preds_age %>% mutate(agediff = predicted_age - actual_age)
 

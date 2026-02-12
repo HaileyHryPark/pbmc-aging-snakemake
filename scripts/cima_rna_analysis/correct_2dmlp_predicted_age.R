@@ -3,7 +3,7 @@ library(tidyverse)
 library(rio)
 
 gender <- snakemake@params[["gender"]]
-f <- ifelse(gender == "both", 1, ifelse(gender == "female", 4, 3))
+f <- ifelse(gender == "both", 2, ifelse(gender == "female", 4, 3))
 internal_csv <- import(snakemake@input[["pred_i"]]) %>% filter(fold == f) %>% 
 	mutate(sample_id = donor_id, disease = "normal", cohort = "internal") %>% 
 	select(sample_id, donor_id, cohort, dataset, disease, actual_age, predicted_age, sex, fold)
@@ -12,8 +12,10 @@ external_csv <- import(snakemake@input[["pred_e"]]) %>% filter(fold == f) %>%
 	mutate(actual_age = as.numeric(actual_age)) %>% filter(!is.na(actual_age)) %>%
 	select(sample_id, cohort, dataset, actual_age, predicted_age, sex, fold)
 
-if(gender != "both"){
-	external_csv <- external_csv %>% filter(sex == gender)
+if(gender == "female"){
+	external_csv <- external_csv %>% filter(sex == "Female")
+}else if(gender == "male"){
+	external_csv <- external_csv %>% filter(sex == "Male")
 }
 # -----------------------------
 # Define correction function

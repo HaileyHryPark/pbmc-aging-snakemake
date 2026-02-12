@@ -16,10 +16,10 @@ library(intergraph)
 library(ggnetwork)
 
 
-celltype_cols <- c("CD4 T" = "#D2533B", "CD8 T" = "#E6974D", "NK" = "#73AF68", "B" = "#79629E", "Mono" = "#5B83BF")
+celltype_cols <- c("CD4 T" = "#D2533B", "CD8 T" = "#E6974D", "B" = "#79629E", "NK" = "#73AF68", "Mono" = "#5B83BF")
 celltypes <- factor(names(celltype_cols), levels = names(celltype_cols))
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")
 
 ### Functions
 jaccard <- function(a, b) {
@@ -57,7 +57,7 @@ PlotGSEANetwork <- function(df, title){
 	                           vertices = sig_df, directed = FALSE)
 	
 	# Create a ggraph layout object
-	set.seed(123)
+	set.seed(45)
 	ggraph_layout <- ggraph(g, layout = "kk")
 	
 	# Extract node positions from ggraph
@@ -68,7 +68,7 @@ PlotGSEANetwork <- function(df, title){
 	# Merge with sig_df
 	plot_df <- node_positions %>% left_join(sig_df, by="term")
 	
-	set.seed(123)
+	set.seed(45)
 	p1 <- ggraph(g, layout = "kk") +
 	  geom_edge_link(color="grey80", alpha=.7, width = 2) +
 	  scatterpie::geom_scatterpie(
@@ -83,7 +83,7 @@ PlotGSEANetwork <- function(df, title){
 	  labs(title = title) +
 	  coord_equal()
 
-	set.seed(123)
+	set.seed(45)
 	p2 <- ggraph(g, layout = "kk") +
 	  geom_edge_link(color="grey80", alpha=.7, width = 2) +
 	  scatterpie::geom_scatterpie(
@@ -109,7 +109,7 @@ PlotGSEANetwork <- function(df, title){
 
 ## Main
 res <- import(snakemake@input[["res"]]) %>%
-	filter(db == "Reactome", qvalues < 0.01) %>% 
+	filter(db == "Reactome", qvalue < 0.01) %>% 
 	rename(term = Description)
 
 pdf(snakemake@output[["plots"]], width = 12, height = 6)

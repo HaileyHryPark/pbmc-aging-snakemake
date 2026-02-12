@@ -21,7 +21,7 @@ print(head(meta))
 print(table(meta$AgeGroup, meta$Gender))
 export(meta, snakemake@output[["metadata"]])
 
-rgSet <- read.metharray.exp(file.path("/home/users/nus/e0859928/scratch/Snakemake/pbmc-aging-snakemake/data/dna_methylation"), targets=meta)
+rgSet <- read.metharray.exp(file.path("/data/behmoaras/home/e0859928/Snakemake/pbmc-aging-snakemake/data/dna_methylation"), targets=meta)
 sampleNames(rgSet) <- meta$Basename
 annotation(rgSet)["array"] = "IlluminaHumanMethylation450k"
 annotation(rgSet)["annotation"] = "ilmn12.hg19"

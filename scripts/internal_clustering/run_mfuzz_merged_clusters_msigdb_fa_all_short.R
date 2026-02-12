@@ -12,16 +12,13 @@ library(circlize)
 library(rio)
 library(msigdbr)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Continuous\nincrease", "Late\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")
 celltype_level = c("CD4 T", "CD8 T", "B", "NK", "Mono")
 
 msig_hs <- msigdbr(species = "Homo sapiens")
 print(unique(msig_hs$gs_collection))
 print(unique(msig_hs$gs_subcollection))
-msig_imm <- msig_hs %>% dplyr::filter(gs_subcollection == "IMMUNESIGDB") %>% dplyr::select(gs_name, ncbi_gene)
 msig_pos <- msig_hs %>% dplyr::filter(gs_collection == "C1") %>% dplyr::select(gs_name, ncbi_gene)
-msig_mir <- msig_hs %>% dplyr::filter(gs_subcollection == "MIR:MIRDB") %>% dplyr::select(gs_name, ncbi_gene)
-msig_tft <- msig_hs %>% dplyr::filter(gs_subcollection == "TFT:GTRD") %>% dplyr::select(gs_name, ncbi_gene)
 
 ### Functions
 runFA <- function(features){
@@ -30,23 +27,10 @@ runFA <- function(features){
   print(genelist)
   
   set.seed(123)
-  enr_imm <- enricher(genelist,
-			TERM2GENE=msig_imm,
-                         pvalueCutoff = 1, 
-                         minGSSize = 3)
-  if(is.null(enr_imm)){
-    print("here1")
-    enr_imm_res <- NULL
-  }else{
-    enr_imm_res <- enr_imm@result
-    enr_imm_res$db <- "IMMUNESIGDB"
-  }
-  print(head(enr_imm_res))
-  
-  set.seed(123)
   enr_pos <- enricher(genelist,
 			TERM2GENE=msig_pos,
                          pvalueCutoff = 1, 
+			 qvalueCutoff = 0.5,
                          minGSSize = 3)
   if(is.null(enr_pos)){
     print("here2")
@@ -57,38 +41,10 @@ runFA <- function(features){
   }
   print(head(enr_pos_res))
   
-  set.seed(123)
-  enr_mir <- enricher(genelist,
-			TERM2GENE=msig_mir,
-                         pvalueCutoff = 1, 
-                         minGSSize = 3)
-  if(is.null(enr_mir)){
-    print("here3")
-    enr_mir_res <- NULL
-  }else{
-    enr_mir_res <- enr_mir@result
-    enr_mir_res$db <- "MIR"
-  }
-  print(head(enr_mir_res))
 
-  set.seed(123)
-  enr_tft <- enricher(genelist,
-			TERM2GENE=msig_tft,
-                         pvalueCutoff = 1, 
-                         minGSSize = 3)
-  if(is.null(enr_tft)){
-    print("here3")
-    enr_tft_res <- NULL
-  }else{
-    enr_tft_res <- enr_tft@result
-    enr_tft_res$db <- "TFT"
-  }
-  print(head(enr_tft_res))
+  enr_all_res <- enr_pos_res
 
-  res_list <- list(enr_imm_res, enr_pos_res, enr_mir_res, enr_tft_res)
-
-  enr_all_res <- bind_rows(res_list[!unlist(lapply(res_list, is.null))])
-  if(nrow(enr_all_res) == 0){
+  if(is.null(enr_all_res)){
         return(data.frame())
   }
   
@@ -133,7 +89,7 @@ fares <- lapply(as.list(unique(df$final_cluster)), function(clust){
 	print(clust)
 	clustdf <- df %>% dplyr::filter(final_cluster == clust)
 
-	fadf <- rbind(runFA(unique(clustdf$gene)), runGOFA(unique(clustdf$gene)))
+	fadf <- runFA(unique(clustdf$gene))
 
         if(nrow(fadf) == 0){
                 return(data.frame())
@@ -162,8 +118,8 @@ print(table(male_df_exc$final_cluster))
 annot_deg <- ensembldb::select(org.Hs.eg.db, keys = unique(c(both_df$gene, female_df$gene, male_df$gene)), keytype = "SYMBOL", columns = c("SYMBOL","ENTREZID"))
 print(head(annot_deg))
 
-df_list <- list(both_df, female_df, male_df, female_df_exc, male_df_exc)
-names(df_list) <- c("both", "female", "male", "female_only", "male_only")
+df_list <- list(both_df, female_df, male_df)
+names(df_list) <- c("both", "female", "male")
 
 ## Res 1
 all_res <- lapply(as.list(names(df_list)), function(n){

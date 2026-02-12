@@ -16,10 +16,10 @@ library(intergraph)
 library(ggnetwork)
 
 
-celltype_cols <- c("CD4 T" = "#D2533B", "CD8 T" = "#E6974D", "NK" = "#73AF68", "B" = "#79629E", "Mono" = "#5B83BF")
+celltype_cols <- c("CD4 T" = "#D2533B", "CD8 T" = "#E6974D", "B" = "#79629E", "NK" = "#73AF68", "Mono" = "#5B83BF")
 celltypes <- factor(names(celltype_cols), levels = names(celltype_cols))
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")
 
 ### Functions
 jaccard <- function(a, b) {
@@ -142,7 +142,7 @@ res <- import(snakemake@input[["table"]]) %>%
 	rename(term = Description)
 print(head(res))
 
-pdf(snakemake@output[["plot"]], width = 12, height = 6)
+pdf(snakemake@output[["plot"]], width = 22, height = 10)
 top_terms <- lapply(as.list(unique(res$type)), function(t){
 
 	res <- lapply(as.list(cluster_level), function(cl){
@@ -160,10 +160,80 @@ dev.off()
 
 top <- bind_rows(top_terms)
 
+# For female inverted Ushape
+top_terms_to_plot <- top %>% filter(title == "female Inverted\nUshape", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
+
+res_to_plot <- res %>% filter(type == "female", cluster == "Inverted\nUshape", term %in% top_terms_to_plot) %>% arrange(qvalue) %>% mutate(term = factor(term, levels = rev(top_terms_to_plot)))
+
+res_to_plot <- res_to_plot  %>% 
+  arrange(term, desc(qvalue))  %>% 
+  mutate(group_order = forcats::fct_inorder(interaction(term, fa_celltype)),
+         fa_celltype = factor(fa_celltype, levels= c("CD4 T", "CD8 T", "B", "NK", "Mono")))
+
+p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.25) +
+  geom_text(
+    aes(x = 0, label = term),
+    hjust = 0,
+    nudge_x = max(-log10(res_to_plot$qvalue)) / 80,
+    nudge_y = 0.4,
+    size = 6,
+    lineheight = 0.95
+  ) +
+  geom_hline(yintercept = (1:4)+0.6, linewidth = 0.5) +
+  scale_fill_manual(values = celltype_cols) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    x = "-log10(qvalue)",
+    y = "GOBP Terms",
+  ) +
+  theme_linedraw(base_size = 18) +
+  theme(
+    panel.grid=element_blank(),
+    axis.text.y = element_blank(),  # hide original y-axis text
+    axis.ticks.y = element_blank()
+  )
+ggsave(snakemake@output[["plot_fiu"]], plot = p, width = 8, height = 4)
+
+# For female continuous increase
+top_terms_to_plot <- top %>% filter(title == "female Continuous\nincrease", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
+
+res_to_plot <- res %>% filter(type == "female", cluster == "Continuous\nincrease", term %in% top_terms_to_plot) %>% arrange(qvalue) %>% mutate(term = factor(term, levels = rev(top_terms_to_plot)))
+
+res_to_plot <- res_to_plot  %>% 
+  arrange(term, desc(qvalue))  %>% 
+  mutate(group_order = forcats::fct_inorder(interaction(term, fa_celltype)),
+         fa_celltype = factor(fa_celltype, levels= c("CD4 T", "CD8 T", "B", "NK", "Mono")))
+
+p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.5) +
+  geom_text(
+    aes(x = 0, label = term),
+    hjust = 0,
+    nudge_x = max(-log10(res_to_plot$qvalue)) / 80,
+    nudge_y = 0.4,
+    size = 6,
+    lineheight = 0.95
+  ) +
+  geom_hline(yintercept = (1:4)+0.6, linewidth = 0.5) +
+  scale_fill_manual(values = celltype_cols) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    x = "-log10(qvalue)",
+    y = "GOBP Terms",
+  ) +
+  theme_linedraw(base_size = 18) +
+  theme(
+    panel.grid=element_blank(),
+    axis.text.y = element_blank(),  # hide original y-axis text
+    axis.ticks.y = element_blank()
+  )
+ggsave(snakemake@output[["plot_fci"]], plot = p, width = 10, height = 6)
+
 # For female late increase
 top_terms_to_plot <- top %>% filter(title == "female Late\nincrease", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
 
-res_to_plot <- res %>% filter(type == "female", cluster == "Late\nincrease", term %in% top_terms_to_plot) %>% arrange(qvalue)
+res_to_plot <- res %>% filter(type == "female", cluster == "Late\nincrease", term %in% top_terms_to_plot) %>% arrange(qvalue) %>% mutate(term = factor(term, levels = rev(top_terms_to_plot)))
 
 res_to_plot <- res_to_plot  %>% 
   arrange(term, desc(qvalue))  %>% 
@@ -199,9 +269,7 @@ ggsave(snakemake@output[["plot_fli"]], plot = p, width = 10, height = 6)
 top_terms_to_plot <- top %>% filter(title == "male Early\nfluctuation", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
 
 res_to_plot <- res %>% filter(type == "male", cluster == "Early\nfluctuation", term %in% top_terms_to_plot) %>% 
-  mutate(term = factor(term, levels = rev(c("mitochondrial translational elongation", "mitochondrial respiratory chain complex assembly", 
-                                        "antigen processing and presentation of exogenous peptide antigen via MHC class I, TAP-dependent", 
-                                        "macroautophagy", "positive regulation of telomerase RNA localization to Cajal body")))) %>% 
+  mutate(term = factor(term, levels = rev(top_terms_to_plot))) %>%
   arrange(term, desc(qvalue))
 
 res_to_plot <- res_to_plot  %>% 
@@ -231,5 +299,5 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
     axis.text.y = element_blank(),  # hide original y-axis text
     axis.ticks.y = element_blank()
   )
-ggsave(snakemake@output[["plot_mic"]], plot = p, width = 13, height = 6)
+ggsave(snakemake@output[["plot_mef"]], plot = p, width = 13, height = 6)
 

@@ -71,6 +71,7 @@ rule plot_deswan:
 	output:
 		plots="plots/internal_deswan/{mode}_deswan_q_res_by_gender.pdf",
 		plots2="plots/internal_deswan/{mode}_deswan_q_res_by_gender2.pdf",
+		plot="plots/internal_deswan/{mode}_deswan_q_res_all.svg",
 	conda: "../env/final_plots.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"

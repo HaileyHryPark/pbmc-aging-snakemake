@@ -112,6 +112,11 @@ rule plot_limma_dmrcate_sig_gender_interaction:
                 pie="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_chromosome_pie.pdf",
                 plot1="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_plots.pdf",
                 plot2="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_line_vln_plots.pdf",
+                p1="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_line_vln_plot1.svg",
+                p2="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_line_vln_plot2.svg",
+                p3="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_line_vln_plot3.svg",
+                p4="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_line_vln_plot4.svg",
+                p5="plots/dna_methylation/nsphs_limma_dmrcate_sig_gender_interaction_line_vln_plot5.svg",
         conda: "../env/dna_methylation_dm.yaml"
         threads: 1
         resources: ngpus = 0, mem_gb = 50, walltime = "08:00:00", queue = "super"

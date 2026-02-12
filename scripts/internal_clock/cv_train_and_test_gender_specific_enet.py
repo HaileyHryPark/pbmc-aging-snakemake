@@ -13,6 +13,9 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from scipy.stats import pearsonr
 
 warnings.filterwarnings("ignore")
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
 
 # Load data
 data = pd.read_csv(snakemake.input[0]).set_index("rowname")
@@ -55,7 +58,7 @@ for fold, (train_idx, test_idx) in enumerate(outer_cv.split(X, y), 1):
         cv=inner_cv,
         max_iter=5000,
         random_state=123,
-        n_jobs=1
+        n_jobs=-1
     )
     model_cv.fit(X_train_scaled, y_train)
 

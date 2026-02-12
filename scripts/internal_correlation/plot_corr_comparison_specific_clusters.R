@@ -31,8 +31,8 @@ p1 <- ggplot(cor_mei_fci, aes(x = type, y = rho)) +
 p2 <- ggplot(cor_mei_fci, aes(x = type, y = r)) + 
   geom_violin(aes(fill = type), width = 0.7) +
   geom_boxplot(fill = "white", width = 0.2) + 
-  geom_point(size = 0.5) +
-  geom_line(aes(group = feature), linewidth = 0.3) +
+#  geom_point(size = 0.5) +
+#  geom_line(aes(group = feature), linewidth = 0.3) +
   stat_compare_means(paired = T, comparisons = list(c("Female", "Male")), label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4) + 
   scale_fill_manual(values = c("Female" = "#E15566", "Male" = "#4981BF"))+
   xlab("") +
@@ -79,11 +79,12 @@ p5 <- cor_mei_fci %>% filter(type == "Female") %>% select(feature, rho.b, rho.a)
   ggplot(aes(x = range, y = correlation)) + 
   geom_violin(fill = "#E15566", width = 0.7) +
   geom_boxplot(fill = "white", width = 0.2) + 
-  geom_point(size = 0.5) +
-  geom_line(aes(group = feature), linewidth = 0.3) +
+#  geom_point(size = 0.5) +
+#  geom_line(aes(group = feature), linewidth = 0.3) +
   stat_compare_means(paired = T, comparisons = list(c("Before age 60", "After age 60")), label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4) + 
   xlab("") +
-  scale_y_continuous(expand = expansion(mult = c(0,.15)))+
+#  scale_y_continuous(expand = expansion(mult = c(0,.15)))+
+  ylim(-0.1, 0.5)+
   theme_classic(base_size = 15) +
   theme(legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1, size = 15))
 
@@ -94,11 +95,12 @@ p6 <- cor_mei_fci %>% filter(type == "Male") %>% select(feature, rho.b, rho.a) %
   ggplot(aes(x = range, y = correlation)) + 
   geom_violin(fill = "#4981BF", width = 0.7) +
   geom_boxplot(fill = "white", width = 0.2) + 
-  geom_point(size = 0.5) +
-  geom_line(aes(group = feature), linewidth = 0.3) +
+#  geom_point(size = 0.5) +
+#  geom_line(aes(group = feature), linewidth = 0.3) +
   stat_compare_means(paired = T, comparisons = list(c("Before age 60", "After age 60")), label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4) + 
   xlab("") +
-  scale_y_continuous(expand = expansion(mult = c(0,.15)))+
+#  scale_y_continuous(expand = expansion(mult = c(0,.15)))+
+  ylim(-0.1, 0.5)+
   theme_classic(base_size = 15) +
   theme(legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1, size = 15))
 

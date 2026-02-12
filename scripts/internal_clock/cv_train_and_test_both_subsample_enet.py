@@ -15,6 +15,9 @@ from sklearn.utils import resample
 from sklearn.model_selection import StratifiedShuffleSplit
 
 warnings.filterwarnings("ignore")
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
 
 # Load data
 data = pd.read_csv(snakemake.input[0]).set_index("rowname")
@@ -69,7 +72,7 @@ for fold, (sub_idx, _) in enumerate(strat_splitter.split(X_full, gender_full), 1
         cv=inner_cv,
         max_iter=5000,
         random_state=123,
-        n_jobs=1
+        n_jobs=-1
     )
     model_cv.fit(X_train_scaled, y_train)
 

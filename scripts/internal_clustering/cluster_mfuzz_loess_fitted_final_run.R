@@ -9,8 +9,6 @@ library(rio)
 # ----------------------------
 # Parameters
 # ----------------------------
-set.seed(123)
-
 cor_threshold <- 0.8
 membership_cutoff <- 0.5
 
@@ -111,6 +109,7 @@ m1 <- mestimate(eset)
 # ----------------------------
 # Mfuzz clustering
 # ----------------------------
+set.seed(11)
 cl <- mfuzz(eset, c = cnum, m = m1)
 
 membership <- cl$membership
@@ -126,7 +125,7 @@ rownames(centers) <- paste0("Cluster_", seq_len(nrow(centers)))
 # ----------------------------
 merged <- merge_clusters_graph(centers, cor_threshold)
 
-merged2 <- merge_clusters_graph(merged$merged_centers, cor_threshold)
+#merged2 <- merge_clusters_graph(merged$merged_centers, cor_threshold)
 
 # ----------------------------
 # Save outputs
@@ -140,7 +139,8 @@ feature_initial_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-feature_initial_df$merged_cluster <- merged2$cluster_map[merged$cluster_map[feature_initial_df$initial_cluster]]
+#feature_initial_df$merged_cluster <- merged2$cluster_map[merged$cluster_map[feature_initial_df$initial_cluster]]
+feature_initial_df$merged_cluster <- merged$cluster_map[feature_initial_df$initial_cluster]
 
 feature_initial_df$initial_cluster[feature_initial_df$membership < membership_cutoff] <- NA
 feature_initial_df$merged_cluster[feature_initial_df$membership < membership_cutoff] <- NA
@@ -157,6 +157,7 @@ export(
 )
 
 export(
-  merged2$merged_centers %>% rownames_to_column("cluster"),
+  #merged2$merged_centers %>% rownames_to_column("cluster"),
+  merged$merged_centers %>% rownames_to_column("cluster"),
   snakemake@output[["final_centers"]]
 )

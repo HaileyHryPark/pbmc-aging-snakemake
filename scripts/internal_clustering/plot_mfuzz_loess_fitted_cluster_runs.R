@@ -23,8 +23,8 @@ p1 <- ggplot(cluster_counts, aes(x = n_clusters)) +
 ggsave(
   snakemake@output[["plot1"]],
   p1,
-  width = 2*length(unique(cluster_counts)),
-  height = 4
+  width = 1.3*length(unique(cluster_counts)),
+  height = 3
 )
 
 # ----------------------------
@@ -37,12 +37,11 @@ final_long <- final_centers %>%
 p2 <- ggplot() +
   geom_line(
     data = final_long,
-    aes(time, value, group = cluster),
-    color = "red",
+    aes(time, value, group = cluster, color = cluster),
     linewidth = 1
   ) +
   theme_linedraw(base_size = 13) +
-  theme(panel.grid.major=element_blank()) +
+  theme(panel.grid.major=element_blank(), legend.position = "none") +
   scale_x_continuous(breaks=seq(20, 90, 10)) +
   labs(
     x = "Age",
@@ -57,8 +56,8 @@ p21 <- ggplot() + geom_line(data = final_long, aes(time, value, group = cluster,
 ggsave(
   snakemake@output[["plot2"]],
   ggarrange(p2, p21, ncol = 1, nrow = 2),
-  width = 4,
-  height = 6.3
+  width = 3.3,
+  height = 6
 )
 
 run_long <- map_dfr(all_runs, function(r) {
@@ -71,13 +70,12 @@ run_long <- map_dfr(all_runs, function(r) {
 p3 <- ggplot() +
   geom_line(
     data = run_long,
-    aes(time, value, group = interaction(cluster, type)),
-    linewidth = 1,
-    color = "grey30"
+    aes(time, value, group = cluster, color = cluster),
+    linewidth = 1
   ) +
   facet_wrap(~ type, scales = "free_y", ncol = 5) +
   theme_linedraw(base_size = 13) +
-  theme(panel.grid.major=element_blank()) +
+  theme(panel.grid.major=element_blank(), legend.position = "none", strip.text = element_text(size = 16)) +
   scale_x_continuous(breaks=seq(20, 90, 10)) +
   labs(
     x = "Age",
@@ -87,7 +85,7 @@ p3 <- ggplot() +
 ggsave(
   snakemake@output[["plot3"]],
   p3,
-  width = 20,
-  height = 6.3
+  width = 16.5,
+  height = 6
 )
 

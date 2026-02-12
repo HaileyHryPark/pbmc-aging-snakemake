@@ -4,16 +4,16 @@ library(ggpubr)
 library(ggplot2)
 library(colorspace)
 library(ComplexHeatmap)
+library(AnnotationHub)
 library(clusterProfiler)
 library(ReactomePA)
-library(AnnotationHub)
 library(org.Hs.eg.db)
 library(ensembldb)
 library(circlize)
 library(rio)
 
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
-celltype_level = c("CD4 T", "CD8 T", "NK", "B", "Mono")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")
+celltype_level = c("CD4 T", "CD8 T", "B", "NK", "Mono")
 
 ### Functions
 runFA <- function(features){
@@ -162,31 +162,4 @@ return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
 })
 
 export(bind_rows(all_res), snakemake@output[["res1"]])
-
-## Exclude ribosomal genes
-annot_deg <- annot_deg %>% dplyr::filter(!grepl("^(RPS|RPL|MRPS|MRPL|MT-)", SYMBOL))
-
-## Res2
-all_res <- lapply(as.list(names(df_list)), function(n){
-
-df <- df_list[[n]]
-
-res <- RunFAbyCluster(df, "All celltype")
-res$fa_celltype <- "All celltype"
-
-ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
-	
-	print(ct)
-	ctdf <- df %>% dplyr::filter(celltype == ct)
-	res <- RunFAbyCluster(ctdf, ct) 
-	res$fa_celltype <- ct
-
-	return(res)
-})
-
-return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
-
-})
-
-export(bind_rows(all_res), snakemake@output[["res2"]])
 

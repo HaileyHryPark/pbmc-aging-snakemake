@@ -41,8 +41,8 @@ lapply(as.list(unique(deg_plot_data$celltype)), function(ct){
   		labs(
     			title = ct, 
     			x = "Age (years)",
-    			y = "Number of DEGs",
-    			color = "Gender"
+    			y = "Number of DEFs",
+    			color = "Sex"
   		) +
   		theme_test(base_size = 14)+
   		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
@@ -55,8 +55,8 @@ lapply(as.list(unique(deg_plot_data$celltype)), function(ct){
   		labs(
     			title = ct, 
     			x = "Age Threshold",
-    			y = "Number of DEGs",
-    			color = "Gender"
+    			y = "Number of DEFs",
+    			color = "Sex"
   		) +
   		theme_test(base_size = 14)+
   		theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))

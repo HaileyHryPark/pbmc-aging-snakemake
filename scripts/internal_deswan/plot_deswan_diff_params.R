@@ -40,8 +40,8 @@ lapply(list(5,10,15,20,25), function(b){
                 labs(
                         title = ct,
                         x = "Age (years)",
-                        y = paste0("Number of DEGs (Window ", b, ")"),
-                        color = "Gender"
+                        y = paste0("Number of DEFs (Window ", b, ")"),
+                        color = "Sex"
                 ) +
                 theme_test(base_size = 14)+
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
@@ -54,8 +54,8 @@ lapply(list(5,10,15,20,25), function(b){
                 labs(
                         title = ct,
                         x = "Age Threshold",
-                        y = paste0("Number of DEGs (Window ", b, ")"),
-                        color = "Gender"
+                        y = paste0("Number of DEFs (Window ", b, ")"),
+                        color = "Sex"
 		) +
                 theme_test(base_size = 14)+
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
@@ -107,8 +107,8 @@ lapply(list(0.05,0.01,0.001,0.0001), function(b){
                 labs(
                         title = ct,
                         x = "Age (years)",
-                        y = paste0("Number of DEGs (q < ", b, ")"),
-                        color = "Gender"
+                        y = paste0("Number of DEFs (q < ", b, ")"),
+                        color = "Sex"
                 ) +
                 theme_test(base_size = 14)+
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))
@@ -121,8 +121,8 @@ lapply(list(0.05,0.01,0.001,0.0001), function(b){
                 labs(
                         title = ct,
                         x = "Age Threshold",
-                        y = paste0("Number of DEGs (q < ", b, ")"),
-                        color = "Gender"
+                        y = paste0("Number of DEFs (q < ", b, ")"),
+                        color = "Sex"
 		) +
                 theme_test(base_size = 14)+
                 theme(panel.grid = element_blank(), plot.title = element_text(hjust=0.5))

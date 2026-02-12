@@ -9,8 +9,8 @@ library(rio)
 celltype_colors <- c(
   "CD4 T" = "#D2533B",
   "CD8 T"    = "#E6974D",
-  "NK"= "#73AF68",
   "B"   = "#79629E",
+  "NK"= "#73AF68",
   "Mono" = "#5B83BF"
 )
 

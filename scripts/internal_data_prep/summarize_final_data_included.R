@@ -21,7 +21,7 @@ summary <- lapply(as.list(names(objs)), function(obj){
 
 	meta_all <- bind_rows(lapply(objs[[obj]], \(x) x@meta.data))
 
-	return(data.frame(dataset = obj,
+	meta_df <- data.frame(dataset = obj,
 			  n_donors = n_distinct(meta_all$donor_id),
 			  n_cells_main = nrow(meta_all %>% filter(predicted.celltype.l1 %in% main_celltypes)),
 			  n_cells_total = nrow(meta_all),
@@ -29,8 +29,12 @@ summary <- lapply(as.list(names(objs)), function(obj){
 			  n_male = meta_all %>% filter(sex == "male") %>% pull(donor_id) %>% unique() %>% length(),
 			  n_asian = meta_all %>% filter(self_reported_ethnicity %in% c("Asian", "Indian", "Japanese", "Korean", "Singaporean Chinese", "Singaporean Indian", "Singaporean Malay", "Thai")) %>% pull(donor_id) %>% unique() %>% length(),
 			  age_min = min(meta_all$age, na.rm = TRUE),
-			  age_max = max(meta_all$age, na.rm = TRUE)))
+			  age_max = max(meta_all$age, na.rm = TRUE))
 
+	cellcount_df <- meta_all %>% count(donor_id) %>% mutate(dataset = obj)
+
+	return(list(meta_df, cellcount_df))
 })
 
-export(bind_rows(summary), snakemake@output[["summary"]])
+export(bind_rows(lapply(summary, `[[`, 1)), snakemake@output[["summary"]])
+export(bind_rows(lapply(summary, `[[`, 2)), snakemake@output[["cellcount"]])

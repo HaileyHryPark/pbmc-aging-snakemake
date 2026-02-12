@@ -17,3 +17,4 @@ dependencies:
   - bioconductor-illuminahumanmethylation450kanno.ilmn12.hg19
   - bioconductor-illuminahumanmethylation450kmanifest
   - bioconductor-dmrcate
+  - r-svglite

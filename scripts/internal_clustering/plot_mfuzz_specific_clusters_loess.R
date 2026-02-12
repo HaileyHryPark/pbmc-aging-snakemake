@@ -110,12 +110,12 @@ mat_m <- mat_m %>%
 plotdata_f <- merge(mat_f, clust_df_f, all.x = T, by = "feature")
 print(head(plotdata_f))
 print(table(plotdata_f$final_cluster))
-print(table(plotdata_f$merged_clusters))
+print(table(plotdata_f$merged_cluster))
 
 plotdata_m <- merge(mat_m, clust_df_m, all.x = T, by = "feature")
 print(head(plotdata_m))
 print(table(plotdata_m$final_cluster))
-print(table(plotdata_m$merged_clusters))
+print(table(plotdata_m$merged_cluster))
 
 n_features <- plotdata_f %>%
   distinct(final_cluster, feature) %>%

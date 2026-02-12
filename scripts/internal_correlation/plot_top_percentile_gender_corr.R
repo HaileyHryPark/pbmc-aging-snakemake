@@ -5,18 +5,19 @@ library(ggpubr)
 library(ggplot2)
 library(colorspace)
 library(ggVennDiagram)
+library(svglite)
 
 celltype_colors <- c(
   "CD4 T" = "#D2533B",
   "CD8 T"    = "#E6974D",
-  "NK"= "#73AF68",
   "B"   = "#79629E",
+  "NK"= "#73AF68",
   "Mono" = "#5B83BF"
 )
 celltype_col_df <-  data.frame(celltype = names(celltype_colors), color = celltype_colors)
 
-cluster_col = qualitative_hcl(6, palette = "Set 2")
-cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Late\nincrease", "Continuous\nincrease")
+cluster_col = qualitative_hcl(7, palette = "Set 2")
+cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease", "Late\nincrease")
 cluster_col_df <- data.frame(cluster = cluster_level, color = cluster_col)
 
 ## Import cor table
@@ -92,29 +93,37 @@ plot(ggVennDiagram(venn_neg, label_alpha = 0, edge_size = 1.5, set_size = 6, lab
 
 dev.off()
 
-## Pie chart
-pdf(snakemake@output[["pie"]], height = 5, width = 5)
+## Bar chart
+cor_sub <- bind_rows(cor_sub_f2 %>% mutate(top = "Female top positive correlation"), 
+                     cor_sub_f1 %>% mutate(top = "Female top negative correlation"), 
+                     cor_sub_m2 %>% mutate(top = "Male top positive correlation"), 
+                     cor_sub_m1 %>% mutate(top = "Male top negative correlation")) %>% 
+  mutate(top = factor(top, levels = rev(c("Female top positive correlation", "Male top positive correlation", 
+                                      "Female top negative correlation", "Male top negative correlation"))))
 
-sub_list <- list(cor_sub_f1, cor_sub_f2, cor_sub_m1, cor_sub_m2)
-names(sub_list) <- c("Female neg", "Female pos", "Male neg", "Male pos")
+cor_sub_df <- as.data.frame(table(cor_sub$celltype,cor_sub$final_cluster,cor_sub$top))
 
-lapply(as.list(names(sub_list)), function(s){
+cluster_col <- c(cluster_col_df$color)
+names(cluster_col) <- cluster_col_df$cluster
 
-  df <- sub_list[[s]]
+p1 <- ggplot(cor_sub_df %>% mutate(Var2 = factor(Var2, levels = cluster_level)), aes(fill = Var2, y = Freq, x = Var3)) + 
+  geom_bar(position = "fill", stat = "identity") +
+  scale_fill_manual(values = cluster_col, name = "Cluster") +
+  theme_linedraw(base_size = 15)+
+  theme(legend.position = "bottom", axis.text.y = element_text(size = 15)) +
+  coord_flip()+
+  labs(y = "Percentage", x = "")
 
-  bycluster <- as.data.frame(table(df$final_cluster)) %>% arrange(Freq)
-  bycluster <- bycluster %>% left_join(cluster_col_df, by = join_by(Var1 == cluster))
+p2 <- ggplot(cor_sub_df %>% mutate(Var1 = factor(Var1, levels = c("CD4 T", "CD8 T", "B", "NK", "Mono"))), aes(fill = Var1, y = Freq, x = Var3)) + 
+  geom_bar(position = "fill", stat = "identity") +
+  scale_fill_manual(values = celltype_colors, name = "Cell type") +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+  theme_linedraw(base_size = 15)+
+  theme(legend.position = "bottom", axis.text.y = element_blank()) +
+  coord_flip()+
+  labs(y = "Percentage", x = "")
 
-  pie(bycluster$Freq, labels = rep("", nrow(bycluster)), col = bycluster$color, main = s)
-  pie(bycluster$Freq, labels = bycluster$Var1, col = bycluster$color, main = s)
-  mtext(s, side = 3, line = 1, outer = F)
+p <- ggarrange(p1, p2, widths = c(8,5), ncol = 2, nrow = 1)
+ggsave(snakemake@output[["bar"]], p, width = 13, height = 4)
 
-  bycelltype <- as.data.frame(table(df$celltype)) %>% arrange(Freq)
-  bycelltype <- bycelltype %>% left_join(celltype_col_df, by = join_by(Var1 == celltype))
 
-  pie(bycelltype$Freq, labels = rep("", nrow(bycelltype)), col = bycelltype$color, main = s)
-  pie(bycelltype$Freq, labels = bycelltype$Var1, col = bycelltype$color, main = s)
-  mtext(s, side = 3, line = 1, outer = F)
-})
-
-dev.off()

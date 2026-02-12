@@ -36,6 +36,7 @@ make_long_df <- function(cpg_beta_mat, metadata){
 
 plot_cpg_lines <- function(df_long) {
   
+  cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
   # summarize mean and SE per CpG per group
   df_summary <- df_long %>%
     group_by(Gender, AgeGroup, CpG, group) %>%
@@ -59,6 +60,7 @@ plot_cpg_lines <- function(df_long) {
 }
 
 plot_mean_box <- function(df_long){
+  cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
   df_mean <- df_long %>%
     group_by(Sample, AgeGroup, Gender) %>%
     summarize(mean_beta = mean(Beta), .groups = "drop")
@@ -72,8 +74,8 @@ plot_mean_box <- function(df_long){
     scale_y_continuous(expand = expansion(mult = c(0.1, 0.15))) +
     scale_fill_manual(values = cols) +
     theme_linedraw(base_size = 15) +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1), panel.grid.major = element_blank(), legend.position = "none") +
-    labs(x = "Age Group", y = "Mean Beta")
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), panel.grid.major = element_blank(), legend.position = "none", axis.title.x = element_blank()) +
+    labs(x = "", y = "Mean Beta")
 }
 
 
@@ -180,14 +182,97 @@ df_long <- make_long_df(cpg_mat, metadata)
 df_long$CpG <- factor(df_long$CpG, levels = rownames(cpg_mat))
 df_long <- df_long %>% mutate(AgeGroup = factor(AgeGroup, levels = c("<40", "40-60", ">60")),
                               Gender = factor(Gender, levels = c("female", "male"), labels = c("Female", "Male")))
+print(head(df_long))
 
 cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
 
 p1 <- plot_cpg_lines(df_long)
 p2 <- plot_mean_box(df_long)
 
-ggarrange(p1, p2, ncol = 2, nrow = 1, width = c(4,2.5))
+ggarrange(p1, p2, ncol = 2, nrow = 1, widths = c(4,2.5))
 
 })
 
 dev.off()
+
+## Individual plots
+dmr_index <- 22
+cpg_mat <- extract_dmr_cpg_matrix(dmr_int1, dmr_index, beta_all, cpg_gr)
+
+df_long <- make_long_df(cpg_mat, metadata)
+df_long$CpG <- factor(df_long$CpG, levels = rownames(cpg_mat))
+df_long <- df_long %>% mutate(AgeGroup = factor(AgeGroup, levels = c("<40", "40-60", ">60")),
+                              Gender = factor(Gender, levels = c("female", "male"), labels = c("Female", "Male")))
+
+cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
+
+p1 <- plot_cpg_lines(df_long)
+p2 <- plot_mean_box(df_long)
+
+p <- ggarrange(p1, p2, ncol = 2, nrow = 1, widths = c(6,2))
+ggsave(snakemake@output[["p1"]], p, width = 8, height = 5)
+
+dmr_index <- 293
+cpg_mat <- extract_dmr_cpg_matrix(dmr_int2, dmr_index, beta_all, cpg_gr)
+
+df_long <- make_long_df(cpg_mat, metadata)
+df_long$CpG <- factor(df_long$CpG, levels = rownames(cpg_mat))
+df_long <- df_long %>% mutate(AgeGroup = factor(AgeGroup, levels = c("<40", "40-60", ">60")),
+                              Gender = factor(Gender, levels = c("female", "male"), labels = c("Female", "Male")))
+
+cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
+
+p1 <- plot_cpg_lines(df_long)
+p2 <- plot_mean_box(df_long)
+
+p <- ggarrange(p1, p2, ncol = 2, nrow = 1, widths = c(3.5,2))
+ggsave(snakemake@output[["p2"]], p, width = 5.5, height = 5)
+
+dmr_index <- 208
+cpg_mat <- extract_dmr_cpg_matrix(dmr_int2, dmr_index, beta_all, cpg_gr)
+
+df_long <- make_long_df(cpg_mat, metadata)
+df_long$CpG <- factor(df_long$CpG, levels = rownames(cpg_mat))
+df_long <- df_long %>% mutate(AgeGroup = factor(AgeGroup, levels = c("<40", "40-60", ">60")),
+                              Gender = factor(Gender, levels = c("female", "male"), labels = c("Female", "Male")))
+
+cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
+
+p1 <- plot_cpg_lines(df_long)
+p2 <- plot_mean_box(df_long)
+
+p <- ggarrange(p1, p2, ncol = 2, nrow = 1, widths = c(3.5,2))
+ggsave(snakemake@output[["p3"]], p, width = 5.5, height = 5)
+
+dmr_index <- 244
+cpg_mat <- extract_dmr_cpg_matrix(dmr_int2, dmr_index, beta_all, cpg_gr)
+
+df_long <- make_long_df(cpg_mat, metadata)
+df_long$CpG <- factor(df_long$CpG, levels = rownames(cpg_mat))
+df_long <- df_long %>% mutate(AgeGroup = factor(AgeGroup, levels = c("<40", "40-60", ">60")),
+                              Gender = factor(Gender, levels = c("female", "male"), labels = c("Female", "Male")))
+
+cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
+
+p1 <- plot_cpg_lines(df_long)
+p2 <- plot_mean_box(df_long)
+
+p <- ggarrange(p1, p2, ncol = 2, nrow = 1, widths = c(3,2))
+ggsave(snakemake@output[["p4"]], p, width = 5, height = 5)
+
+dmr_index <- 295
+cpg_mat <- extract_dmr_cpg_matrix(dmr_int2, dmr_index, beta_all, cpg_gr)
+
+df_long <- make_long_df(cpg_mat, metadata)
+df_long$CpG <- factor(df_long$CpG, levels = rownames(cpg_mat))
+df_long <- df_long %>% mutate(AgeGroup = factor(AgeGroup, levels = c("<40", "40-60", ">60")),
+                              Gender = factor(Gender, levels = c("female", "male"), labels = c("Female", "Male")))
+
+cols <- c("<40" = "black", "40-60" = "orange", ">60" = "forestgreen")
+
+p1 <- plot_cpg_lines(df_long)
+p2 <- plot_mean_box(df_long)
+
+p <- ggarrange(p1, p2, ncol = 2, nrow = 1, widths = c(3.5,2))
+ggsave(snakemake@output[["p5"]], p, width = 5.5, height = 5)
+
