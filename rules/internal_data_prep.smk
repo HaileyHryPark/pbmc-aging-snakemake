@@ -142,4 +142,22 @@ rule plot_final_data_cellcount_per_dataset:
 	script:
 		"../scripts/internal_data_prep/plot_final_data_cellcount_per_dataset.R"
 		
-			
+rule plot_umap:
+	input:
+		onek1k=expand("data/internal_data_prep/onek1k_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 11)]),
+		aida=expand("data/internal_data_prep/aida_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 22)]),
+		perez=expand("data/internal_data_prep/perez_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 5)]),
+		marina=expand("data/internal_data_prep/marina_{split}_processed.rds", split=[f"split{i:02d}" for i in range(1, 7)]),
+	output:
+		coords="tables/internal_data_prep/all_umap_coords.csv",
+		plot1="plots/internal_data_prep/all_umap.svg",
+		plot2="plots/internal_data_prep/all_umap_downsample.svg",
+		plot3="plots/internal_data_prep/all_umap.png",
+		plot4="plots/internal_data_prep/all_umap_downsample.png",
+	conda: "../env/internal_data_prep2.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 220, walltime = "90:00:00", queue = "super"
+	script:
+		"../scripts/internal_data_prep/plot_umap.R"
+
+	

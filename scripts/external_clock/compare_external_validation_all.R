@@ -4,8 +4,77 @@ library(ggpubr)
 library(tidyverse)
 library(svglite)
 library(Metrics)
+library(svglite)
 
 ## Function
+PlotMetricsCohort <- function(df){
+
+both_h_df <- df %>% filter(disease == "normal", model == "Model B") %>% 
+	group_by(fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(type = "Both healthy", sex = "Both")
+both_d_df <- df %>% filter(disease != "normal", model == "Model B") %>% 
+	group_by(fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(type = "Both disease", sex = "Both")
+female_h_df <- df %>% filter(sex == "female", disease == "normal", model == "Model F") %>% 
+	group_by(fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(type = "Female healthy", sex = "Female")
+female_d_df <- df %>% filter(sex == "female", disease != "normal", model == "Model F") %>% 
+	group_by(fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(type = "Female disease", sex = "Female")
+male_h_df <- df %>% filter(sex == "male", disease == "normal", model == "Model M") %>% 
+	group_by(fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(type = "Male healthy", sex = "Male")
+male_d_df <- df %>% filter(sex == "male", disease != "normal", model == "Model M") %>% 
+	group_by(fold) %>% 
+	summarise(RMSE = rmse(actual_age, predicted_age), MAE = mae(actual_age, predicted_age), r = cor(actual_age,predicted_age), .groups = "drop") %>%
+	mutate(type = "Male disease", sex = "Male")
+
+all <- bind_rows(both_h_df, both_d_df, female_h_df, female_d_df, male_h_df, male_d_df) %>% 
+	mutate(sex = factor(sex, levels = c("Both", "Female", "Male")), 
+		type = factor(type, levels = c("Both healthy", "Both disease", "Female healthy", "Female disease", "Male healthy", "Male disease")))
+
+p1 <- ggplot(all, aes(x = type, y = RMSE)) + 
+	geom_boxplot(aes(color = sex), width = 0.6) +
+	scale_color_manual(values = c("Both" = "grey", "Female" = "#E15566", "Male" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	facet_wrap(~sex, scale = "free") +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,0.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+#p1 <- p1 + stat_compare_means(method = "wilcox", paired = FALSE, label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4)
+p2 <- ggplot(all, aes(x = type, y = MAE)) + 
+	geom_boxplot(aes(color = sex), width = 0.6) +
+	scale_color_manual(values = c("Both" = "grey", "Female" = "#E15566", "Male" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	facet_wrap(~sex, scale = "free") +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,0.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+#p2 <- p2 + stat_compare_means(method = "wilcox", paired = FALSE, label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4)
+p3 <- ggplot(all, aes(x = type, y = r)) + 
+	geom_boxplot(aes(color = sex), width = 0.6) +
+	scale_color_manual(values = c("Both" = "grey", "Female" = "#E15566", "Male" = "#4981BF")) +
+	geom_point(position = position_jitter(width = 0.2), size = 0.5, alpha = 1, color = "black") +
+	facet_wrap(~sex, scale = "free") +
+	xlab("")+
+	scale_y_continuous(expand = expansion(mult = c(0.05,0.3)))+
+	theme_linedraw(base_size = 15)+
+	theme(panel.grid = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1))
+#p3 <- p3 + stat_compare_means(method = "wilcox", paired = FALSE, label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4)
+
+pall <- ggarrange(p1, p2, p3, ncol=3, nrow=1)
+
+return(pall)
+
+}
+
 PlotMetricsGender <- function(df){
 
 female_df <- df %>% filter(sex == "female")
@@ -422,3 +491,7 @@ plot(ggarrange(plotlist = wellcome_p, ncol = 1, nrow = 3))
 	
 })
 dev.off()
+
+
+mlp_comp <- PlotMetricsCohort(preds_age %>% filter(alg == "MLP"))
+ggsave(snakemake@output[["plot4"]], mlp_comp, width = 12, height =3) 

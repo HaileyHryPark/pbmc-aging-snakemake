@@ -400,12 +400,28 @@ rule plot_specific_genes:
 	script:
 		"../scripts/internal_clustering/plot_specific_genes.R"
 
+rule plot_nhanes_serum_ferritin:
+	input:
+		meta="data/internal_clustering/DEMO_J.xpt",
+		sf="data/internal_clustering/FERTIN_J.xpt"
+	output:
+		data="tables/internal_clustering/nhanes_data.csv",
+		plot="plots/internal_clustering/nhanes_serum_ferritin_plot.svg"
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 20, walltime = "02:00:00", queue = "short"
+	script:
+		"../scripts/internal_clustering/plot_nhanes_serum_ferritin.R"
+
 rule run_fishers_exact_tests:
 	input:
 		clust_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+		clust_m="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
 		gs="resources/my_genesets_all.rds",
 	output:
-		res1="tables/internal_clustering/{mode}_deswan_deg_female_late_increase_ias_test.txt",
+		res1="tables/internal_clustering/{mode}_deswan_deg_female_late_increase_geneset_test.txt",
+		res2="tables/internal_clustering/{mode}_deswan_deg_female_inverted_ushape_geneset_test.txt",
+		res3="tables/internal_clustering/{mode}_deswan_deg_sex_specific_clusters_test.txt",
 	conda: "../env/final_plots.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 10, walltime = "02:00:00", queue = "short"

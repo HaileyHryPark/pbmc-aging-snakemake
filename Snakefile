@@ -146,7 +146,10 @@ rule internal_clustering2:
 		"plots/internal_clustering/allexp5ct_deswan_deg_fth1.svg",
 		"plots/internal_clustering/allexp5ct_deswan_deg_ftl.svg",
 		"plots/internal_clustering/allexp5ct_deswan_deg_fcimei_cluster_genes.svg",
-		"tables/internal_clustering/allexp5ct_deswan_deg_female_late_increase_ias_test.txt",
+		"plots/internal_clustering/nhanes_serum_ferritin_plot.svg",
+		"tables/internal_clustering/allexp5ct_deswan_deg_female_late_increase_geneset_test.txt",
+		"tables/internal_clustering/allexp5ct_deswan_deg_female_inverted_ushape_geneset_test.txt",
+		"tables/internal_clustering/allexp5ct_deswan_deg_sex_specific_clusters_test.txt",
 
 rule internal_cor:
 	input:
@@ -159,6 +162,7 @@ rule internal_ctp:
 	input:
 		"data/internal_celltype_prop/celltype_prop_data_all.csv",
 		"tables/internal_celltype_prop/celltype_prop_data_spearman_corr_age.csv",
+		"plots/internal_celltype_prop/celltype_prop_data_raw_violin.pdf",
 		#"plots/internal_celltype_prop/celltype_prop_data_raw_scatter.pdf",
 		#"plots/internal_celltype_prop/celltype_data_deswan_corr.pdf",
 
@@ -173,6 +177,7 @@ rule external:
 		"plots/external_clock/allexp5ct_deswan_deg_model_comparison_metrics.pdf",
 		"plots/external_clock/allexp5ct_deswan_deg_model_comparison_scatter.pdf",
 		"plots/external_clock/allexp5ct_deswan_deg_model_comparison_disease.pdf",
+		"plots/external_clock/allexp5ct_deswan_deg_mlp_comparison_healthy_disease.svg",
 		"plots/external_clock/allexp5ct_deswan_deg_2dmlp_model_prediction_corrected_scatter.pdf",
 
 rule downstream:

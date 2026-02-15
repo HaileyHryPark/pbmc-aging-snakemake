@@ -93,6 +93,7 @@ rule compare_external_validation_deswan_all:
                 plot1="plots/external_clock/{mode}_deswan_deg_model_comparison_metrics.pdf",
                 plot2="plots/external_clock/{mode}_deswan_deg_model_comparison_scatter.pdf",
                 plot3="plots/external_clock/{mode}_deswan_deg_model_comparison_disease.pdf",
+                plot4="plots/external_clock/{mode}_deswan_deg_mlp_comparison_healthy_disease.svg",
 		sum="tables/external_clock/{mode}_deswan_deg_model_comparison_all_summary.csv",
 		fold="tables/external_clock/{mode}_deswan_deg_model_comparison_all_folds.csv",
         conda:  "../env/internal_downstream.yaml"

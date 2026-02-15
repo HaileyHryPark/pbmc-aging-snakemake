@@ -90,3 +90,35 @@ lapply(celltypes, function(f){
 	ggarrange(plotlist = plots, ncol = 3, nrow = 1)
 })
 dev.off()
+
+pdf(snakemake@output[["plot3"]], width = 9, height = 2.5)
+lapply(celltypes, function(f){
+
+	plots <- lapply(list("both","female","male"), function(g){ 
+		df <- raw %>% mutate(agegroup = case_when(
+							age < 40 ~ "<40",
+							age >= 40 & age < 60 ~ "40-60",
+							age >= 60 & age < 80 ~ "60-80",
+							age >= 80 ~ ">80")) %>%
+				mutate(agegroup = factor(agegroup, levels = c("<40","40-60","60-80",">80")))
+
+		fill_col <- "grey"
+		if(g != "both"){
+			df <- df %>% filter(sex == g)
+			fill_col <- ifelse(g == "female", "#E15566", "#4981BF")
+		}
+
+		p1 <- ggplot(df, aes(x = agegroup, y = .data[[f]])) +
+			geom_violin(fill = fill_col, width = 0.7) +
+			geom_boxplot(fill = "white", width = 0.2) +
+			stat_compare_means(paired = FALSE, comparisons = list(c("60-80", ">80")), label = "p", tip.length = 0, bracket.size = 0.7, vjust = -0.4) +
+			xlab("") +
+			scale_y_continuous(expand = expansion(mult = c(0,.15)))+
+			theme_classic(base_size = 15) +
+			theme(legend.position = "none", axis.text.x = element_text(angle = 30, hjust = 1, size = 15))
+
+		return(p1)
+	})
+	ggarrange(plotlist = plots, ncol = 3, nrow = 1)
+})
+dev.off()

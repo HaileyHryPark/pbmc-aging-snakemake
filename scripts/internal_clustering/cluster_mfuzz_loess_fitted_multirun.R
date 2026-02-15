@@ -9,7 +9,7 @@ library(rio)
 # ----------------------------
 # Parameters
 # ----------------------------
-seeds <- 11:20
+seeds <- 261:270
 cor_threshold <- 0.8
 membership_cutoff <- 0.5
 
