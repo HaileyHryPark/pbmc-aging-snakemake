@@ -5,7 +5,7 @@ library(rio)
 # ----------------------------
 # Load data
 # ----------------------------
-cluster_counts <- import(snakemake@input[["cluster_counts"]]) %>% mutate(n_clusters = as.integer(n_clusters))
+cluster_counts <- import(snakemake@input[["cluster_counts"]]) %>% mutate(n_clusters = as.character(n_clusters))
 all_runs <- readRDS(snakemake@input[["all_runs_rds"]])
 final_centers <- import(snakemake@input[["final_centers"]], header = T)
 

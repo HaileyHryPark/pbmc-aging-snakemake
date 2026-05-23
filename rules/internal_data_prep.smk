@@ -154,6 +154,8 @@ rule plot_umap:
 		plot2="plots/internal_data_prep/all_umap_downsample.svg",
 		plot3="plots/internal_data_prep/all_umap.png",
 		plot4="plots/internal_data_prep/all_umap_downsample.png",
+		plot5="plots/internal_data_prep/all_umap_split_by_dataset.svg",
+		plot6="plots/internal_data_prep/all_umap_split_by_dataset.png",
 	conda: "../env/internal_data_prep2.yaml"
 	threads: 1
 	resources: ngpus = 0, mem_gb = 220, walltime = "90:00:00", queue = "super"

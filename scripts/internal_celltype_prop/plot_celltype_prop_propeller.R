@@ -3,8 +3,8 @@ library(dplyr)
 library(tidyverse)
 library(purrr)
 library(ggpubr)
-
-dataset_cols <- c("onek1k" = "#1b9e77", "aida" = "#d95f02", "perez" = "#7570b3", "marina" = "#e7298a")
+library(speckle)
+library(limma)
 
 ## Functions
 # Function to compute Spearman correlation
@@ -22,8 +22,7 @@ run_corr <- function(data, celltype_cols) {
   return(res)
 }
 
-raw <- import(snakemake@input[["raw"]]) %>% mutate(`CD4/CD8` = `CD4_T`/`CD8_T`)
-data <- import(snakemake@input[["data"]]) %>% mutate(`CD4/CD8` = `CD4_T`/`CD8_T`)
+data <- import(snakemake@input[["data"]])
 celltypes <- colnames(data %>% select(-c(donor_id, age, sex, dataset, ethnicity)))
 
 # Compute correlations
@@ -69,7 +68,7 @@ lapply(celltypes, function(f){
 })
 dev.off()
 
-pdf(snakemake@output[["plot2"]], width = 8, height = 5)
+pdf(snakemake@output[["plot2"]], width = 9, height = 5)
 lapply(celltypes, function(f){
 
 	plots <- lapply(list("both","female","male"), function(g){ 
@@ -82,9 +81,8 @@ lapply(celltypes, function(f){
 			geom_smooth(method = "loess", method.args = list(degree = 1), se = F) +
 			ggtitle(paste(f, g)) +
 			theme_test() + theme(legend.position = "none")
-		p2 <- ggscatter(df, x = "age", y = f, color = "dataset", alpha = 0.7, size = 0.5, add = "reg.line", conf.int = F) +
-			scale_color_manual(values = dataset_cols) +
-			labs(title = paste0(f, " (", g, ")"), x = "Age", y = "Cell type proportion") +
+		p2 <- ggscatter(df, x = "age", y = f, color = "dataset", alpha = 0.7, size = 0.5, cor.coef = T, cor.method = "spearman") +
+			ggtitle(paste(f, g)) +
 			theme_test() + theme(legend.position = "none")
 		p <- ggarrange(p1, p2, ncol = 1, nrow = 2, widths = c(1,1))
 		return(p)

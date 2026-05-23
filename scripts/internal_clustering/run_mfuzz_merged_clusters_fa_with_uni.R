@@ -16,17 +16,16 @@ cluster_level = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", 
 celltype_level = c("CD4 T", "CD8 T", "B", "NK", "Mono")
 
 ### Functions
-runFA <- function(features){
+runFA <- function(features, uni){
   
-  genelist <- annot_deg %>% dplyr::filter(SYMBOL %in% features) %>% pull(ENTREZID) %>% unique() %>% as.integer()
+  genelist <- universe %>% dplyr::filter(gene %in% features, !is.na(ENTREZID)) %>% pull(ENTREZID) %>% unique() %>% as.character()
   print(genelist)
   
   set.seed(123)
   enr_kegg <- enrichKEGG(genelist,
                          organism = "hsa",
-			 universe = universe_genes,
+			 universe = uni,
                          pvalueCutoff = 1, 
-                         keyType = "ncbi-geneid",
                          minGSSize = 3)
   if(is.null(enr_kegg)){
     print("here1")
@@ -40,7 +39,7 @@ runFA <- function(features){
   set.seed(123)
   enr_wp <- enrichWP(genelist,
                      organism = "Homo sapiens",
-		     universe = universe_genes,
+		     universe = uni,
                      pvalueCutoff = 1, 
                      minGSSize = 3)
   if(is.null(enr_wp)){
@@ -54,7 +53,7 @@ runFA <- function(features){
   set.seed(123)
   enr_r <- enrichPathway(genelist,
                          organism = "human",
-			 universe = universe_genes,
+			 universe = uni,
                          pvalueCutoff = 1, 
                          minGSSize = 3)
   if(is.null(enr_r)){
@@ -74,20 +73,20 @@ runFA <- function(features){
   
   enr_all_res$gene_name <- sapply(enr_all_res$geneID, function(x){
     genes <- unlist(strsplit(x, split = "/"))
-    return(paste(annot_deg[annot_deg$ENTREZID %in% genes, "SYMBOL"], collapse = "/"))
+    return(paste(universe[universe$ENTREZID %in% genes, "gene"], collapse = "/"))
   })
   return(enr_all_res)
 }
 
-runGOFA <- function(features){
+runGOFA <- function(features, uni){
   
-  genelist <- annot_deg %>% dplyr::filter(SYMBOL %in% features) %>% pull(ENTREZID) %>% unique() %>% as.integer()
+  genelist <- universe %>% dplyr::filter(gene %in% features, !is.na(ENTREZID)) %>% pull(ENTREZID) %>% unique() %>% as.character()
   print(genelist)
   
   set.seed(123)
   enr_go <- enrichGO(genelist,
                      OrgDb = org.Hs.eg.db,
-		     universe = universe_genes,
+		     universe = uni,
                      ont = "BP",
                      pvalueCutoff = 1, 
                      keyType = "ENTREZID",
@@ -99,19 +98,19 @@ runGOFA <- function(features){
   enr_go_res$db <- "GO"
   enr_go_res$gene_name <- sapply(enr_go_res$geneID, function(x){
     genes <- unlist(strsplit(x, split = "/"))
-    return(paste(annot_deg[annot_deg$ENTREZID %in% genes, "SYMBOL"], collapse = "/"))
+    return(paste(universe[universe$ENTREZID %in% genes, "gene"], collapse = "/"))
   })
   return(enr_go_res)
 }
 
-RunFAbyCluster <- function(df, title){
+RunFAbyCluster <- function(df, title, uni){
 
 fares <- lapply(as.list(unique(df$final_cluster)), function(clust){
 
 	print(clust)
 	clustdf <- df %>% dplyr::filter(final_cluster == clust)
 
-	fadf <- rbind(runFA(unique(clustdf$gene)), runGOFA(unique(clustdf$gene))) 
+	fadf <- rbind(runFA(unique(clustdf$gene), uni), runGOFA(unique(clustdf$gene, uni))) 
 
 	if(nrow(fadf) == 0){
 		return(data.frame())
@@ -131,38 +130,30 @@ return(res)
 both_df <- import(snakemake@input[["both_df"]]) %>% dplyr::filter(!is.na(final_cluster), final_cluster != "")
 female_df <- import(snakemake@input[["female_df"]]) %>% dplyr::filter(!is.na(final_cluster), final_cluster != "")
 male_df <- import(snakemake@input[["male_df"]]) %>% dplyr::filter(!is.na(final_cluster), final_cluster != "")
-female_df_exc <- female_df %>% dplyr::filter(!(feature %in% male_df$feature))
-male_df_exc <- male_df %>% dplyr::filter(!(feature %in% female_df$feature))
 
-print(table(female_df_exc$final_cluster))
-print(table(male_df_exc$final_cluster))
+universe <- import(snakemake@input[["uni"]])
 
-annot_deg <- ensembldb::select(org.Hs.eg.db, keys = unique(c(both_df$gene, female_df$gene, male_df$gene)), keytype = "SYMBOL", columns = c("SYMBOL","ENTREZID"))
-print(head(annot_deg))
-universe_genes <- unique(na.omit(annot_deg$ENTREZID))
-
-df_list <- list(both_df, female_df, male_df, female_df_exc, male_df_exc)
-names(df_list) <- c("both", "female", "male", "female_only", "male_only")
+df_list <- list(both_df, female_df, male_df)
+names(df_list) <- c("both", "female", "male")
 
 ## Res1
 all_res <- lapply(as.list(names(df_list)), function(n){
 
 df <- df_list[[n]]
 
-res <- RunFAbyCluster(df, "All celltype")
-res$fa_celltype <- "All celltype"
-
 ct_res <- lapply(as.list(df %>% pull(celltype) %>% unique()), function(ct){
 	
 	print(ct)
 	ctdf <- df %>% dplyr::filter(celltype == ct)
-	res <- RunFAbyCluster(ctdf, ct) 
+	uni <- universe %>% dplyr::filter(celltype == ct, !is.na(ENTREZID)) %>% pull(ENTREZID) %>% unique() %>% as.character()
+	print(head(uni))
+	res <- RunFAbyCluster(ctdf, ct, uni)
 	res$fa_celltype <- ct
 
 	return(res)
 })
 
-return(rbind(res, bind_rows(ct_res)) %>% mutate(type = n))
+return(bind_rows(ct_res) %>% mutate(type = n))
 
 })
 

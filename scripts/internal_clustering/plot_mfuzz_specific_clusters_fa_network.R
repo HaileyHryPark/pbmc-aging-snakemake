@@ -138,7 +138,7 @@ PlotFANetwork <- function(df, title){
 
 ## Main
 res <- import(snakemake@input[["table"]]) %>%
-	filter(db == snakemake@params[["db"]], qvalue < 0.01, fa_celltype != "All celltype") %>% 
+	filter(db == snakemake@params[["db"]], qvalue < 0.05, fa_celltype != "All celltype") %>% 
 	select(-term) %>% 
 	rename(term = Description)
 print(head(res))
@@ -189,4 +189,4 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
     axis.ticks.y = element_blank()
   )
 
-ggsave(snakemake@output[["plot_fcimei"]], plot = p, width = 11, height = 4)
+ggsave(snakemake@output[["plot_fcimei"]], plot = p, width = 9, height = 4)

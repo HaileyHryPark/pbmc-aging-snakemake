@@ -29,7 +29,7 @@ rule all:
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv", gender=["both","female","male"]),
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
-		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
+		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.svg",
 		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_top_fa_score_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_all_res.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_loess.pdf",
@@ -113,7 +113,7 @@ rule internal_clustering:
 		"plots/internal_clustering/allexp5ct_deswan_cluster_pie_by_celltype.pdf",
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res.csv", gender=["both","female","male"]),
 		expand("tables/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_all_res.csv", gender=["both","female","male"]),
-		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
+		#"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.svg",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_mitocarta_fa_res_plots.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_all_res_network_plots.pdf",
@@ -132,7 +132,7 @@ rule internal_clustering2:
 		"plots/internal_clustering/allexp5ct_deswan_deg_gender_flowplot_by_merged_clusters.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_gender_venn_by_merged_clusters.pdf",	
 		"plots/internal_clustering/allexp5ct_deswan_cluster_pie_by_celltype.pdf",
-		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.svg",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_GO_res_network3.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_GO_res_network3_fli.pdf",
 		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_GO_res_network3_mef.pdf",
@@ -212,6 +212,20 @@ rule cima_rna:
 rule cima_atac:
 	input:
 		"data/cima_atac_data/cima_atac_metadata_prefilter.csv",
+
+rule revision:
+	input:
+		"plots/internal_data_prep/all_umap.svg",
+		"plots/internal_data_prep/all_umap_split_by_dataset.svg",
+		"plots/internal_deswan/allexp5ct_deswan_qc_plots.svg",
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_pseudobulk_data_limma_{gender}_pca.svg", gender=["both","female","male"]),
+		expand("plots/internal_celltype_prop/{level}_propeller_{gender}_vlnplot.svg", level=["l1","l2"], gender=["both","female","male"]),
+		"plots/internal_celltype_prop/celltype_prop_data_raw_scatter.pdf",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_go_res_plots.svg",
+		"plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_msigdb_fa_chr_res_plots.svg",
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3.pdf", db=["GO","Reactome"]),
+		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_{db}_network.pdf", db=["GO","Reactome"]),
+		"plots/internal_deswan/allexp5ct_deswan_removebatcheffect_q_res_all.svg",
 
 ##### load rules #####
 

@@ -3,8 +3,8 @@ library(tidyverse)
 library(ggpubr)
 library(ggplot2)
 library(colorspace)
-library(circlize)
 library(rio)
+library(svglite)
 
 ### Functions
 fa <- import(snakemake@input[["table"]])
@@ -12,7 +12,7 @@ annot <- import(snakemake@input[["annot"]])
 
 fa_top <- fa %>% filter(db == "GO", cluster != "", fa_celltype != "All celltype", type %in% c("both","female","male")) %>% 
 	group_by(fa_celltype, cluster, type) %>% 
-	arrange(qvalue) %>% slice_head(n = 3) %>% ungroup() %>% pull(term) %>% unique()
+	arrange(qvalue) %>% slice_head(n = 2) %>% ungroup() %>% pull(term) %>% unique()
 
 fa_res_top <- fa %>% filter(term %in% fa_top,  cluster != "", fa_celltype != "All celltype", type %in% c("both","female","male")) %>% 
   mutate(type = factor(type, levels = c("both","female","male")), 
@@ -21,9 +21,9 @@ fa_res_top <- fa %>% filter(term %in% fa_top,  cluster != "", fa_celltype != "Al
   select(Description, ID, Gender = type, Celltype = fa_celltype, Cluster = cluster, qvalue, gene_name) %>% 
   filter(qvalue < 0.01)
 
-gobp_fa_res_top <- merge(annot, fa_res_top, by.x = "term", by.y = "Description") %>% rename(Category = category, Description = term)
+gobp_fa_res_top <- merge(annot, fa_res_top, by.x = "term", by.y = "Description", all.y = T) %>% rename(Category = category, Description = term)
 
-gobp_fa_res_top <- gobp_fa_res_top %>% mutate(Category = factor(Category, levels = c("DNA/RNA metabolism", "Translation", "Proteostasis", "Chromosome organization", "OXPHOS/Energy metabolism", "Mitochondria","Immune response", "Immune cell differentiation/activation", "Antigen processing and presentation", "Signaling", "Apoptosis", "Actin fiber organization", "Cellular transport", "Others")))
+gobp_fa_res_top <- gobp_fa_res_top %>% mutate(Category = factor(Category, levels = c("DNA/RNA metabolism", "Translation", "Proteostasis", "Chromosome organization", "OXPHOS/Energy metabolism", "Mitochondria","Immune response", "Immune cell differentiation/activation", "Antigen processing and presentation", "Cell death", "Actin fiber organization", "Cellular transport", "Sex differentiation", "Others", NA)))
 export(gobp_fa_res_top, snakemake@output[["annotgo"]])
 
 term_order2 <- gobp_fa_res_top %>% 
@@ -34,7 +34,7 @@ data_to_plot <- fa %>% filter(Description %in% term_order2, cluster != "", fa_ce
          cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation","Inverted\nUshape", "Continuous\nincrease","Late\nincrease")),
          fa_celltype = factor(fa_celltype, levels = c("CD4 T", "CD8 T", "B", "NK", "Mono"))) %>% 
   select(Description, Gender = type, Celltype = fa_celltype, Cluster = cluster, qvalue) %>% 
-  filter(qvalue < 0.01)
+  filter(qvalue < 0.05)
 
 
 celltypes <- unique(data_to_plot$Celltype)
@@ -47,8 +47,7 @@ bg <- data.frame(
   fill = rep(c("white", "grey85"), length.out = length(celltypes))
 )
 
-pdf(snakemake@output[["go"]], width = 16, height =15)
-ggplot(data_to_plot %>%  mutate(Description = factor(Description, levels = rev(term_order2))), 
+p <- ggplot(data_to_plot %>%  mutate(Description = factor(Description, levels = rev(term_order2))), 
        aes(x = Celltype, y = Description, color = Gender, group = Gender)) +
   geom_rect(data = bg, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
             inherit.aes = FALSE, alpha = 0.5) +
@@ -63,4 +62,4 @@ ggplot(data_to_plot %>%  mutate(Description = factor(Description, levels = rev(t
     panel.grid.minor = element_blank()
   ) +
   labs(x = "", y = "Pathways", color = "Gender")
-dev.off()
+ggsave(snakemake@output[["go"]], p, width = 15, height = 11)

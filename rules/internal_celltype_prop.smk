@@ -4,6 +4,7 @@ rule get_celltype_prop_mat:
 	output:
 		ctp="data/internal_celltype_prop/{dataset}_{split}_celltype_prop_data.csv",
 		meta="data/internal_celltype_prop/{dataset}_{split}_celltype_meta_data.csv",
+		meta2="data/internal_celltype_prop/{dataset}_{split}_celltype_meta_data_summary.csv",
 	params: dataset="{dataset}"
 	conda: "../env/external_dis_data_prep.yaml"
 	threads: 1
@@ -81,4 +82,21 @@ rule plot_celltype_data_deswan_corr:
 	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "super"
 	script:
 		"../scripts/internal_celltype_prop/plot_celltype_data_deswan_corr.R"
+
+rule run_celltype_prop_propeller:
+	input:
+		data="data/internal_celltype_prop/celltype_meta_data_all.csv",
+	output:
+		l1res_anova="tables/internal_celltype_prop/l1_propeller_{gender}_anova.csv",
+		l1res_age="tables/internal_celltype_prop/l1_propeller_{gender}_age.csv",
+		l1_vlnplot="plots/internal_celltype_prop/l1_propeller_{gender}_vlnplot.svg",
+		l2res_anova="tables/internal_celltype_prop/l2_propeller_{gender}_anova.csv",
+		l2res_age="tables/internal_celltype_prop/l2_propeller_{gender}_age.csv",
+		l2_vlnplot="plots/internal_celltype_prop/l2_propeller_{gender}_vlnplot.svg",
+	params: gender="{gender}"
+	conda: "../env/internal_celltype_prop.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 80, walltime = "20:00:00", queue = "super"
+	script:
+		"../scripts/internal_celltype_prop/run_celltype_prop_propeller.R"
 

@@ -41,7 +41,14 @@ print(head(df))
 
 export(df, snakemake@output[["ctp"]])
 
-table <- seu@meta.data %>% group_by(donor_id, sex, predicted.celltype.l1) %>% summarise(cell_num = n(), total_UMI = sum(nCount_RNA), total_gene = sum(nFeature_RNA), mean_UMI = mean(nCount_RNA), mean_gene = mean(nFeature_RNA)) %>% group_by(donor_id, sex) %>% mutate(proportion = cell_num / sum(cell_num)) %>% ungroup()
+table <- seu@meta.data %>% select(donor_id, age, sex, predicted.celltype.l1, predicted.celltype.l2) %>%
+		mutate(dataset = snakemake@params[["dataset"]])
 print(head(table))
 
 export(table, snakemake@output[["meta"]])
+
+table <- seu@meta.data %>% group_by(donor_id, sex, predicted.celltype.l1) %>% summarise(cell_num = n(), total_UMI = sum(nCount_RNA), total_gene = sum(nFeature_RNA), mean_UMI = mean(nCount_RNA), mean_gene = mean(nFeature_RNA)) %>% group_by(donor_id, sex) %>% mutate(proportion = cell_num / sum(cell_num)) %>% ungroup()
+print(head(table))
+
+export(table, snakemake@output[["meta2"]])
+

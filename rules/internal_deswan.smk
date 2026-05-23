@@ -149,3 +149,44 @@ rule plot_deswan_deg_venn:
 	script:
 		"../scripts/internal_deswan/plot_deswan_deg_venn.R"	 
 
+rule plot_deswan_qc:
+	input:
+		q1="tables/internal_deswan/{mode}_deswan_q_res.csv",
+		q2="tables/internal_deswan/{mode}_deswan_q_res_by_dataset.csv",
+		meta="data/internal_pseudobulk/{mode}_pseudobulk_data_all.csv",
+	output:
+		plots="plots/internal_deswan/{mode}_deswan_qc_plots.svg",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/plot_deswan_qc.R"
+
+rule run_deswan_removebatcheffect:
+	input:
+		data="data/internal_pseudobulk/{mode}_pseudobulk_data_all.csv",
+	output:
+		res="tables/internal_deswan/{mode}_deswan_removebatcheffect_res.rds",
+		coef="tables/internal_deswan/{mode}_deswan_removebatcheffect_coef_res.csv",
+		p="tables/internal_deswan/{mode}_deswan_removebatcheffect_p_res.csv",
+		q="tables/internal_deswan/{mode}_deswan_removebatcheffect_q_res.csv",
+	#conda: "../env/internal_data_prep.yaml"
+	singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 100, walltime = "99:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/run_deswan_removebatcheffect.R"
+
+rule plot_deswan_removebatcheffect:
+	input:
+		q="tables/internal_deswan/{mode}_deswan_removebatcheffect_q_res.csv",
+	output:
+		plots="plots/internal_deswan/{mode}_deswan_removebatcheffect_q_res_by_gender.pdf",
+		plots2="plots/internal_deswan/{mode}_deswan_removebatcheffect_q_res_by_gender2.pdf",
+		plot="plots/internal_deswan/{mode}_deswan_removebatcheffect_q_res_all.svg",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/plot_deswan.R"
+

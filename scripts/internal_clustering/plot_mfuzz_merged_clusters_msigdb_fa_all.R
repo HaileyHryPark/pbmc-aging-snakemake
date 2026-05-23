@@ -10,7 +10,7 @@ library(svglite)
 ### Functions
 fa <- import(snakemake@input[["table"]])
 
-fa_res_top <- fa %>% filter(db == "C1", cluster != "", fa_celltype != "All celltype", type %in% c("female","male"), qvalue < 0.01, Count > 5) %>%
+fa_res_top <- fa %>% filter(db == "C1", cluster != "", fa_celltype != "All celltype", type %in% c("female","male","both"), qvalue < 0.01, Count > 5) %>%
   mutate(type = factor(type, levels = c("female","male")), 
          cluster = factor(cluster, levels = c("Early\nincrease", "Early\ndecrease", "Continuous\ndecrease", "Early\nfluctuation", "Inverted\nUshape", "Continuous\nincrease","Late\nincrease")),
          fa_celltype = factor(fa_celltype, levels = c("CD4 T", "CD8 T", "B", "NK", "Mono"))) %>% 
