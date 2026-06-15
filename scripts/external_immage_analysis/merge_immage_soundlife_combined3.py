@@ -3,36 +3,23 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-dfs = [pd.read_csv(f) for f in snakemake.input]
-
-all_columns = set().union(*(df.columns for df in dfs))
-common_columns = set(dfs[0].columns)
-for df in dfs[1:]:
-    common_columns &= set(df.columns)
-incomplete_columns = all_columns - common_columns
+df = pd.read_csv(snakemake.input[0])
 
 ## Outer join, incomplete columns to NaN
-all_dfs = pd.concat(dfs, join="outer")
-all_dfs = all_dfs[~all_dfs['sample_id'].duplicated(keep=False)]
-all_dfs.to_csv(snakemake.output[0], index=False)
+df = df[~df['rowname'].duplicated(keep=False)]
+
+## Remove onek1k and aida
+df = df[df["dataset"].isin(["onek1k", "aida"])]
+df.to_csv(snakemake.output[0], index=False)
 
 ## keep track of all collumns and incomplete columns
 with open(snakemake.output[1], "w") as f:
-    f.write("=== Column Summary ===\n")
-    f.write(f"Total unique columns: {len(all_columns)}\n")
-    f.write(f"Columns kept after inner join: {len(common_columns)}\n")
-    f.write(f"Columns incomplete: {len(incomplete_columns)}\n\n")
-
-    f.write("Kept columns:\n")
-    f.write(", ".join(sorted(common_columns)) + "\n\n")
-    
-    f.write("Dropped columns:\n")
-    f.write(", ".join(sorted(incomplete_columns)) + "\n")
+    f.write("=== No merging done - just subsetting by dataset ===\n")
 
 ## plot pca
-sex_labels = all_dfs['sex']
-dataset_labels = all_dfs['dataset']
-X_all = all_dfs.drop(columns=['sample_id', 'donor_id', 'sex', 'age', 'disease', 'dataset', 'ethnicity'], errors='ignore').fillna(0)
+sex_labels = df['sex']
+dataset_labels = df['dataset']
+X_all = df.drop(columns=['rowname', 'sex', 'age', 'disease', 'dataset', 'ethnicity'], errors='ignore').fillna(0)
 
 scaler = StandardScaler()
 scaled_data = scaler.fit_transform(X_all)

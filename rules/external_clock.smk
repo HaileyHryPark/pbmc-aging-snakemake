@@ -127,3 +127,36 @@ rule plot_corrected_2dmlp_predicted_age:
         resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "super"
         script:
                 "../scripts/external_clock/plot_corrected_2dmlp_predicted_age.R"
+
+rule test_external_gender_deswan_2dmlp_lodo:
+	input:
+		"data/external_clock/{mode}_deswan_deg_pseudobulk_{gender}_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model.pt",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model_params.json",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model_scalers.joblib",
+	output:
+		"tables/external_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_predictions.csv",
+		"tables/external_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_res.csv",
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 120, walltime = "20:00:00", queue = "gpu-h200"
+	script:
+		"../scripts/external_clock/test_deswan_2dmlp_lodo.py"
+
+rule compare_lodo_5cv_external:
+        input:
+                cvb="tables/external_clock/{mode}_deswan_deg_2dmlp_both_cv_predictions.csv",
+                cvf="tables/external_clock/{mode}_deswan_deg_2dmlp_female_cv_predictions.csv",
+                cvm="tables/external_clock/{mode}_deswan_deg_2dmlp_male_cv_predictions.csv",
+		lodob="tables/external_clock/{mode}_deswan_deg_lodo_2dmlp_both_res.csv",
+		lodof="tables/external_clock/{mode}_deswan_deg_lodo_2dmlp_female_res.csv",
+		lodom="tables/external_clock/{mode}_deswan_deg_lodo_2dmlp_male_res.csv",
+        output:
+                plot="plots/external_clock/{mode}_deswan_deg_lodo_5cv_metrics_comparison.svg",
+                res="tables/external_clock/{mode}_deswan_deg_lodo_5cv_metrics_comparison.csv",
+        conda:  "../env/internal_downstream.yaml"
+        threads: 1
+        resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "super"
+        script:
+                "../scripts/external_clock/compare_lodo_5cv.R"
+

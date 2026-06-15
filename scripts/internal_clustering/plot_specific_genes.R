@@ -34,7 +34,7 @@ p1 <- ggplot(limma %>% select(`CD8 T.HLA-C`, age, sex, dataset), aes(x = age, y 
   scale_color_manual(values = c("female" = "#E15566", "male" = "#4981BF"), labels = c("Female", "Male"), name = "Gender") +
   theme_linedraw(base_size = 15) + theme(legend.position = "none", panel.grid = element_blank())
 
-ps <- lapply(list("CD8 T.NDUFA2", "CD8 T.IDH3B", "CD8 T.CD74", "CD8 T.PDIA3", "CD8 T.CTSS", "CD4 T.ATP6AP2", "CD4 T.AP1S2", "CD4 T.ANP32E", "CD4 T.ARRDC3", "CD4 T.CAPZA1", "CD4 T.CLN5", "CD4 T.TRAM1", "NK.TPT1", "CD4 T.TPT1", "NK.RACK1", "CD4 T.RACK1", "CD4 T.LAPTM5"), function(f){
+ps <- lapply(list("CD8 T.SIGIRR", "CD8 T.MYO1G", "CD8 T.CD74", "CD8 T.ITGB2", "CD8 T.CTSS", "CD4 T.ATP6AP2", "CD4 T.AP1S2", "CD4 T.ANP32E", "CD4 T.ARRDC3", "CD4 T.CAPZA1", "CD4 T.CLN5", "CD4 T.TRAM1", "NK.TPT1", "CD4 T.TPT1", "NK.RACK1", "CD4 T.RACK1", "CD4 T.LAPTM5"), function(f){
   return(plotLimmaScatterFig(limma, span_f, span_m, f))
 })
 

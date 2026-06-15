@@ -65,6 +65,34 @@ rule run_deswan_others:
 	script:
 		"../scripts/internal_deswan/run_deswan_others.R"
 
+rule run_deswan_downsample:
+	input:
+		data="data/internal_pseudobulk/{mode}_pseudobulk_data_all.csv",
+	output:
+		res="tables/internal_deswan/{mode}_deswan_num_deg_{gender}_res_downsample.csv",
+	#conda: "../env/internal_data_prep.yaml"
+	params: gender="{gender}"
+	singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 100, walltime = "99:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/run_deswan_downsample.R"
+
+rule run_deswan_level2:
+	input:
+		data="data/internal_pseudobulk/{mode}_pseudobulk_data_all_level2.csv",
+	output:
+		res="tables/internal_deswan/{mode}_deswan_res_level2.rds",
+		coef="tables/internal_deswan/{mode}_deswan_coef_res_level2.csv",
+		p="tables/internal_deswan/{mode}_deswan_p_res_level2.csv",
+		q="tables/internal_deswan/{mode}_deswan_q_res_level2.csv",
+	#conda: "../env/internal_data_prep.yaml"
+	singularity: "/apps/singularity/rstudio-4.5.0_ExtPack_NOV102025.sif"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 100, walltime = "99:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/run_deswan.R"
+
 rule plot_deswan:
 	input:
 		q="tables/internal_deswan/{mode}_deswan_q_res.csv",
@@ -122,6 +150,32 @@ rule plot_deswan_others:
 	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"
 	script:
 		"../scripts/internal_deswan/plot_deswan_others.R"
+
+rule plot_deswan_downsample:
+	input:
+		res_b="tables/internal_deswan/{mode}_deswan_num_deg_both_res_downsample.csv",
+		res_f="tables/internal_deswan/{mode}_deswan_num_deg_female_res_downsample.csv",
+		res_m="tables/internal_deswan/{mode}_deswan_num_deg_male_res_downsample.csv",
+	output:
+		plot="plots/internal_deswan/{mode}_deswan_res_downsample.svg",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/plot_deswan_downsample.R"
+
+rule plot_deswan_level2:
+	input:
+		q="tables/internal_deswan/{mode}_deswan_q_res_level2.csv",
+	output:
+		plots="plots/internal_deswan/{mode}_deswan_q_res_by_gender_level2.pdf",
+		plots2="plots/internal_deswan/{mode}_deswan_q_res_by_gender2_level2.pdf",
+		plot="plots/internal_deswan/{mode}_deswan_q_res_all_level2.svg",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_deswan/plot_deswan_level2.R"
 
 rule get_deswan_deg:
 	input:
@@ -188,5 +242,5 @@ rule plot_deswan_removebatcheffect:
 	threads: 1
 	resources: ngpus = 0, mem_gb = 50, walltime = "02:00:00", queue = "super"
 	script:
-		"../scripts/internal_deswan/plot_deswan.R"
+		"../scripts/internal_deswan/plot_deswan_removebatcheffect.R"
 

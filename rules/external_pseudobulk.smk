@@ -25,6 +25,8 @@ rule get_full5ct_pseudobulk_mat_external_sc:
 # Not including the second split because only one donor + no exact age so does not affect analysis
 rule merge_full5ct_pseudobulk_data_external:
 	input:
+		"data/external_immage_data_prep/full5ct_pseudobulk_data_immage.csv",
+		"data/external_soundlife_data_prep/full5ct_pseudobulk_data_soundlife.csv",
 		"data/external_pseudobulk/sc_full5ct_pseudobulk_data.csv",
 		expand("data/external_pseudobulk/ren_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 10)]), 
 		expand("data/external_pseudobulk/wellcome_{split}_full5ct_pseudobulk_data.csv", split=[f"split{i:02d}" for i in range(1, 5)]), 

@@ -255,31 +255,119 @@ rule compute_shap_gender_specific_final_2dmlp_deswan:
 		"../scripts/internal_clock/compute_shap_2dmlp.py"
 
 rule plot_shap_gender_specific_final_2dmlp_deswan:
-        input:
-                clust_b="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
-                clust_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
+	input:
+		clust_b="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_both_annotated.csv",
+		clust_f="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_female_annotated.csv",
 		clust_m="tables/internal_clustering/{mode}_deswan_deg_loess_fitted_mfuzz_cluster_assignment_male_annotated.csv",
-                pred_b="tables/external_clock/{mode}_deswan_deg_2dmlp_both_model_prediction_corrected_all.csv",
-                pred_f="tables/external_clock/{mode}_deswan_deg_2dmlp_female_model_prediction_corrected_all.csv",
-                pred_m="tables/external_clock/{mode}_deswan_deg_2dmlp_male_model_prediction_corrected_all.csv",
-                shap_b="tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_shap_values.csv",
-                shap_f="tables/internal_clock/{mode}_deswan_deg_2dmlp_female_model_shap_values.csv",
-                shap_m="tables/internal_clock/{mode}_deswan_deg_2dmlp_male_model_shap_values.csv",
-        output:
-                pcaplot="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_pcaplots.svg",
-                pcaplot_c="plots/internal_clock/{mode}_deswan_deg_2dmlp_corrected_shap_pcaplots.svg",
-                corrplot_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_age_corrplots_female.svg",
-                corrplot_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_age_corrplots_male.svg",
-                vlnplot_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_vlnplots_female.svg",
+		pred_b="tables/external_clock/{mode}_deswan_deg_2dmlp_both_model_prediction_corrected_all.csv",
+		pred_f="tables/external_clock/{mode}_deswan_deg_2dmlp_female_model_prediction_corrected_all.csv",
+		pred_m="tables/external_clock/{mode}_deswan_deg_2dmlp_male_model_prediction_corrected_all.csv",
+		shap_b="tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_shap_values.csv",
+		shap_f="tables/internal_clock/{mode}_deswan_deg_2dmlp_female_model_shap_values.csv",
+		shap_m="tables/internal_clock/{mode}_deswan_deg_2dmlp_male_model_shap_values.csv",
+	output:
+		pcaplot="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_pcaplots.svg",
+		pcaplot_c="plots/internal_clock/{mode}_deswan_deg_2dmlp_corrected_shap_pcaplots.svg",
+		corrplot_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_age_corrplots_female.svg",
+		corrplot_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_age_corrplots_male.svg",
+		vlnplot_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_vlnplots_female.svg",
 		vlnplot_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_vlnplots_male.svg",
-                vlnplot2_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_vlnplots_female.svg",
-                vlnplot2_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_vlnplots_male.svg",
-                vlnplot3_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_accel_vlnplots_female.svg",
-                vlnplot3_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_accel_vlnplots_male.svg",
-        conda: "../env/internal_downstream.yaml"
-        threads: 1
-        resources: ngpus = 1, mem_gb = 20, walltime = "10:00:00", queue = "gpu"
-        script:
-                "../scripts/internal_clock/plot_shap_gender_specific_final_2dmlp_deswan.R"
+		vlnplot2_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_vlnplots_female.svg",
+		vlnplot2_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_vlnplots_male.svg",
+		vlnplot3_f="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_accel_vlnplots_female.svg",
+		vlnplot3_m="plots/internal_clock/{mode}_deswan_deg_2dmlp_shap_clust_ag_accel_vlnplots_male.svg",
+	conda: "../env/internal_downstream.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 20, walltime = "10:00:00", queue = "gpu"
+	script:
+		"../scripts/internal_clock/plot_shap_gender_specific_final_2dmlp_deswan.R"
 
+rule lodo_train_and_test_gender_specific_2dmlp_deswan:
+	input:
+		"data/internal_clock/{mode}_deswan_deg_pseudobulk_{gender}_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_{gender}_model_params.json",
+	output:
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model_prediction.csv",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model_res.csv",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model.pt",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model_params.json",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_{gender}_model_scalers.joblib",
+	params: gender="{gender}"
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 120, walltime = "99:00:00", queue = "gpu-h200"
+	script:
+		"../scripts/internal_clock/lodo_train_and_test_2dmlp.py"
 
+rule lodo_train_and_test_gender_both_subsample_2dmlp_deswan:
+	input:
+		"data/internal_clock/{mode}_deswan_deg_pseudobulk_data_all.csv",
+		"tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_params.json",
+	output:
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_both_model_prediction.csv",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_both_model_res.csv",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_both_model.pt",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_both_model_params.json",
+		"tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_both_model_scalers.joblib",
+	params: gender="both"
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 1, mem_gb = 120, walltime = "99:00:00", queue = "gpu-h200"
+	script:
+		"../scripts/internal_clock/lodo_train_and_test_2dmlp.py"
+
+rule plot_sample_distribution_lodo:
+	input:
+		data="data/internal_pseudobulk/{mode}_pseudobulk_data_all.csv",
+	output:
+		plot1="plots/internal_clock/{mode}_sample_distribution_female_lodo.svg",
+		plot2="plots/internal_clock/{mode}_sample_distribution_male_lodo.svg",
+		plot3="plots/internal_clock/{mode}_sample_distribution_both_lodo.svg",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 40, walltime = "05:00:00", queue = "super"
+	script:
+		"../scripts/internal_clock/plot_sample_distribution_lodo.R"
+
+rule extract_both_split_fold_information:
+	input:
+		"data/internal_clock/{mode}_deswan_deg_pseudobulk_data_all.csv",
+	output:
+		"tables/internal_clock/{mode}_deswan_deg_pseudobulk_both_split_fold_info.csv",
+	conda: "../env/mlp.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 40, walltime = "01:00:00", queue = "super"
+	script:
+		"../scripts/internal_clock/extract_both_split_fold_information.py"
+
+rule plot_sample_distribution_5cv:
+	input:
+		datab="tables/internal_clock/{mode}_deswan_deg_pseudobulk_both_split_fold_info.csv",
+		dataf="tables/internal_clock/{mode}_deswan_deg_2dmlp_female_model_prediction.csv",
+		datam="tables/internal_clock/{mode}_deswan_deg_2dmlp_male_model_prediction.csv",
+	output:
+		plotb="plots/internal_clock/{mode}_sample_distribution_both_5cv.svg",
+		plotf="plots/internal_clock/{mode}_sample_distribution_female_5cv.svg",
+		plotm="plots/internal_clock/{mode}_sample_distribution_male_5cv.svg",
+		res="tables/internal_clock/{mode}_sample_distribution_5cv.csv",
+	conda: "../env/final_plots.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 40, walltime = "05:00:00", queue = "super"
+	script:
+		"../scripts/internal_clock/plot_sample_distribution_5cv.R"
+
+rule compare_lodo_5cv_internal:
+	input:
+		cvb="tables/internal_clock/{mode}_deswan_deg_2dmlp_both_model_res.csv",
+		cvf="tables/internal_clock/{mode}_deswan_deg_2dmlp_female_model_res.csv",
+		cvm="tables/internal_clock/{mode}_deswan_deg_2dmlp_male_model_res.csv",
+		lodob="tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_both_model_res.csv",
+		lodof="tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_female_model_res.csv",
+		lodom="tables/internal_clock/{mode}_deswan_deg_lodo_2dmlp_male_model_res.csv",
+	output:
+		plot="plots/internal_clock/{mode}_deswan_deg_lodo_5cv_metrics_comparison.svg",
+	conda:	"../env/internal_downstream.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 50, walltime = "05:00:00", queue = "super"
+	script:
+		"../scripts/internal_clock/compare_lodo_5cv.R"

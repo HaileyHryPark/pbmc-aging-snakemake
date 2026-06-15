@@ -138,7 +138,7 @@ PlotFANetwork <- function(df, title){
 
 ## Main
 res <- import(snakemake@input[["table"]]) %>%
-	filter(db == snakemake@params[["db"]], qvalue < 0.05, fa_celltype != "All celltype") %>% 
+	filter(db == snakemake@params[["db"]], qvalue < 0.1, fa_celltype != "All celltype") %>% 
 	select(-term) %>% 
 	rename(term = Description)
 print(head(res))

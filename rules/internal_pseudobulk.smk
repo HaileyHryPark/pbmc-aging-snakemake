@@ -103,4 +103,42 @@ rule check_cellnumber_effect_pseudobulk:
 	script:
 		"../scripts/internal_pseudobulk/check_cellnumber_effect_pseudobulk.R"
 
+rule get_full5ct_pseudobulk_mat_level2:
+       input:
+               data="data/internal_data_prep/{dataset}_{split}_processed.rds",
+       output:
+               pb="data/internal_pseudobulk/{dataset}_{split}_full5ct_pseudobulk_data_level2.csv",
+       params: dataset="{dataset}"
+       conda: "../env/internal_data_prep.yaml"
+       threads: 1
+       resources: ngpus = 0, mem_gb = 100, walltime = "20:00:00", queue = "super"
+       script:
+               "../scripts/internal_pseudobulk/get_full5ct_pseudobulk_mat_level2.R"
+
+rule merge_full5ct_pseudobulk_data_level2:
+       input:
+               expand("data/internal_pseudobulk/onek1k_{split}_full5ct_pseudobulk_data_level2.csv", split=[f"split{i:02d}" for i in range(1, 11)]), 
+               expand("data/internal_pseudobulk/aida_{split}_full5ct_pseudobulk_data_level2.csv", split=[f"split{i:02d}" for i in range(1, 22)]), 
+               expand("data/internal_pseudobulk/perez_{split}_full5ct_pseudobulk_data_level2.csv", split=[f"split{i:02d}" for i in range(1, 5)]), 
+               expand("data/internal_pseudobulk/marina_{split}_full5ct_pseudobulk_data_level2.csv", split=[f"split{i:02d}" for i in range(1, 7)]), 
+       output:
+               "data/internal_pseudobulk/full5ct_pseudobulk_data_all_level2.csv",
+               "tables/internal_pseudobulk/full5ct_pseudobulk_data_column_summary_level2.txt",
+               "plots/internal_pseudobulk/full5ct_pseudobulk_data_all_pca_level2.pdf"
+       conda: "../env/internal_pseudobulk_py.yaml"
+       threads: 1
+       resources: ngpus = 0, mem_gb = 100, walltime = "10:00:00", queue = "super"
+       script:
+               "../scripts/internal_pseudobulk/merge_full5ct_pseudobulk_data_level2.py"
+
+rule subset_allexp5ct_pseudobulk_level2:
+	input:
+		"data/internal_pseudobulk/full5ct_pseudobulk_data_all_level2.csv",
+	output:
+		"data/internal_pseudobulk/allexp5ct_pseudobulk_data_all_level2.csv",
+	conda: "../env/internal_pseudobulk_py.yaml"
+	threads: 1
+	resources: ngpus = 0, mem_gb = 150, walltime = "02:00:00", queue = "super"
+	script:
+		"../scripts/internal_pseudobulk/subset_allexp5ct_pseudobulk_level2.py"
 

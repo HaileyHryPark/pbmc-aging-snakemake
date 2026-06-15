@@ -13,7 +13,8 @@ incomplete_columns = all_columns - common_columns
 
 ## Outer join, incomplete columns to NaN
 all_dfs = pd.concat(dfs, join="outer")
-all_dfs = all_dfs[~all_dfs['sample_id'].duplicated(keep=False)]
+all_dfs = all_dfs[~all_dfs['rowname'].duplicated(keep=False)]
+
 all_dfs.to_csv(snakemake.output[0], index=False)
 
 ## keep track of all collumns and incomplete columns
@@ -32,7 +33,7 @@ with open(snakemake.output[1], "w") as f:
 ## plot pca
 sex_labels = all_dfs['sex']
 dataset_labels = all_dfs['dataset']
-X_all = all_dfs.drop(columns=['sample_id', 'donor_id', 'sex', 'age', 'disease', 'dataset', 'ethnicity'], errors='ignore').fillna(0)
+X_all = all_dfs.drop(columns=['rowname', 'sex', 'age', 'disease', 'dataset', 'ethnicity'], errors='ignore').fillna(0)
 
 scaler = StandardScaler()
 scaled_data = scaler.fit_transform(X_all)

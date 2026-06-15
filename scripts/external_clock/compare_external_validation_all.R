@@ -302,7 +302,10 @@ preds <- bind_rows(pred_m1, pred_m2, pred_m3, pred_b1, pred_b2, pred_b3, pred_f1
 print(preds %>% distinct(sample_id, dataset, disease) %>% count(dataset, disease) %>% group_by(disease) %>% mutate(prop = prop.table(n)))
 
 # External data with actual age
-preds_age <- preds %>% mutate(actual_age = as.integer(actual_age)) %>% filter(!is.na(actual_age))
+preds_age <- preds %>% mutate(actual_age = as.integer(actual_age)) %>% filter(!is.na(actual_age), !is.na(predicted_age))
+print(summary(preds_age))
+# External data make sure disease is correct for allen data
+preds_age <- preds_age %>% mutate(disease = ifelse(dataset %in% c("soundlife", "immage"), "normal", disease)) 
 preds_age_table <- preds_age %>% distinct(sample_id, donor_id, dataset, disease) 
 print(preds_age_table %>% count(dataset, disease) %>% group_by(disease) %>% mutate(prop = prop.table(n)))
 print(preds_age_table[!duplicated(preds_age_table$donor_id),])

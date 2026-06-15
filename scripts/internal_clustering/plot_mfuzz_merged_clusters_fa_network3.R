@@ -137,7 +137,7 @@ PlotFANetwork <- function(df, title){
 
 ## Main
 res <- import(snakemake@input[["table"]]) %>%
-	filter(db == snakemake@params[["db"]], qvalue < 0.01, fa_celltype != "All celltype") %>% 
+	filter(db == snakemake@params[["db"]], qvalue < 0.1, fa_celltype != "All celltype") %>% 
 	select(-term) %>%
 	rename(term = Description)
 print(head(res))
@@ -193,7 +193,7 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
     axis.text.y = element_blank(),  # hide original y-axis text
     axis.ticks.y = element_blank()
   )
-ggsave(snakemake@output[["plot_fiu"]], plot = p, width = 10, height = 5)
+ggsave(snakemake@output[["plot_fiu"]], plot = p, width = 8, height = 5)
 
 # For female continuous increase
 top_terms_to_plot <- top %>% filter(title == "female Continuous\nincrease", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
@@ -206,7 +206,7 @@ res_to_plot <- res_to_plot  %>%
          fa_celltype = factor(fa_celltype, levels= c("CD4 T", "CD8 T", "B", "NK", "Mono")))
 
 p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
-  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.5) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.25) +
   geom_text(
     aes(x = 0, label = term),
     hjust = 0,
@@ -228,7 +228,7 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
     axis.text.y = element_blank(),  # hide original y-axis text
     axis.ticks.y = element_blank()
   )
-ggsave(snakemake@output[["plot_fci"]], plot = p, width = 10, height = 5)
+ggsave(snakemake@output[["plot_fci"]], plot = p, width = 8, height = 5)
 
 # For female late increase
 top_terms_to_plot <- top %>% filter(title == "female Late\nincrease", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
@@ -241,18 +241,18 @@ res_to_plot <- res_to_plot  %>%
          fa_celltype = factor(fa_celltype, levels= c("CD4 T", "CD8 T", "B", "NK", "Mono")))
 
 p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
-  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.5) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 2, preserve = "single"), width = 0.25) +
   geom_text(
     aes(x = 0, label = term),
     hjust = 0,
     nudge_x = max(-log10(res_to_plot$qvalue)) / 80,
-    nudge_y = 0.4,
+    nudge_y = 0.2,
     size = 6,
     lineheight = 0.95
   ) +
   geom_hline(yintercept = (1:4)+0.6, linewidth = 0.5) +
   scale_fill_manual(values = celltype_cols) +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0))) +
   labs(
     x = "-log10(qvalue)",
     y = "GOBP Terms",
@@ -263,7 +263,7 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
     axis.text.y = element_blank(),  # hide original y-axis text
     axis.ticks.y = element_blank()
   )
-ggsave(snakemake@output[["plot_fli"]], plot = p, width = 10, height = 5)
+ggsave(snakemake@output[["plot_fli"]], plot = p, width = 8, height = 5)
 
 ## For male early fluctuation
 top_terms_to_plot <- top %>% filter(title == "male Early\nfluctuation", rank == 1) %>% arrange(qvalue) %>% slice_head(n = 5) %>% pull(term)
@@ -277,7 +277,7 @@ res_to_plot <- res_to_plot  %>%
          fa_celltype = factor(fa_celltype, levels= c("CD4 T", "CD8 T", "B", "NK", "Mono")))
 
 p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
-  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.5) +
+  geom_col(aes(x = -log10(qvalue), fill = fa_celltype), position = position_dodge2(width = 0.5, preserve = "single"), width = 0.25) +
   geom_text(
     aes(x = 0, label = term),
     hjust = 0,
@@ -299,5 +299,5 @@ p <- ggplot(res_to_plot, aes(y = term, group = group_order)) +
     axis.text.y = element_blank(),  # hide original y-axis text
     axis.ticks.y = element_blank()
   )
-ggsave(snakemake@output[["plot_mef"]], plot = p, width = 10, height = 5)
+ggsave(snakemake@output[["plot_mef"]], plot = p, width = 8, height = 5)
 

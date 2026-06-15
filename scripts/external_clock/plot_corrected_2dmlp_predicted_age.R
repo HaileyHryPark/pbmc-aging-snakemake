@@ -35,6 +35,9 @@ female <- import(snakemake@input[["female"]]) %>% mutate(model = "Model F")
 male <- import(snakemake@input[["male"]]) %>% mutate(model = "Model M")
 
 data <- bind_rows(both, female, male)
+print(unique(data$dataset))
+
+data <- data %>% mutate(disease = ifelse(dataset %in% c("immage", "soundlife"), "normal", disease))
 
 pdf(snakemake@output[["plot1"]], width = 9, height = 3)
 
@@ -46,5 +49,11 @@ plotPredScatter(data %>% filter(cohort == "external", disease == "normal"), "pre
 plotPredScatter(data %>% filter(cohort == "external", disease == "normal"), "c_predicted_age", "External healthy")
 plotPredScatter(data %>% filter(cohort == "external", disease != "normal"), "predicted_age", "External disease")
 plotPredScatter(data %>% filter(cohort == "external", disease != "normal"), "c_predicted_age", "External disease")
+plotPredScatter(data %>% filter(dataset == "immage"), "predicted_age", "Immage")
+plotPredScatter(data %>% filter(dataset == "immage"), "c_predicted_age", "Immage")
+plotPredScatter(data %>% filter(dataset == "soundlife"), "predicted_age", "Soundlife")
+plotPredScatter(data %>% filter(dataset == "soundlife"), "c_predicted_age", "Soundlife")
+plotPredScatter(data %>% filter(cohort == "external", disease == "normal", dataset != "immage", dataset != "soundlife"), "predicted_age", "Non-allen External healthy")
+plotPredScatter(data %>% filter(cohort == "external", disease == "normal", dataset != "immage", dataset != "soundlife"), "c_predicted_age", "Non-allen External healthy")
 
 dev.off()

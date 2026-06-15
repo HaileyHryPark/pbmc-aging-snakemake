@@ -213,6 +213,24 @@ rule cima_atac:
 	input:
 		"data/cima_atac_data/cima_atac_metadata_prefilter.csv",
 
+rule immage:
+	input:
+		"data/external_immage_data_prep/split_h5ad_by_sample_log_immage.txt",
+		"tables/external_immage_data_prep/final_data_included_summary.csv",
+		"data/external_immage_data_prep/allexp5ct_pseudobulk_data_immage.csv",
+		"data/external_immage_data_prep/allexp5ct_pseudobulk_data_immage_combined.csv",
+		"plots/external_immage_data_prep/immage_sample_distribution.svg",
+		"plots/external_soundlife_data_prep/soundlife_sample_distribution.svg",
+		"data/external_immage_analysis/allexp5ct_pseudobulk_data_immage_soundlife_combined1.csv",	
+		"data/external_immage_analysis/allexp5ct_pseudobulk_data_immage_soundlife_combined2.csv",	
+		"plots/external_immage_analysis/allexp5ct_deswan_q_res_all_immage.svg",
+		"plots/external_immage_analysis/allexp5ct_deswan_q_res_all_soundlife.svg",
+		"plots/external_immage_analysis/allexp5ct_deswan_q_res_all_immage_soundlife_combined1.svg",
+		"plots/external_immage_analysis/allexp5ct_deswan_q_res_all_immage_soundlife_combined2.svg",
+		"plots/external_immage_analysis/allexp5ct_deswan_q_res_all_immage_soundlife_combined3.svg",
+		"plots/external_immage_analysis/allexp5ct_deswan_q_res_all_immage_soundlife_combined4.svg",
+		"plots/external_immage_analysis/allexp5ct_immage_soundlife_combined2_sample_distribution.svg",	
+
 rule revision:
 	input:
 		"plots/internal_data_prep/all_umap.svg",
@@ -226,6 +244,13 @@ rule revision:
 		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_merged_clusters_fa_{db}_res_network3.pdf", db=["GO","Reactome"]),
 		expand("plots/internal_clustering/allexp5ct_deswan_deg_mfuzz_specific_clusters_fa_{db}_network.pdf", db=["GO","Reactome"]),
 		"plots/internal_deswan/allexp5ct_deswan_removebatcheffect_q_res_all.svg",
+	
+		"plots/internal_deswan/allexp5ct_deswan_res_downsample.svg",
+		"plots/internal_deswan/allexp5ct_deswan_q_res_by_gender2_level2.pdf",	
+		expand("tables/internal_clock/allexp5ct_deswan_deg_lodo_2dmlp_{gender}_model_res.csv", gender=["both","female","male"]),
+		expand("tables/external_clock/allexp5ct_deswan_deg_lodo_2dmlp_{gender}_res.csv", gender=["both","female","male"]),
+		"plots/internal_clock/allexp5ct_sample_distribution_male_5cv.svg",	
+		"plots/internal_clock/allexp5ct_sample_distribution_male_lodo.svg",	
 
 ##### load rules #####
 
@@ -246,3 +271,6 @@ include: "rules/dna_methylation.smk"
 include: "rules/cima_rna_data_prep.smk"
 include: "rules/cima_rna_analysis.smk"
 include: "rules/cima_atac_data.smk"
+include: "rules/external_immage_data_prep.smk"
+include: "rules/external_immage_analysis.smk"
+include: "rules/external_soundlife_data_prep.smk"

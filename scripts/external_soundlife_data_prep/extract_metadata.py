@@ -6,6 +6,7 @@ import mygene
 import re
 
 dataset = snakemake.params["dataset"]
+group = snakemake.params["group"]
 
 SPECIES = "human"
 MITO_PREFIX = "MT-"
@@ -15,8 +16,7 @@ def compute_qc_metrics(adata):
     """Compute nCount_RNA, nFeature_RNA, and percent_mito for an AnnData object."""
     print("Computing QC metrics...")
 
-#    X = adata.raw.X if adata.raw is not None else adata.X
-    X = adata.X
+    X = adata.raw.X if adata.raw is not None else adata.X
 
     if scipy.sparse.issparse(X):
         adata.obs['nCount_RNA'] = np.ravel(X.sum(axis=1))
@@ -25,7 +25,7 @@ def compute_qc_metrics(adata):
         adata.obs['nCount_RNA'] = X.sum(axis=1)
         adata.obs['nFeature_RNA'] = (X > 0).sum(axis=1)
 
-    #adata.var_names = pd.Index(adata.var_names).str.upper()
+    adata.var_names = adata.var_names.str.upper()
     mito_genes = adata.var_names.str.startswith(MITO_PREFIX)
     if mito_genes.any():
         if scipy.sparse.issparse(X):
@@ -39,71 +39,37 @@ def compute_qc_metrics(adata):
 
     return adata
 
-def map_genes(adata, batch_size=1000):
-    print("Mapping Ensembl IDs in batches...")
+def map_genes(adata):
+    """Map Ensembl IDs to gene symbols using mygene, with caching."""
+    print("Mapping Ensembl IDs to gene symbols...")
 
-    ensembl_ids = adata.var_names.tolist()
+    ensembl_ids = adata.raw.var_names.tolist() if adata.raw else adata.var_names.tolist()
+
+    print("Querying mygene.info...")
     mg = mygene.MyGeneInfo()
-
-    results = []
-
-    for i in range(0, len(ensembl_ids), batch_size):
-        batch = ensembl_ids[i:i+batch_size]
-
-        query = mg.querymany(
-            batch,
-            scopes='ensembl.gene',
-            fields='symbol',
-            species=SPECIES,
-            verbose=False
-        )
-
-        results.extend(query)
-
-    map_df = pd.DataFrame(results)[['query', 'symbol']].dropna().drop_duplicates()
-
+    query = mg.querymany(ensembl_ids, scopes='ensembl.gene', fields='symbol', species=SPECIES)
+    map_df = pd.DataFrame(query)[['query', 'symbol']].dropna().drop_duplicates(subset='query')
     map_df.to_csv(snakemake.output[2], index=False)
 
     ens_to_symbol = dict(zip(map_df['query'], map_df['symbol']))
 
-    adata.var_names = [
-        ens_to_symbol.get(g, g) for g in ensembl_ids
-    ]
+    mito_rename_dict = {
+        'ND1': 'MT-ND1', 'ND2': 'MT-ND2', 'COX1': 'MT-CO1', 'COX2': 'MT-CO2',
+        'ATP8': 'MT-ATP8', 'ATP6': 'MT-ATP6', 'COX3': 'MT-CO3', 'ND3': 'MT-ND3',
+        'ND4L': 'MT-ND4L', 'ND4': 'MT-ND4', 'ND5': 'MT-ND5', 'ND6': 'MT-ND6',
+        'CYTB': 'MT-CYB', 'RNR1': 'MT-RNR1', 'RNR2': 'MT-RNR2'
+    }
+
+    new_var_names = []
+    for eid in ensembl_ids:
+        symbol = ens_to_symbol.get(eid, eid)
+        symbol = mito_rename_dict.get(symbol, symbol)
+        new_var_names.append(symbol)
+
+    adata.var_names = new_var_names
     adata.var_names_make_unique()
 
     return adata
-
-#def map_genes(adata):
-#    """Map Ensembl IDs to gene symbols using mygene, with caching."""
-#    print("Mapping Ensembl IDs to gene symbols...")
-#
-#    ensembl_ids = adata.raw.var_names.tolist() if adata.raw else adata.var_names.tolist()
-#
-#    print("Querying mygene.info...")
-#    mg = mygene.MyGeneInfo()
-#    query = mg.querymany(ensembl_ids, scopes='ensembl.gene', fields='symbol', species=SPECIES)
-#    map_df = pd.DataFrame(query)[['query', 'symbol']].dropna().drop_duplicates(subset='query')
-#    map_df.to_csv(snakemake.output[2], index=False)
-#
-#    ens_to_symbol = dict(zip(map_df['query'], map_df['symbol']))
-#
-#    mito_rename_dict = {
-#        'ND1': 'MT-ND1', 'ND2': 'MT-ND2', 'COX1': 'MT-CO1', 'COX2': 'MT-CO2',
-#        'ATP8': 'MT-ATP8', 'ATP6': 'MT-ATP6', 'COX3': 'MT-CO3', 'ND3': 'MT-ND3',
-#        'ND4L': 'MT-ND4L', 'ND4': 'MT-ND4', 'ND5': 'MT-ND5', 'ND6': 'MT-ND6',
-#        'CYTB': 'MT-CYB', 'RNR1': 'MT-RNR1', 'RNR2': 'MT-RNR2'
-#    }
-#
-#    new_var_names = []
-#    for eid in ensembl_ids:
-#        symbol = ens_to_symbol.get(eid, eid)
-#        symbol = mito_rename_dict.get(symbol, symbol)
-#        new_var_names.append(symbol)
-#
-#    adata.var_names = new_var_names
-#    adata.var_names_make_unique()
-#
-#    return adata
 
 def extract_development_stage(stage):
     # Case 1: exact numeric age, e.g. "35-year-old stage"
@@ -160,10 +126,21 @@ if __name__ == "__main__":
     print(np.min(adata.X), np.max(adata.X))
 
     adata.obs["sample_id"] = adata.obs["donor_id"]
-    adata.obs["age"] = adata.obs["sample.subjectAgeAtDraw"]
-    adata.obs["disease"] = "normal"
+    if str(group).endswith("CMVn"):
+        adata.obs["disease"] = "normal"
+    elif str(group).endswith("CMVp"):
+        adata.obs["disease"] = "CMV"
+    else:
+        print("Disease not found from group")
+        adata.obs["disease"] = "normal"
 
-    adata.obs = adata.obs[['donor_id', 'sample_id', 'disease', 'sex', 'age', 'self_reported_ethnicity']].copy()
+    if group in ["OldF_CMVn", "OldF_CMVp", "YoungF_CMVn", "YoungF_CMVp"]:
+        adata.obs["sex"] = "female"
+    elif group in ["OldM_CMVn", "OldM_CMVp", "YoungM_CMVn", "YoungM_CMVp"]:
+        adata.obs["sex"] = "male"
+    else:
+        print("Sex not found from group")
+        adata.obs["sex"] = "male"
 
     # Gene name mapping
     adata = map_genes(adata)
@@ -172,7 +149,7 @@ if __name__ == "__main__":
     adata = compute_qc_metrics(adata)
 
     # Extract age metadata
-    #adata = extract_age(adata)
+    adata = extract_age(adata)
 
     # Save processed outputs
     print("Saving processed AnnData object...")

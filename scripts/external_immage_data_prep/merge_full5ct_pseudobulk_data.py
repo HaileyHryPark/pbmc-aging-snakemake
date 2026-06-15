@@ -9,30 +9,29 @@ all_columns = set().union(*(df.columns for df in dfs))
 common_columns = set(dfs[0].columns)
 for df in dfs[1:]:
     common_columns &= set(df.columns)
-incomplete_columns = all_columns - common_columns
+dropped_columns = all_columns - common_columns
 
-## Outer join, incomplete columns to NaN
-all_dfs = pd.concat(dfs, join="outer")
+all_dfs = pd.concat(dfs, join="inner")
 all_dfs = all_dfs[~all_dfs['sample_id'].duplicated(keep=False)]
 all_dfs.to_csv(snakemake.output[0], index=False)
 
-## keep track of all collumns and incomplete columns
+## keep track of all collumns and dropped columns
 with open(snakemake.output[1], "w") as f:
     f.write("=== Column Summary ===\n")
     f.write(f"Total unique columns: {len(all_columns)}\n")
     f.write(f"Columns kept after inner join: {len(common_columns)}\n")
-    f.write(f"Columns incomplete: {len(incomplete_columns)}\n\n")
+    f.write(f"Columns dropped: {len(dropped_columns)}\n\n")
 
     f.write("Kept columns:\n")
     f.write(", ".join(sorted(common_columns)) + "\n\n")
     
     f.write("Dropped columns:\n")
-    f.write(", ".join(sorted(incomplete_columns)) + "\n")
+    f.write(", ".join(sorted(dropped_columns)) + "\n")
 
 ## plot pca
 sex_labels = all_dfs['sex']
 dataset_labels = all_dfs['dataset']
-X_all = all_dfs.drop(columns=['sample_id', 'donor_id', 'sex', 'age', 'disease', 'dataset', 'ethnicity'], errors='ignore').fillna(0)
+X_all = all_dfs.drop(columns=['donor_id', 'sample_id', 'sex', 'age', 'dataset', 'ethnicity'], errors='ignore')
 
 scaler = StandardScaler()
 scaled_data = scaler.fit_transform(X_all)
@@ -65,7 +64,7 @@ plt.title('PCA of pseudobulk expression by dataset (color) and sex (shape)')
 plt.xlabel(f'PC1 ({pc1_var:.1f}%)')
 plt.ylabel(f'PC2 ({pc2_var:.1f}%)')
 plt.grid(True)
-plt.legend(bbox_to_anchor=(0.5, -0.1), loc='upper center', ncol = 4)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 plt.savefig(snakemake.output[2], dpi=300)
 
