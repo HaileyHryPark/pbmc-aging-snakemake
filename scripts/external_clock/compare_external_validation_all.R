@@ -382,17 +382,17 @@ export(met_all_sum, snakemake@output[["sum"]])
 
 pdf(snakemake@output[["plot1"]], width = 9, height = 10.5)
 
-PlotMetricsGender(preds_age)
-PlotMetricsGender(preds_age %>% filter(disease == "normal"))
-PlotMetricsGender(preds_age %>% filter(disease != "normal"))
+PlotMetricsGender(preds_age %>% filter(!dataset %in% c("immage", "soundlife")))
+PlotMetricsGender(preds_age %>% filter(!dataset %in% c("immage", "soundlife"), disease == "normal"))
+PlotMetricsGender(preds_age %>% filter(!dataset %in% c("immage", "soundlife"), disease != "normal"))
 
 dev.off()
 
 pdf(snakemake@output[["plot2"]], width = 15, height = 8.5)
 
-PlotScatterGender(preds_age)
-PlotScatterGender(preds_age %>% filter(disease == "normal"))
-PlotScatterGender(preds_age %>% filter(disease != "normal"))
+PlotScatterGender(preds_age %>% filter(!dataset %in% c("immage", "soundlife")))
+PlotScatterGender(preds_age %>% filter(!dataset %in% c("immage", "soundlife"), disease == "normal"))
+PlotScatterGender(preds_age %>% filter(!dataset %in% c("immage", "soundlife"), disease != "normal"))
 
 dev.off()
 
@@ -496,5 +496,5 @@ plot(ggarrange(plotlist = wellcome_p, ncol = 1, nrow = 3))
 dev.off()
 
 
-mlp_comp <- PlotMetricsCohort(preds_age %>% filter(alg == "MLP"))
+mlp_comp <- PlotMetricsCohort(preds_age %>% filter(!dataset %in% c("immage", "soundlife"), alg == "MLP"))
 ggsave(snakemake@output[["plot4"]], mlp_comp, width = 12, height =3) 
