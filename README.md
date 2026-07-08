@@ -1,4 +1,4 @@
-# Sex-specific nonlinear immune aging at single cell level
+# Sex-specific nonlinear immune aging at the single-cell level
 Snakemake pipeline for the analysis of sex-specific, non-linear immune aging trajectories from public human PBMC single-cell RNA-sequencing data. This repository contains all code used to generate the figures and results in our manuscript (see [Citation](#citation)).
 
 ## Contents
@@ -8,7 +8,6 @@ Snakemake pipeline for the analysis of sex-specific, non-linear immune aging tra
 - [Running the code](#running-the-code)
 - [Citation](#citation)
 
----
 
 ## Overview
 
@@ -19,14 +18,13 @@ Aging is increasingly recognized as a non-linear process, but investigation of t
 3. **Link transcriptional trajectories to DNA methylation** by analyzing an independent whole-blood 450K methylation array cohort for age x sex interaction differentially methylated regions (DMRs).
 4. **Build sex-stratified biological age clocks** (Elastic Net, XGBoost, and MLP) trained on sex-combined vs. sex-stratified SAFs, and interpret model predictions using SHAP values.
 
----
 
 ## Data source
 All datasets used in this study are publicly available. Raw data are **not** included in this repository and must be downloaded separately into the paths listed below before running the pipeline.
 
 ### Internal datasets (scRNA-seq)
 * [Onek1k](https://cellxgene.cziscience.com/collections/dde06e0f-ab3b-46be-96a2-a8082383c4a1): data/internal_data_prep/onek1k.h5ad
-* [AIDAv2](https://cellxgene.cziscience.com/collections/ced320a1-29f3-47c1-a735-513c7084d508): data/internal_data_prep/aida.h5ad
+* [AIDA v2](https://cellxgene.cziscience.com/collections/ced320a1-29f3-47c1-a735-513c7084d508): data/internal_data_prep/aida.h5ad
 * [Marina et al.](https://www.synapse.org/Synapse:syn49637038/files/): GEX_HTO_processed/all_pbmcs.tar.gz -> data/internal_data_prep/all_pbmcs/all_pbmcs_rna.h5ad
 * [Perez et al.](https://cellxgene.cziscience.com/collections/436154da-bcf1-4130-9c8b-120ff9a888f2): data/internal_data_prep/perez.h5ad
 
@@ -41,35 +39,34 @@ All datasets used in this study are publicly available. Raw data are **not** inc
 * [Sound Life (soundlife)](https://cellxgene.cziscience.com/collections/60a2676d-9f37-46cc-9b02-c7370a53be9c): data/external_soundlife_data_prep/soundlife_{group}.h5ad
 
 ### Other datasets (DNA methylation)
-* [GSE35069](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE35069): data/dna_methylation/{filenames}.idat, data/dna_methylation/samples.csv
+* [GSE87571](https://www-ncbi-nlm-nih-gov.libproxy1.nus.edu.sg/geo/query/acc.cgi?acc=GSE87571): data/dna_methylation/{filenames}.idat, data/dna_methylation/samples.csv
 
 ### Other datasets (NHANES 2017-2018 Serum Ferritin)
 * [NHANES 2017-2018 demographics data](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/DEMO_J.htm): data/internal_clustering/DEMO_J.xpt
 * [NHANES 2017-2018 ferritin data](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/FERTIN_J.htm): data/internal_clustering/FERTIN_J.xpt
 
----
 
 ## Repository structure
 
 ```
 pbmc-aging-snakemake/
-Snakefile              # Main Snakemake workflow: defines rule "all" and includes all sub-workflows
-config.yaml            # Pipeline configuration 
-rules/                 # Modular Snakemake rule files (.smk), one per analysis
-scripts/                # R / Python scripts called by the rules
-data/                  # Input data and intermediate processed data
-tables/                 # Output summary tables 
-plots/                  # Output figures 
-resources/               # Reference / auxiliary resource files (e.g., gene sets, annotation references)
-env/                    # Conda / R environment specification files
-pbs_config/             # HPC (PBS) job submission configuration files
-pbs_oe/                 # HPC job output/error logs
-README.md
+├── Snakefile              # Main Snakemake workflow: defines rule "all" and includes all sub-workflows
+├── config.yaml            # Pipeline configuration 
+├── rules/                 # Modular Snakemake rule files (.smk), one per analysis
+├── scripts/               # R / Python scripts called by the rules
+├── data/                  # Input data and intermediate processed data
+├── tables/                # Output summary tables 
+├── plots/                 # Output figures 
+├── resources/             # Reference / auxiliary resource files (e.g., gene sets, annotation references)
+├── env/                   # Conda / R environment specification files
+├── pbs_config/            # HPC (PBS) job submission configuration files
+├── pbs_oe/                # HPC job output/error logs
+└── README.md
 ```
 
 ### Key rule files (`rules/`)
  
-| Rule file | Purpose |
+| Rule file | Analyses |
 |---|---|
 | `internal_data_prep.smk` | QC, filtering, and Azimuth cell type annotation of the four internal scRNA-seq datasets |
 | `internal_pseudobulk.smk` | Generates cell type-level pseudobulk expression matrices |
@@ -84,9 +81,8 @@ README.md
 | `external_pseudobulk.smk` | Pseudobulk generation for external datasets |
 | `external_clock.smk` | External validation of biological age clocks on healthy and disease cohorts |
 | `dna_methylation.smk` | Processing and DMR analysis of whole-blood 450K methylation array data |
- 
----
 
+ 
 ## Running the code
 
 ### Setup
@@ -97,26 +93,25 @@ cd pbmc-aging-snakemake
 conda env create -f env/initial_env.yaml
 conda activate <env_name>
 ```
-`initial_env.yaml` installs Snakemake and the dependencies. 
+`initial_env.yaml` installs Snakemake and its dependencies. 
  
 ### Run
  
 ```bash
 snakemake all --profile ./pbs_config --use-conda --use-singularity
 ```
-This runs `rule all` in the `Snakefile` the way I ran, generating every table and figure used in the manuscript. 
+This runs `rule all` in the `Snakefile` as executed for the manuscript, generating every table and figure reported. 
  
-> **HPC/environment notes:** This pipeline was run on HPC, using the PBS scheduler (job configs in `pbs_config/`, logs in `pbs_oe/`). R was run inside a Singularity container rather than via conda for some rules in the case of required R packages not available on conda/Bioconductor, which were installed manually and stored in `resources/r_package/`. If reproducing this pipeline on a different system, you may need to adapt the R environment setup (Singularity) and the scheduler submission commands accordingly.
+> **HPC/environment notes:** This pipeline was run on an institutional HPC cluster using the PBS scheduler (job configs in `pbs_config/`, logs in `pbs_oe/`). For rules requiring R packages not available via conda/Bioconductor, R was run inside a Singularity container (R 4.5.0) rather than through conda; these packages were installed manually and are stored in `resources/r_package/`. If reproducing this pipeline on a different system, you may need to adapt the R environment setup (Singularity) and the scheduler submission commands accordingly.
 
----
 
 ## Citation
 
 If you use this pipeline or code in your work, please cite:
-Jacques Behmoaras, Harry Park, Nina Le Bert et al. Sex-specific trajectories of nonlinear immune aging at single cell level, 04 March 2026, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-8944546/v1]
 
----
+> Behmoaras, J., Park, H., Le Bert, N. et al. Sex-specific trajectories of nonlinear immune aging at single cell level. *Research Square* (2026) [Preprint]. https://doi.org/10.21203/rs.3.rs-8944546/v1
+
  
 ## Contact
  
-For questions about the code or pipeline, please open an issue on this repository or contact [e0859928@u.nus.edu].
+For questions about the code or pipeline, please open an issue on this repository or contact e0859928@u.nus.edu.
